@@ -1,7 +1,7 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
 HOSTNAME=registry.terraform.io
 NAMESPACE=cloudposse
-NAME=utils
+NAME=awsutils
 BINARY=terraform-provider-${NAME}
 VERSION=9999.99.99
 OS_ARCH=darwin_amd64

@@ -1,7 +1,5 @@
 <!-- markdownlint-disable -->
-
 ## Makefile Targets
-
 ```text
 Available targets:
 
@@ -10,5 +8,4 @@ Available targets:
   help/short                          This help short screen
 
 ```
-
 <!-- markdownlint-restore -->

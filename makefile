@@ -1,5 +1,5 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=registry.terraform.io
+HOSTNAME=example.com
 NAMESPACE=cloudposse
 NAME=awsutils
 BINARY=terraform-provider-${NAME}

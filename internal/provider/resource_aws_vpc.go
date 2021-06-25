@@ -1,4 +1,4 @@
-package aws
+package provider
 
 import (
 	"context"
@@ -10,15 +10,15 @@ import (
 	"github.com/aws/aws-sdk-go/aws/arn"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/keyvaluetags"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/ec2/finder"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/ec2/waiter"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/tfresource"
 	"github.com/hashicorp/aws-sdk-go-base/tfawserr"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/terraform-providers/terraform-provider-aws/aws/internal/keyvaluetags"
-	"github.com/terraform-providers/terraform-provider-aws/aws/internal/service/ec2/finder"
-	"github.com/terraform-providers/terraform-provider-aws/aws/internal/service/ec2/waiter"
-	"github.com/terraform-providers/terraform-provider-aws/aws/internal/tfresource"
 )
 
 func resourceAwsVpc() *schema.Resource {

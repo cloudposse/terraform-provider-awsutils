@@ -3,8 +3,8 @@ terraform {
 
   required_providers {
     awsutils = {
-      source  = "example.com/cloudposse/awsutils"
-      version = "~> 1.0"
+      source = "example.com/cloudposse/awsutils"
+      #version = "~> 1.0"
     }
   }
 }

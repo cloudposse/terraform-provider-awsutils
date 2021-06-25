@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/tfresource"
 	"github.com/hashicorp/aws-sdk-go-base/tfawserr"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/terraform-providers/terraform-provider-aws/aws/internal/tfresource"
 )
 
 // Returns true if the error matches all these conditions:

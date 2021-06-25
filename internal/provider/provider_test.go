@@ -18,14 +18,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/organizations"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/envvar"
+	organizationsfinder "github.com/cloudposse/terraform-provider-awsutils/internal/service/organizations/finder"
+	stsfinder "github.com/cloudposse/terraform-provider-awsutils/internal/service/sts/finder"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/structure"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	"github.com/terraform-providers/terraform-provider-aws/aws/internal/envvar"
-	organizationsfinder "github.com/terraform-providers/terraform-provider-aws/aws/internal/service/organizations/finder"
-	stsfinder "github.com/terraform-providers/terraform-provider-aws/aws/internal/service/sts/finder"
 )
 
 const (

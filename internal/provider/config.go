@@ -170,11 +170,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/workmail"
 	"github.com/aws/aws-sdk-go/service/workspaces"
 	"github.com/aws/aws-sdk-go/service/xray"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/keyvaluetags"
+	"github.com/cloudposse/terraform-provider-awsutils/version"
 	awsbase "github.com/hashicorp/aws-sdk-go-base"
 	"github.com/hashicorp/aws-sdk-go-base/tfawserr"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
-	"github.com/terraform-providers/terraform-provider-aws/aws/internal/keyvaluetags"
-	"github.com/terraform-providers/terraform-provider-aws/version"
 )
 
 type Config struct {
@@ -442,7 +442,7 @@ func (c *Config) Client() (interface{}, error) {
 			{Name: "APN", Version: "1.0"},
 			{Name: "HashiCorp", Version: "1.0"},
 			{Name: "Terraform", Version: c.terraformVersion, Extra: []string{"+https://www.terraform.io"}},
-			{Name: "terraform-provider-aws", Version: version.ProviderVersion, Extra: []string{"+https://registry.terraform.io/providers/hashicorp/aws"}},
+			{Name: "terraform-provider-awsautils", Version: version.ProviderVersion, Extra: []string{"+https://registry.terraform.io/providers/cloudposse/awsutils"}},
 		},
 	}
 

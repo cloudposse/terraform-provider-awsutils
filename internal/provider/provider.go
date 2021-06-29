@@ -183,12 +183,10 @@ func Provider() *schema.Provider {
 			},
 		},
 
-		DataSourcesMap: map[string]*schema.Resource{
-			"awsutils_vpc": dataSourceAwsVpc(),
-		},
+		DataSourcesMap: map[string]*schema.Resource{},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"awsutils_vpc": resourceAwsVpc(),
+			"awsutils_default_vpc_deletion": resourceAwsUtilsDefaultVpcDeletion(),
 		},
 	}
 

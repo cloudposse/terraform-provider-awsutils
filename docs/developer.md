@@ -80,33 +80,5 @@ Resource actions are indicated with the following symbols:
 
 Terraform will perform the following actions:
 
-Plan: 0 to add, 0 to change, 0 to destroy.
-
-Changes to Outputs:
-  + deep_merge_output = <<-EOT
-        Statement:
-        - Action:
-          - s3:*
-          Effect: Allow
-          Resource:
-          - '*'
-          Sid: FullAccess
-        - Action:
-          - s3:*
-          Complex:
-            ExtraComplex:
-              ExtraExtraComplex:
-                Foo: bazzz
-                SomeArray:
-                - one
-                - two
-                - three
-          Effect: Deny
-          Resource:
-          - arn:aws:s3:::customer
-          - arn:aws:s3:::customer/*
-          - foo
-          Sid: DenyCustomerBucket
-        Version: "2012-10-17"
-    EOT
+Plan: 1 to add, 0 to change, 0 to destroy.
 ```

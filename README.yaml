@@ -11,7 +11,7 @@ name: terraform-provider-awsutils
 #logo: docs/logo.png
 
 # License of this project
-license: "MOZILLA2"
+license: "MPL-2.0"
 
 # Copyrights
 copyrights:

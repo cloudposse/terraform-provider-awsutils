@@ -19,7 +19,7 @@ deps:
 	go mod download
 
 docs:
-	go generate
+	tfplugindocs
 
 install: build
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}

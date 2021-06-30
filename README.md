@@ -28,7 +28,15 @@
 
 -->
 
-Terraform provider for performing various tasks that cannot be performed with the official AWS Terraform Provider
+Terraform provider for performing various tasks that cannot be performed with the official 
+[AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws) from Hashicorp.  
+
+This provider is derived in large parts from on the official HashiCorp AWS provider. We copied all the boilerplate 
+functionality to so that it follows the `terraform-provider-utils` conventions, but then removed all the standard 
+resources and added in our own. This module is intended to be used as an escape hatch to accomplish all the hard 
+things that will never be supported by the official provider due to strong (and valid) opinions of how providers 
+should manage the life cycle of a resource. Unfortunately, in the real-world we have to make tradeoffs to get stuff 
+done. That's this provider in a nutshell.
 
 ---
 
@@ -42,8 +50,6 @@ This project is part of our comprehensive ["SweetOps"](https://cpco.io/sweetops)
 
 
 
-
-It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 
 
@@ -97,8 +103,7 @@ terraform {
 
 Here are some additional examples:
 
-- [`examples/data-sources/deep_merge_json`](/examples/data-sources/deep_merge_json/)
-- [`examples/data-sources/deep_merge_yaml`](/examples/data-sources/deep_merge_yaml/)
+- [`examples/resources/awsutils_default_vpc_deletion`](/examples/resources/awsutils_default_vpc_deletion/)
 
 
 
@@ -127,7 +132,7 @@ For testing this provider, you can edit your `~/.terraformrc` file with the foll
 ```hcl
 provider_installation {
   dev_overrides  {
-    "cloudposse/awsutils" = "/path/to/your/code/github.com/cloudposse/terraform-provider-awsutils/"
+    "cloudposse/utils" = "/path/to/your/code/github.com/cloudposse/terraform-provider-utils/"
   }
 
   # For all other providers, install them directly from their origin provider
@@ -142,7 +147,7 @@ With that in place, you can build the provider (see above) and add a provider bl
 ```hcl
 required_providers {
     utils = {
-      source = "cloudposse/awsutils"
+      source = "cloudposse/utils"
     }
   }
 ```
@@ -229,6 +234,8 @@ Are you using this project or any of our other projects? Consider [leaving a tes
 
 Check out these related projects.
 
+- [Cloud Posse Terraform Utils Provider](https://github.com/cloudposse/terraform-provider-utils) - Terraform provider for various utilities (deep merging, stack configuration management), and to add additional 
+missing functionality to Terraform
 
 
 ## References
@@ -315,31 +322,6 @@ Copyright © 2021-2021 [Cloud Posse, LLC](https://cloudposse.com)
 
 
 
-
-## License
-
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-See [LICENSE](LICENSE) for full details.
-
-```text
-Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements.  See the NOTICE file
-distributed with this work for additional information
-regarding copyright ownership.  The ASF licenses this file
-to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
-
-  https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations
-under the License.
-```
 
 
 

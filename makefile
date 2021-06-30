@@ -18,7 +18,9 @@ build:
 deps:
 	go mod download
 
-docs:
+docs: tfdocs readme
+
+tfdocs:
 	tfplugindocs
 
 install: build

@@ -16,8 +16,9 @@ will flag the default VPCs as non-compliant if they aren't configured with best-
 hoops, it's easier to delete to default VPCs. This task cannot be accomplished with the official AWS Terraform Provider, 
 so this resource is necessary. 
 
-Please note that this resource is unusual as it will DELETE infrastrucutre when `teraform apply` is run rather than 
-creating it. This is a permanent deletion and nothing will be restored when `terraform destroy` is run. 
+Please note that applying this resource is destructive and nonreversible. This resource is unusual as it will **DELETE** 
+infrastructure when `terraform apply` is run rather than creating it. This is a permanent deletion and nothing will be 
+restored when `terraform destroy` is run. 
 
 ## Example Usage
 

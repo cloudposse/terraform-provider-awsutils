@@ -19,6 +19,13 @@ func resourceAwsUtilsDefaultVpcDeletion() *schema.Resource {
 		Read:          resourceAwsDefaultVpcDeletionRead,
 		Delete:        resourceAwsDefaultVpcDeletionDelete,
 		SchemaVersion: 1,
+		Schema: map[string]*schema.Schema{
+			"id": {
+				Description: "The ID of the VPC that was deleted.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
+		},
 	}
 }
 

@@ -31,7 +31,7 @@
 Terraform provider for performing various tasks that cannot be performed with the official 
 [AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws) from Hashicorp.  
 
-This provider is derived in large parts from on the official HashiCorp AWS provider. We copied all the boilerplate 
+This provider is derived in large parts from the official HashiCorp AWS provider. We copied all the boilerplate 
 functionality to so that it follows the `terraform-provider-utils` conventions, but then removed all the standard 
 resources and added in our own. This module is intended to be used as an escape hatch to accomplish all the hard 
 things that will never be supported by the official provider due to strong (and valid) opinions of how providers 

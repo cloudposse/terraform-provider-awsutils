@@ -32,7 +32,7 @@ Terraform provider for performing various tasks that cannot be performed with th
 [AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws) from Hashicorp.  
 
 This provider is derived in large parts from the official HashiCorp AWS provider. We copied all the boilerplate 
-functionality to so that it follows the `terraform-provider-utils` conventions, but then removed all the standard 
+functionality to so that it follows the `terraform-provider-awsutils` conventions, but then removed all the standard 
 resources and added in our own. This module is intended to be used as an escape hatch to accomplish all the hard 
 things that will never be supported by the official provider due to strong (and valid) opinions of how providers 
 should manage the life cycle of a resource. Unfortunately, in the real-world we have to make tradeoffs to get stuff 
@@ -132,7 +132,7 @@ For testing this provider, you can edit your `~/.terraformrc` file with the foll
 ```hcl
 provider_installation {
   dev_overrides  {
-    "cloudposse/utils" = "/path/to/your/code/github.com/cloudposse/terraform-provider-utils/"
+    "cloudposse/awsutils" = "/path/to/your/code/github.com/cloudposse/terraform-provider-awsutils/"
   }
 
   # For all other providers, install them directly from their origin provider
@@ -146,8 +146,8 @@ With that in place, you can build the provider (see above) and add a provider bl
 
 ```hcl
 required_providers {
-    utils = {
-      source = "cloudposse/utils"
+    awsutils = {
+      source = "cloudposse/awsutils"
     }
   }
 ```
@@ -159,12 +159,12 @@ $ terraform init
 Initializing the backend...
 
 Initializing provider plugins...
-- Finding latest version of cloudposse/utils...
+- Finding latest version of cloudposse/awsutils...
 
 Warning: Provider development overrides are in effect
 
 The following provider development overrides are set in the CLI configuration:
- - cloudposse/utils in /path/to/your/code/github.com/cloudposse/terraform-provider-utils
+ - cloudposse/awsutils in /path/to/your/code/github.com/cloudposse/terraform-provider-awsutils
 
 The behavior may therefore not match any released version of the provider and
 applying changes may cause the state to become incompatible with published
@@ -177,7 +177,7 @@ terraform apply
 Warning: Provider development overrides are in effect
 
 The following provider development overrides are set in the CLI configuration:
- - cloudposse/utils in /Users/matt/code/src/github.com/cloudposse/terraform-provider-utils
+ - cloudposse/awsutils in /Users/matt/code/src/github.com/cloudposse/terraform-provider-awsutils
 
 The behavior may therefore not match any released version of the provider and
 applying changes may cause the state to become incompatible with published
@@ -234,7 +234,7 @@ Are you using this project or any of our other projects? Consider [leaving a tes
 
 Check out these related projects.
 
-- [Cloud Posse Terraform Utils Provider](https://github.com/cloudposse/terraform-provider-utils) - Terraform provider for various utilities (deep merging, stack configuration management), and to add additional 
+- [Cloud Posse Terraform Utils Provider](https://github.com/cloudposse/terraform-provider-awsutils) - Terraform provider for various utilities (deep merging, stack configuration management), and to add additional 
 missing functionality to Terraform
 
 

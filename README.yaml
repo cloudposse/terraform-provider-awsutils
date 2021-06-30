@@ -39,7 +39,7 @@ related:
     description: |-
       Terraform provider for various utilities (deep merging, stack configuration management), and to add additional 
       missing functionality to Terraform
-    url: "https://github.com/cloudposse/terraform-provider-utils"
+    url: "https://github.com/cloudposse/terraform-provider-awsutils"
 
 # List any resources helpful for someone to get started. For example, link to the hashicorp documentation or AWS documentation.
 references:
@@ -55,7 +55,7 @@ description: |-
   [AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws) from Hashicorp.  
 
   This provider is derived in large parts from the official HashiCorp AWS provider. We copied all the boilerplate 
-  functionality to so that it follows the `terraform-provider-utils` conventions, but then removed all the standard 
+  functionality to so that it follows the `terraform-provider-awsutils` conventions, but then removed all the standard 
   resources and added in our own. This module is intended to be used as an escape hatch to accomplish all the hard 
   things that will never be supported by the official provider due to strong (and valid) opinions of how providers 
   should manage the life cycle of a resource. Unfortunately, in the real-world we have to make tradeoffs to get stuff 

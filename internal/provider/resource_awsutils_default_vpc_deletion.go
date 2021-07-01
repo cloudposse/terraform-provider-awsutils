@@ -13,8 +13,18 @@ import (
 const noDefaultVPC string = "no-default-vpc-found"
 
 func resourceAwsUtilsDefaultVpcDeletion() *schema.Resource {
-	//lintignore:R011
 	return &schema.Resource{
+		Description: `Deletes the default VPC along with the child resources of the VPC including Subnets, Route Tables, NACLs and Internet 
+Gateways in the configured region.
+		
+Best-practices call for not using the default VPC, but rather, creating a new set of VPCs as necessary. AWS Security 
+Hub will flag the default VPCs as non-compliant if they aren't configured with best-practices. Rather than jumping 
+through hoops, it's easier to delete to default VPCs. This task cannot be accomplished with the official AWS 
+Terraform Provider, so this resource is necessary. 
+		
+Please note that applying this resource is destructive and nonreversible. This resource is unusual as it will 
+**DELETE** infrastructure when ` + "`terraform apply`" + ` is run rather than creating it. This is a permanent 
+deletion and nothing will be restored when` + "`terraform destroy`" + ` is run. `,
 		Create:        resourceAwsDefaultVpcDeletionCreate,
 		Read:          resourceAwsDefaultVpcDeletionRead,
 		Delete:        resourceAwsDefaultVpcDeletionDelete,

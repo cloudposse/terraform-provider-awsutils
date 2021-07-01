@@ -13,7 +13,6 @@ require (
 	github.com/hashicorp/hcl/v2 v2.8.2 // indirect
 	github.com/hashicorp/terraform-plugin-docs v0.4.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
-	github.com/jen20/awspolicyequivalence v1.1.0
 	github.com/keybase/go-crypto v0.0.0-20161004153544-93f5b35093ba
 	github.com/mitchellh/go-testing-interface v1.14.1
 	github.com/posener/complete v1.2.1 // indirect

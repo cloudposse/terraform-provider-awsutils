@@ -12,8 +12,6 @@ provider "awsutils" {
   region = "us-east-1"
 }
 
-## TODO: Update this once we have some resources
-# Create a VPC
-resource "awsutils_vpc" "example" {
-  cidr_block = "10.0.0.0/16"
+# Delete default VPC
+resource "awsutils_default_vpc_deletion" "example" {
 }

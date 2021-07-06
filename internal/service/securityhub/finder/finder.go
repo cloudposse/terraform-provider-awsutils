@@ -63,3 +63,13 @@ func SecurityHubControl(conn *securityhub.SecurityHub, controlArn string) (*secu
 		Message: fmt.Sprintf("%s is not a valid control arn", controlArn),
 	}
 }
+
+func SecurityHubOrganizationSettingsAutoEnabled(conn *securityhub.SecurityHub) (bool, error) {
+	input := &securityhub.DescribeOrganizationConfigurationInput{}
+	settings, err := conn.DescribeOrganizationConfiguration(input)
+	if err != nil {
+		return false, err
+	}
+
+	return *settings.AutoEnable, err
+}

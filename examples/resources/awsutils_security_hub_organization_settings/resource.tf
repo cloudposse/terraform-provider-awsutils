@@ -14,7 +14,6 @@ provider "awsutils" {
   region = "us-east-1"
 }
 
-# Delete the default VPC in our account/region
 resource "awsutils_security_hub_organization_settings" "default" {
   member_accounts          = ["111111111111", "222222222222"]
   auto_enable_new_accounts = true

@@ -14,7 +14,7 @@ provider "awsutils" {
   region = "us-east-1"
 }
 
-resource "awsutils_security_hub_organization_settings" "default" {
-  member_accounts          = ["111111111111", "222222222222"]
-  auto_enable_new_accounts = true
+resource "awsutils_guardduty_organization_settings" "default" {
+  member_accounts = ["111111111111", "22222222222"]
+  detector_id     = "42bd3eab69b96663418094bb59397d1f"
 }

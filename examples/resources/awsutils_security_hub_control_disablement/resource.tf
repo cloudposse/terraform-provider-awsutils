@@ -14,7 +14,6 @@ provider "awsutils" {
   region = "us-east-1"
 }
 
-# Delete the default VPC in our account/region
 resource "awsutils_security_hub_control_disablement" "default" {
   control_arn = "arn:aws:securityhub:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:control/cis-aws-foundations-benchmark/v/1.2.0/1.1"
   reason      = "Global Resources are not evaluated in this region"

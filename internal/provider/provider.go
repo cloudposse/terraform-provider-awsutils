@@ -187,6 +187,7 @@ func Provider() *schema.Provider {
 
 		ResourcesMap: map[string]*schema.Resource{
 			"awsutils_default_vpc_deletion":               resourceAwsUtilsDefaultVpcDeletion(),
+			"awsutils_guardduty_organization_settings":    resourceAwsUtilsGuardDutyOrganizationSettings(),
 			"awsutils_security_hub_control_disablement":   resourceAwsUtilsSecurityHubControlDisablement(),
 			"awsutils_security_hub_organization_settings": resourceAwsUtilsSecurityHubOrganizationSettings(),
 		},

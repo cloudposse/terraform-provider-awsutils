@@ -183,8 +183,9 @@ func Provider() *schema.Provider {
 			},
 		},
 
-		DataSourcesMap: map[string]*schema.Resource{},
-
+		DataSourcesMap: map[string]*schema.Resource{
+			"awsutils_ec2_client_vpn_export_client_config": dataSourceAwsUtilsEc2ClientVpnClientExportConfiguration(),
+		},
 		ResourcesMap: map[string]*schema.Resource{
 			"awsutils_default_vpc_deletion":               resourceAwsUtilsDefaultVpcDeletion(),
 			"awsutils_guardduty_organization_settings":    resourceAwsUtilsGuardDutyOrganizationSettings(),

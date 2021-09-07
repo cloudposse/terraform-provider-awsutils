@@ -184,7 +184,7 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"awsutils_ec2_client_vpn_export_client_config": dataSourceAwsUtilsEc2ClientVpnClientExportConfiguration(),
+			"awsutils_ec2_client_vpn_export_client_config": dataSourceAwsUtilsEc2ExportClientVpnClientConfiguration(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"awsutils_default_vpc_deletion":               resourceAwsUtilsDefaultVpcDeletion(),

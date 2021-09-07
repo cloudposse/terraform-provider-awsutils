@@ -1,8 +1,8 @@
 package provider
 
 import (
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/cloudposse/terraform-provider-awsutils/internal/service/ec2/finder"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -17,23 +17,28 @@ func dataSourceAwsUtilsEc2ExportClientVpnClientConfiguration() *schema.Resource 
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+			"client_configuration": {
+				Description: "Output from 'export-client-vpn-client-configuration' call",
+				Type:        schema.TypeString,
+				Computed:    false,
+			},
 		},
 	}
 }
 
 func dataSourceAwsUtilsEc2ExportClientVpnClientConfigurationRead(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*AWSClient).ec2conn
-	var vpc *ec2.Vpc
+	params := &ec2.ExportClientVpnClientConfigurationInput{}
 
-	vpc, err := finder.VpcDefault(conn)
+	id := d.Get("id").(string)
+	params.ClientVpnEndpointId = aws.String(id)
+
+	resp, err := conn.ExportClientVpnClientConfiguration(params)
 	if err != nil {
 		return err
 	}
 
-	if !d.IsNewResource() && vpc != nil {
-		d.SetId("")
-	}
+	d.Set("client_configuration", resp.ClientConfiguration)
 
 	return nil
-
 }

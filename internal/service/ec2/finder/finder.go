@@ -5,7 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-// VpcDefault looks up the Default Vpc. When not found, returns nil and potentially an API error.
+// InternetGatewayForVPC looks up the Internet Gateway for the given VPC. When not found, returns nil and potentially an API error.
 func InternetGatewayForVPC(conn *ec2.EC2, vpcID string) (*ec2.InternetGateway, error) {
 	filters := []*ec2.Filter{
 		{

@@ -15,12 +15,12 @@ func dataSourceAwsUtilsEc2ExportClientVpnClientConfiguration() *schema.Resource 
 			"id": {
 				Description: "The ID of the VPN endpoint to export the config for.",
 				Type:        schema.TypeString,
-				Computed:    true,
+				Required:    true,
 			},
 			"client_configuration": {
 				Description: "Output from 'export-client-vpn-client-configuration' call",
 				Type:        schema.TypeString,
-				Computed:    false,
+				Computed:    true,
 			},
 		},
 	}

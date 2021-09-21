@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -29,8 +30,11 @@ func dataSourceAwsUtilsEc2ExportClientVpnClientConfiguration() *schema.Resource 
 func dataSourceAwsUtilsEc2ExportClientVpnClientConfigurationRead(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*AWSClient).ec2conn
 	params := &ec2.ExportClientVpnClientConfigurationInput{}
+	var id string
 
-	id := d.Get("id").(string)
+	if v, ok := d.GetOk("id"); ok {
+		id = v.(string)
+	}
 	params.ClientVpnEndpointId = aws.String(id)
 
 	resp, err := conn.ExportClientVpnClientConfiguration(params)
@@ -38,7 +42,10 @@ func dataSourceAwsUtilsEc2ExportClientVpnClientConfigurationRead(d *schema.Resou
 		return err
 	}
 
-	d.Set("client_configuration", resp.ClientConfiguration)
+	d.SetId(id)
+	if err := d.Set("client_configuration", *resp.ClientConfiguration); err != nil {
+		return fmt.Errorf("error setting names: %w", err)
+	}
 
 	return nil
 }

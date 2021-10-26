@@ -23,7 +23,7 @@ For testing this provider, you can edit your `~/.terraformrc` file with the foll
 ```hcl
 provider_installation {
   dev_overrides  {
-    "cloudposse/awsutils" = "/path/to/your/code/github.com/cloudposse/terraform-provider-awsutils/"
+    "cloudposse/awsutils" = "/home/path/.terraform.d/plugins/registry.terraform.io/cloudposse/awsutils/9999.99.99/darwin_amd64"
   }
 
   # For all other providers, install them directly from their origin provider

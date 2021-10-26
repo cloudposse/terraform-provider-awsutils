@@ -191,6 +191,7 @@ func Provider() *schema.Provider {
 			"awsutils_guardduty_organization_settings":    resourceAwsUtilsGuardDutyOrganizationSettings(),
 			"awsutils_security_hub_control_disablement":   resourceAwsUtilsSecurityHubControlDisablement(),
 			"awsutils_security_hub_organization_settings": resourceAwsUtilsSecurityHubOrganizationSettings(),
+			"awsutils_iam_user_login_profile": resourceAwsUtilsUserLoginProfile(),
 		},
 	}
 

@@ -20,19 +20,22 @@ func NotFound(err error) bool {
 //  * TimeoutError.LastError is nil
 func TimedOut(err error) bool {
 	// This explicitly does *not* match wrapped TimeoutErrors
-	timeoutErr, ok := err.(*resource.TimeoutError) // nolint:errorlint
+	timeoutErr, ok := err.(*resource.TimeoutError) //nolint:errorlint // Explicitly does *not* match wrapped TimeoutErrors
 	return ok && timeoutErr.LastError == nil
 }
 
 // SetLastError sets the LastError field on the error if supported.
 // If lastErr is nil it is ignored.
 func SetLastError(err, lastErr error) {
-	var te *resource.TimeoutError
-	var use *resource.UnexpectedStateError
+	switch err := err.(type) {
+	case *resource.TimeoutError:
+		if err.LastError == nil {
+			err.LastError = lastErr
+		}
 
-	if ok := errors.As(err, &te); ok && te.LastError == nil {
-		te.LastError = lastErr
-	} else if ok := errors.As(err, &use); ok && use.LastError == nil {
-		use.LastError = lastErr
+	case *resource.UnexpectedStateError:
+		if err.LastError == nil {
+			err.LastError = lastErr
+		}
 	}
 }

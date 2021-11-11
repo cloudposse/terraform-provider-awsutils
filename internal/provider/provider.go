@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/cloudposse/terraform-provider-awsutils/internal/conns"
+	tftags "github.com/cloudposse/terraform-provider-awsutils/internal/tags"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/verify"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
-	"github.com/hashicorp/terraform-provider-aws/internal/verify"
+
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/ec2"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/guardduty"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/securityhub"
 )
 
 // Provider returns a *schema.Provider.
@@ -191,14 +195,14 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"awsutils_ec2_client_vpn_export_client_config": dataSourceAwsUtilsEc2ExportClientVpnClientConfiguration(),
+			"awsutils_ec2_client_vpn_export_client_config": ec2.DataSourceEC2ExportClientVpnClientConfiguration(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"awsutils_default_vpc_deletion":               resourceAwsUtilsDefaultVpcDeletion(),
-			"awsutils_guardduty_organization_settings":    resourceAwsUtilsGuardDutyOrganizationSettings(),
-			"awsutils_security_hub_control_disablement":   resourceAwsUtilsSecurityHubControlDisablement(),
-			"awsutils_security_hub_organization_settings": resourceAwsUtilsSecurityHubOrganizationSettings(),
+			"awsutils_default_vpc_deletion":               ec2.ResourceDefaultVpcDeletion(),
+			"awsutils_guardduty_organization_settings":    guardduty.ResourceAwsUtilsGuardDutyOrganizationSettings(),
+			"awsutils_security_hub_control_disablement":   securityhub.ResourceSecurityHubControlDisablement(),
+			"awsutils_security_hub_organization_settings": securityhub.ResourceSecurityHubOrganizationSettings(),
 		},
 	}
 

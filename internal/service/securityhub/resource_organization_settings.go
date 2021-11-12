@@ -24,6 +24,11 @@ enable existing accounts. Use this resource to enable a list of existing account
 		Delete:        resourceAwsSecurityHubOrganizationSettingsDelete,
 		SchemaVersion: 1,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Description: "The ID of this resource.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"member_accounts": {
 				Description: "A list of AWS Organization member accounts to associate with the Security Hub Administrator account.",
 				Type:        schema.TypeSet,

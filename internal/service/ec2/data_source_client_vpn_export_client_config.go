@@ -11,7 +11,7 @@ import (
 
 func DataSourceEC2ExportClientVpnClientConfiguration() *schema.Resource {
 	return &schema.Resource{
-		Description:   `Passthru for configuring and executing ` + "`aws ec2 export-client-vpn-client-configuration`",
+		Description:   "Passthru for configuring and executing `aws ec2 export-client-vpn-client-configuration`",
 		Read:          dataSourceEc2ExportClientVpnClientConfigurationRead,
 		SchemaVersion: 1,
 		Schema: map[string]*schema.Schema{

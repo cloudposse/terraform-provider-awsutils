@@ -24,7 +24,7 @@ Terraform Provider, so this resource is necessary.
 		
 Please note that applying this resource is destructive and nonreversible. This resource is unusual as it will 
 **DELETE** infrastructure when ` + "`terraform apply`" + ` is run rather than creating it. This is a permanent 
-deletion and nothing will be restored when` + "`terraform destroy`" + ` is run. `,
+deletion and nothing will be restored when ` + "`terraform destroy`" + ` is run. `,
 		Create:        resourceDefaultVpcDeletionCreate,
 		Read:          resourceDefaultVpcDeletionRead,
 		Delete:        resourceDefaultVpcDeletionDelete,

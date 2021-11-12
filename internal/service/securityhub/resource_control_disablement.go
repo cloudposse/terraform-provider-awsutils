@@ -25,6 +25,11 @@ readiness score for the associated standard.`,
 		Delete:        resourceAwsSecurityHubControlDisablementDelete,
 		SchemaVersion: 1,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Description: "The ID of this resource.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"control_arn": {
 				Description: "The ARN of the Security Hub Standards Control to disable.",
 				Type:        schema.TypeString,

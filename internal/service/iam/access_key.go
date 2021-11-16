@@ -1,11 +1,11 @@
 package iam
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"log"
 	"math"
 	"time"
 
@@ -25,6 +25,8 @@ func ResourceExpiringAccessKey() *schema.Resource {
 		Read:        resourceAccessKeyRead,
 		Update:      resourceAccessKeyUpdate,
 		Delete:      resourceAccessKeyDelete,
+
+		CustomizeDiff: resourceAccessKeyDiff,
 
 		Importer: &schema.ResourceImporter{
 			// ListAccessKeys requires UserName field in certain scenarios:
@@ -111,6 +113,27 @@ func ResourceExpiringAccessKey() *schema.Resource {
 	}
 }
 
+func resourceAccessKeyDiff(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+	if d.Id() == "" {
+		return nil
+	}
+
+	if v, ok := d.GetOk("expiration_date"); ok {
+		now := time.Now().UTC()
+		rotationTimestamp, err := time.Parse(time.RFC3339, v.(string))
+
+		if err != nil {
+			return fmt.Errorf("error parsing expiration_date (%s): %s", v.(string), err)
+		}
+
+		if now.After(rotationTimestamp) {
+			d.SetNewComputed("expiration_date")
+		}
+	}
+
+	return nil
+}
+
 func resourceAccessKeyCreate(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*conns.AWSClient).IAMConn
 
@@ -193,27 +216,6 @@ func resourceAccessKeyCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceAccessKeyRead(d *schema.ResourceData, meta interface{}) error {
-
-	if v, ok := d.GetOk("expiration_date"); ok && !d.IsNewResource() {
-		now := time.Now().UTC()
-		rotationTimestamp, err := time.Parse(time.RFC3339, v.(string))
-
-		if err != nil {
-			return fmt.Errorf("error parsing expiration_date (%s): %s", v.(string), err)
-		}
-
-		if now.After(rotationTimestamp) {
-			log.Printf("[INFO] Expiration timestamp (%s) is after current timestamp (%s), deleting key and removing from state", v.(string), now.Format(time.RFC3339))
-			err := resourceAccessKeyDelete(d, meta)
-			if err == nil {
-				d.SetId("")
-				return nil
-			} else {
-				return err
-			}
-
-		}
-	}
 
 	conn := meta.(*conns.AWSClient).IAMConn
 

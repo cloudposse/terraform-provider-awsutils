@@ -130,7 +130,6 @@ func resourceAccessKeyDiff(ctx context.Context, d *schema.ResourceDiff, meta int
 			d.SetNewComputed("expiration_date")
 		}
 	}
-
 	return nil
 }
 
@@ -216,7 +215,6 @@ func resourceAccessKeyCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceAccessKeyRead(d *schema.ResourceData, meta interface{}) error {
-
 	conn := meta.(*conns.AWSClient).IAMConn
 
 	request := &iam.ListAccessKeysInput{

@@ -1,13 +1,19 @@
 package provider
 
 import (
+	"fmt"
 	"log"
-	"strings"
 
-	"github.com/cloudposse/terraform-provider-awsutils/internal/keyvaluetags"
-	"github.com/cloudposse/terraform-provider-awsutils/internal/mutexkv"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/conns"
+	tftags "github.com/cloudposse/terraform-provider-awsutils/internal/tags"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/verify"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/ec2"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/guardduty"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/iam"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/securityhub"
 )
 
 // Provider returns a *schema.Provider.
@@ -106,6 +112,12 @@ func Provider() *schema.Provider {
 				},
 			},
 
+			"http_proxy": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: descriptions["http_proxy"],
+			},
+
 			"endpoints": endpointsSchema(),
 
 			"ignore_tags": {
@@ -184,14 +196,16 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"awsutils_ec2_client_vpn_export_client_config": dataSourceAwsUtilsEc2ExportClientVpnClientConfiguration(),
+			"awsutils_ec2_client_vpn_export_client_config": ec2.DataSourceEC2ExportClientVpnClientConfiguration(),
 		},
+
 		ResourcesMap: map[string]*schema.Resource{
-			"awsutils_default_vpc_deletion":               resourceAwsUtilsDefaultVpcDeletion(),
-			"awsutils_guardduty_organization_settings":    resourceAwsUtilsGuardDutyOrganizationSettings(),
-			"awsutils_security_hub_control_disablement":   resourceAwsUtilsSecurityHubControlDisablement(),
-			"awsutils_security_hub_organization_settings": resourceAwsUtilsSecurityHubOrganizationSettings(),
-			"awsutils_iam_user_login_profile": resourceAwsUtilsUserLoginProfile(),
+			"awsutils_default_vpc_deletion":               ec2.ResourceDefaultVpcDeletion(),
+			"awsutils_expiring_iam_access_key":            iam.ResourceExpiringAccessKey(),
+			"awsutils_guardduty_organization_settings":    guardduty.ResourceAwsUtilsGuardDutyOrganizationSettings(),
+			"awsutils_iam_user_login_profile":             resourceAwsUtilsUserLoginProfile(),
+			"awsutils_security_hub_control_disablement":   securityhub.ResourceSecurityHubControlDisablement(),
+			"awsutils_security_hub_organization_settings": securityhub.ResourceSecurityHubOrganizationSettings(),
 		},
 	}
 
@@ -209,7 +223,6 @@ func Provider() *schema.Provider {
 }
 
 var descriptions map[string]string
-var endpointServiceNames []string
 
 func init() {
 	descriptions = map[string]string{
@@ -235,9 +248,12 @@ func init() {
 			"being executed. If the API request still fails, an error is\n" +
 			"thrown.",
 
+		"http_proxy": "The address of an HTTP proxy to use when accessing the AWS API. " +
+			"Can also be configured using the `HTTP_PROXY` or `HTTPS_PROXY` environment variables.",
+
 		"endpoint": "Use this to override the default service endpoint URL",
 
-		"insecure": "Explicitly allow the provider to perform \"insecure\" SSL requests. If omitted," +
+		"insecure": "Explicitly allow the provider to perform \"insecure\" SSL requests. If omitted, " +
 			"default value is `false`",
 
 		"skip_credentials_validation": "Skip the credentials validation via STS API. " +
@@ -260,171 +276,10 @@ func init() {
 			"use virtual hosted bucket addressing when possible\n" +
 			"(http://BUCKET.s3.amazonaws.com/KEY). Specific to the Amazon S3 service.",
 	}
-
-	endpointServiceNames = []string{
-		"accessanalyzer",
-		"acm",
-		"acmpca",
-		"amplify",
-		"apigateway",
-		"appconfig",
-		"applicationautoscaling",
-		"applicationinsights",
-		"appmesh",
-		"apprunner",
-		"appstream",
-		"appsync",
-		"athena",
-		"auditmanager",
-		"autoscaling",
-		"autoscalingplans",
-		"backup",
-		"batch",
-		"budgets",
-		"chime",
-		"cloud9",
-		"cloudformation",
-		"cloudfront",
-		"cloudhsm",
-		"cloudsearch",
-		"cloudtrail",
-		"cloudwatch",
-		"cloudwatchevents",
-		"cloudwatchlogs",
-		"codeartifact",
-		"codebuild",
-		"codecommit",
-		"codedeploy",
-		"codepipeline",
-		"codestarconnections",
-		"cognitoidentity",
-		"cognitoidp",
-		"configservice",
-		"connect",
-		"cur",
-		"dataexchange",
-		"datapipeline",
-		"datasync",
-		"dax",
-		"detective",
-		"devicefarm",
-		"directconnect",
-		"dlm",
-		"dms",
-		"docdb",
-		"ds",
-		"dynamodb",
-		"ec2",
-		"ecr",
-		"ecrpublic",
-		"ecs",
-		"efs",
-		"eks",
-		"elasticache",
-		"elasticbeanstalk",
-		"elastictranscoder",
-		"elb",
-		"emr",
-		"emrcontainers",
-		"es",
-		"firehose",
-		"fms",
-		"forecast",
-		"fsx",
-		"gamelift",
-		"glacier",
-		"globalaccelerator",
-		"glue",
-		"greengrass",
-		"guardduty",
-		"iam",
-		"identitystore",
-		"imagebuilder",
-		"inspector",
-		"iot",
-		"iotanalytics",
-		"iotevents",
-		"kafka",
-		"kinesis",
-		"kinesisanalytics",
-		"kinesisanalyticsv2",
-		"kinesisvideo",
-		"kms",
-		"lakeformation",
-		"lambda",
-		"lexmodels",
-		"licensemanager",
-		"lightsail",
-		"location",
-		"macie",
-		"macie2",
-		"managedblockchain",
-		"marketplacecatalog",
-		"mediaconnect",
-		"mediaconvert",
-		"medialive",
-		"mediapackage",
-		"mediastore",
-		"mediastoredata",
-		"mq",
-		"mwaa",
-		"neptune",
-		"networkfirewall",
-		"networkmanager",
-		"opsworks",
-		"organizations",
-		"outposts",
-		"personalize",
-		"pinpoint",
-		"pricing",
-		"qldb",
-		"quicksight",
-		"ram",
-		"rds",
-		"redshift",
-		"resourcegroups",
-		"resourcegroupstaggingapi",
-		"route53",
-		"route53domains",
-		"route53resolver",
-		"s3",
-		"s3control",
-		"s3outposts",
-		"sagemaker",
-		"schemas",
-		"sdb",
-		"secretsmanager",
-		"securityhub",
-		"serverlessrepo",
-		"servicecatalog",
-		"servicediscovery",
-		"servicequotas",
-		"ses",
-		"shield",
-		"signer",
-		"sns",
-		"sqs",
-		"ssm",
-		"ssoadmin",
-		"stepfunctions",
-		"storagegateway",
-		"sts",
-		"swf",
-		"synthetics",
-		"timestreamwrite",
-		"transfer",
-		"waf",
-		"wafregional",
-		"wafv2",
-		"worklink",
-		"workmail",
-		"workspaces",
-		"xray",
-	}
 }
 
 func providerConfigure(d *schema.ResourceData, terraformVersion string) (interface{}, error) {
-	config := Config{
+	config := conns.Config{
 		AccessKey:               d.Get("access_key").(string),
 		SecretKey:               d.Get("secret_key").(string),
 		Profile:                 d.Get("profile").(string),
@@ -436,13 +291,14 @@ func providerConfigure(d *schema.ResourceData, terraformVersion string) (interfa
 		MaxRetries:              d.Get("max_retries").(int),
 		IgnoreTagsConfig:        expandProviderIgnoreTags(d.Get("ignore_tags").([]interface{})),
 		Insecure:                d.Get("insecure").(bool),
+		HTTPProxy:               d.Get("http_proxy").(string),
 		SkipCredsValidation:     d.Get("skip_credentials_validation").(bool),
 		SkipGetEC2Platforms:     d.Get("skip_get_ec2_platforms").(bool),
 		SkipRegionValidation:    d.Get("skip_region_validation").(bool),
 		SkipRequestingAccountId: d.Get("skip_requesting_account_id").(bool),
 		SkipMetadataApiCheck:    d.Get("skip_metadata_api_check").(bool),
 		S3ForcePathStyle:        d.Get("s3_force_path_style").(bool),
-		terraformVersion:        terraformVersion,
+		TerraformVersion:        terraformVersion,
 	}
 
 	if l, ok := d.Get("assume_role").([]interface{}); ok && len(l) > 0 && l[0] != nil {
@@ -513,8 +369,17 @@ func providerConfigure(d *schema.ResourceData, terraformVersion string) (interfa
 
 	for _, endpointsSetI := range endpointsSet.List() {
 		endpoints := endpointsSetI.(map[string]interface{})
-		for _, endpointServiceName := range endpointServiceNames {
-			config.Endpoints[endpointServiceName] = endpoints[endpointServiceName].(string)
+
+		for _, hclKey := range conns.HCLKeys() {
+			var serviceKey string
+			var err error
+			if serviceKey, err = conns.ServiceForHCLKey(hclKey); err != nil {
+				return nil, fmt.Errorf("failed to assign endpoint (%s): %w", hclKey, err)
+			}
+
+			if config.Endpoints[serviceKey] == "" && endpoints[hclKey].(string) != "" {
+				config.Endpoints[serviceKey] = endpoints[hclKey].(string)
+			}
 		}
 	}
 
@@ -532,9 +397,6 @@ func providerConfigure(d *schema.ResourceData, terraformVersion string) (interfa
 
 	return config.Client()
 }
-
-// This is a global MutexKV for use within this plugin.
-var awsMutexKV = mutexkv.NewMutexKV()
 
 func assumeRoleSchema() *schema.Schema {
 	return &schema.Schema{
@@ -565,14 +427,14 @@ func assumeRoleSchema() *schema.Schema {
 					Description: "Amazon Resource Names (ARNs) of IAM Policies describing further restricting permissions for the IAM Role being assumed.",
 					Elem: &schema.Schema{
 						Type:         schema.TypeString,
-						ValidateFunc: validateArn,
+						ValidateFunc: verify.ValidARN,
 					},
 				},
 				"role_arn": {
 					Type:         schema.TypeString,
 					Optional:     true,
 					Description:  "Amazon Resource Name of an IAM Role to assume prior to making API calls.",
-					ValidateFunc: validateArn,
+					ValidateFunc: verify.ValidARN,
 				},
 				"session_name": {
 					Type:        schema.TypeString,
@@ -599,8 +461,8 @@ func assumeRoleSchema() *schema.Schema {
 func endpointsSchema() *schema.Schema {
 	endpointsAttributes := make(map[string]*schema.Schema)
 
-	for _, endpointServiceName := range endpointServiceNames {
-		endpointsAttributes[endpointServiceName] = &schema.Schema{
+	for _, serviceKey := range conns.HCLKeys() {
+		endpointsAttributes[serviceKey] = &schema.Schema{
 			Type:        schema.TypeString,
 			Optional:    true,
 			Default:     "",
@@ -617,46 +479,35 @@ func endpointsSchema() *schema.Schema {
 	}
 }
 
-func expandProviderDefaultTags(l []interface{}) *keyvaluetags.DefaultConfig {
+func expandProviderDefaultTags(l []interface{}) *tftags.DefaultConfig {
 	if len(l) == 0 || l[0] == nil {
 		return nil
 	}
 
-	defaultConfig := &keyvaluetags.DefaultConfig{}
+	defaultConfig := &tftags.DefaultConfig{}
 	m := l[0].(map[string]interface{})
 
 	if v, ok := m["tags"].(map[string]interface{}); ok {
-		defaultConfig.Tags = keyvaluetags.New(v)
+		defaultConfig.Tags = tftags.New(v)
 	}
 	return defaultConfig
 }
 
-func expandProviderIgnoreTags(l []interface{}) *keyvaluetags.IgnoreConfig {
+func expandProviderIgnoreTags(l []interface{}) *tftags.IgnoreConfig {
 	if len(l) == 0 || l[0] == nil {
 		return nil
 	}
 
-	ignoreConfig := &keyvaluetags.IgnoreConfig{}
+	ignoreConfig := &tftags.IgnoreConfig{}
 	m := l[0].(map[string]interface{})
 
 	if v, ok := m["keys"].(*schema.Set); ok {
-		ignoreConfig.Keys = keyvaluetags.New(v.List())
+		ignoreConfig.Keys = tftags.New(v.List())
 	}
 
 	if v, ok := m["key_prefixes"].(*schema.Set); ok {
-		ignoreConfig.KeyPrefixes = keyvaluetags.New(v.List())
+		ignoreConfig.KeyPrefixes = tftags.New(v.List())
 	}
 
 	return ignoreConfig
-}
-
-// ReverseDns switches a DNS hostname to reverse DNS and vice-versa.
-func ReverseDns(hostname string) string {
-	parts := strings.Split(hostname, ".")
-
-	for i, j := 0, len(parts)-1; i < j; i, j = i+1, j-1 {
-		parts[i], parts[j] = parts[j], parts[i]
-	}
-
-	return strings.Join(parts, ".")
 }

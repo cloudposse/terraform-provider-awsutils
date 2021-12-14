@@ -203,6 +203,7 @@ func Provider() *schema.Provider {
 			"awsutils_default_vpc_deletion":               ec2.ResourceDefaultVpcDeletion(),
 			"awsutils_expiring_iam_access_key":            iam.ResourceExpiringAccessKey(),
 			"awsutils_guardduty_organization_settings":    guardduty.ResourceAwsUtilsGuardDutyOrganizationSettings(),
+			"awsutils_iam_user_login_profile":             resourceAwsUtilsUserLoginProfile(),
 			"awsutils_security_hub_control_disablement":   securityhub.ResourceSecurityHubControlDisablement(),
 			"awsutils_security_hub_organization_settings": securityhub.ResourceSecurityHubOrganizationSettings(),
 		},

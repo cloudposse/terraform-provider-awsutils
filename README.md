@@ -81,6 +81,10 @@ terraform {
     }
   }
 }
+
+provdier "awsutils" {
+  region = "us-east-2"
+}
 ```
 See the [Docs](./docs) for additional information.
 
@@ -289,7 +293,7 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
 ## Copyrights
 
-Copyright © 2021-2021 [Cloud Posse, LLC](https://cloudposse.com)
+Copyright © 2021-2022 [Cloud Posse, LLC](https://cloudposse.com)
 
 
 
@@ -324,12 +328,14 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 ### Contributors
 
 <!-- markdownlint-disable -->
-|  [![Matt Calhoun][mcalhoun_avatar]][mcalhoun_homepage]<br/>[Matt Calhoun][mcalhoun_homepage] |
-|---|
+|  [![Matt Calhoun][mcalhoun_avatar]][mcalhoun_homepage]<br/>[Matt Calhoun][mcalhoun_homepage] | [![RB][nitrocode_avatar]][nitrocode_homepage]<br/>[RB][nitrocode_homepage] |
+|---|---|
 <!-- markdownlint-restore -->
 
   [mcalhoun_homepage]: https://github.com/mcalhoun
   [mcalhoun_avatar]: https://img.cloudposse.com/150x150/https://github.com/mcalhoun.png
+  [nitrocode_homepage]: https://github.com/nitrocode
+  [nitrocode_avatar]: https://img.cloudposse.com/150x150/https://github.com/nitrocode.png
 
 [![README Footer][readme_footer_img]][readme_footer_link]
 [![Beacon][beacon]][website]

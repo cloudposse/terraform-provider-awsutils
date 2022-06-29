@@ -77,6 +77,10 @@ usage: |-
       }
     }
   }
+
+  provdier "awsutils" {
+    region = "us-east-2"
+  }
   ```
   See the [Docs](./docs) for additional information.
 
@@ -105,3 +109,5 @@ include:
 contributors:
   - name: "Matt Calhoun"
     github: "mcalhoun"
+  - name: "RB"
+    github: "nitrocode"

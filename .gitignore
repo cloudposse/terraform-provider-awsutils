@@ -39,3 +39,6 @@ website/vendor
 *.winfile eol=crlf
 
 terraform-provider-awsutils
+
+docs/targets.md
+docs/terraform.md

@@ -12,7 +12,6 @@ export README_DEPS ?= docs/targets.md docs/terraform.md
 
 -include $(shell curl -sSL -o .build-harness "https://cloudposse.tools/build-harness"; echo .build-harness)
 
-
 build:
 	go build
 

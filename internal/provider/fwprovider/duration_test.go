@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cloudposse/terraform-provider-awsutils/internal/provider/fwprovider"
 	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
-	"github.com/hashicorp/terraform-provider-aws/internal/provider/fwprovider"
 )
 
 func TestDurationTypeValueFromTerraform(t *testing.T) {

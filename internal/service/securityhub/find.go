@@ -46,21 +46,28 @@ func FindSecurityHubControl(conn *securityhub.SecurityHub, controlArn string) (*
 			StandardsSubscriptionArn: s.StandardsSubscriptionArn,
 		}
 
-		controls, err := conn.DescribeStandardsControls(input)
-
-		for _, c := range controls.Controls {
-			if *c.StandardsControlArn == controlArn {
-				return c, nil
+		var foundControl *securityhub.StandardsControl
+		err := conn.DescribeStandardsControlsPages(input, func(page *securityhub.DescribeStandardsControlsOutput, lastPage bool) bool {
+			for _, c := range page.Controls {
+				if *c.StandardsControlArn == controlArn {
+					foundControl = c
+					return false
+				}
 			}
-		}
+			return !lastPage
+		})
 
 		if err != nil {
 			return nil, err
 		}
+
+		if foundControl != nil {
+			return foundControl, nil
+		}
 	}
 
 	return nil, &resource.NotFoundError{
-		Message: fmt.Sprintf("%s is not a valid control arn", controlArn),
+		Message: fmt.Sprintf("Could not find a control with arn %s", controlArn),
 	}
 }
 

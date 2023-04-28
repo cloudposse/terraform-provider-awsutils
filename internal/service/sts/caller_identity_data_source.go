@@ -3,6 +3,7 @@ package sts
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sts"
@@ -25,12 +26,38 @@ func DataSourceCallerIdentity() *schema.Resource {
 				Computed: true,
 			},
 
+			"iam_role_arn": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
 			"user_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 		},
 	}
+}
+
+// Take the ARN output of sts get caller identity and return the role
+// example: arn:aws:sts::123456789012:assumed-role/role-name/role-session-name
+// returns: arn:aws:iam::123456789012:role/role-name
+func getIamRoleArnFromCallerRoleArn(sessionRole string) string {
+	parts := strings.Split(sessionRole, "/")
+	if len(parts) != 3 {
+		return sessionRole
+	}
+
+	arnParts := strings.Split(parts[0], ":")
+	if len(arnParts) != 6 {
+		return sessionRole
+	}
+
+	accountId := arnParts[4]
+	partition := arnParts[1]
+	roleName := parts[1]
+
+	return fmt.Sprintf("arn:%s:iam::%s:role/%s", partition, accountId, roleName)
 }
 
 func dataSourceCallerIdentityRead(d *schema.ResourceData, meta interface{}) error {
@@ -49,6 +76,11 @@ func dataSourceCallerIdentityRead(d *schema.ResourceData, meta interface{}) erro
 	d.Set("account_id", res.Account)
 	d.Set("arn", res.Arn)
 	d.Set("user_id", res.UserId)
+
+	// If the caller identity is an assumed role, get the IAM role ARN and set it as the ARN
+	if strings.HasPrefix(aws.StringValue(res.Arn), "arn:aws:sts") {
+		d.Set("iam_role_arn", getIamRoleArnFromCallerRoleArn(aws.StringValue(res.Arn)))
+	}
 
 	return nil
 }

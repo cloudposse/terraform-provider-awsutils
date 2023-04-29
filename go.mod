@@ -1,6 +1,6 @@
 module github.com/cloudposse/terraform-provider-awsutils
 
-go 1.18
+go 1.20
 
 require (
 	github.com/aws/aws-sdk-go v1.44.80

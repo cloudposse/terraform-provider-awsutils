@@ -4,7 +4,7 @@ NAMESPACE=cloudposse
 NAME=awsutils
 BINARY=terraform-provider-${NAME}
 VERSION=9999.99.99
-OS_ARCH=darwin_arm64
+export OS_ARCH ?= $(shell go env GOOS)_$(shell go env GOARCH)
 SHELL := /bin/bash
 
 # List of targets the `readme` target should call before generating the readme

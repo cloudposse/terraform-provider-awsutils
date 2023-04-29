@@ -26,7 +26,7 @@ func DataSourceCallerIdentity() *schema.Resource {
 				Computed: true,
 			},
 
-			"iam_role_arn": {
+			"eks_role_arn": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -79,7 +79,7 @@ func dataSourceCallerIdentityRead(d *schema.ResourceData, meta interface{}) erro
 
 	// If the caller identity is an assumed role, get the IAM role ARN and set it as the ARN
 	if strings.HasPrefix(aws.StringValue(res.Arn), "arn:aws:sts") {
-		d.Set("iam_role_arn", getIamRoleArnFromCallerRoleArn(aws.StringValue(res.Arn)))
+		d.Set("eks_role_arn", getIamRoleArnFromCallerRoleArn(aws.StringValue(res.Arn)))
 	}
 
 	return nil

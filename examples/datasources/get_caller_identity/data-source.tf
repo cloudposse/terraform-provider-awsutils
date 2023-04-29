@@ -30,6 +30,6 @@ output "caller_user" {
   value = data.awsutils_get_caller_identity.default.user_id
 }
 
-output "iam_role_arn" {
-  value = data.awsutils_get_caller_identity.default.iam_role_arn
+output "eks_role_arn" {
+  value = data.awsutils_get_caller_identity.default.eks_role_arn
 }

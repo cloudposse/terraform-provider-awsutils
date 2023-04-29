@@ -281,7 +281,7 @@ func testAccPolicy_type_Backup(t *testing.T) {
          "selections":{
             "tags":{
                "datatype":{
-                  "iam_role_arn":{
+                  "eks_role_arn":{
                      "@@assign":"arn:%[3]s:iam::$account:role/MyIamRole"
                   },
                   "tag_key":{

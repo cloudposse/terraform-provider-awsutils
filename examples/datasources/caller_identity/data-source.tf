@@ -12,7 +12,6 @@ terraform {
 
 # Configure the AWS Provider
 provider "awsutils" {
-  region = "us-east-1"
 }
 
 data "awsutils_caller_identity" "default" {

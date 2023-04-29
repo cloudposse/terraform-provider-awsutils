@@ -246,7 +246,7 @@ func New(_ context.Context) (*schema.Provider, error) {
 
 		DataSourcesMap: map[string]*schema.Resource{
 			"awsutils_ec2_client_vpn_export_client_config": ec2.DataSourceEC2ExportClientVpnClientConfiguration(),
-			"awsutils_get_caller_identity":                 sts.DataSourceCallerIdentity(),
+			"awsutils_caller_identity":                     sts.DataSourceCallerIdentity(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{

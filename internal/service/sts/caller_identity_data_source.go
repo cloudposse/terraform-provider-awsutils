@@ -13,8 +13,9 @@ import (
 
 func DataSourceCallerIdentity() *schema.Resource {
 	return &schema.Resource{
+		Description: `Use this data source to get the access to the effective
+		Account ID, User ID, ARN and EKS Role ARN in which Terraform is authorized.`,
 		Read: dataSourceCallerIdentityRead,
-
 		Schema: map[string]*schema.Schema{
 			"account_id": {
 				Type:     schema.TypeString,

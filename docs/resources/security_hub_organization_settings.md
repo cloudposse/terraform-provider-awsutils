@@ -9,7 +9,7 @@ description: |-
   enable existing accounts. Use this resource to enable a list of existing accounts
 ---
 
-# Resource `awsutils_security_hub_organization_settings`
+# awsutils_security_hub_organization_settings (Resource)
 
 Enables a list of accounts as Security Hub member accounts in an existing AWS Organization.
 
@@ -47,14 +47,14 @@ resource "awsutils_security_hub_organization_settings" "default" {
 
 ### Required
 
-- **member_accounts** (Set of String) A list of AWS Organization member accounts to associate with the Security Hub Administrator account.
+- `member_accounts` (Set of String) A list of AWS Organization member accounts to associate with the Security Hub Administrator account.
 
 ### Optional
 
-- **auto_enable_new_accounts** (Boolean) A flag to indicate if the automatic enablement setting, should be enabled. If enabled, Security Hub begins to enable new accounts as they are added to the organization
+- `auto_enable_new_accounts` (Boolean) A flag to indicate if the automatic enablement setting, should be enabled. If enabled, Security Hub begins to enable new accounts as they are added to the organization
 
-### Read-only
+### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 

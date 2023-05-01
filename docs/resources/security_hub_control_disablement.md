@@ -11,7 +11,7 @@ description: |-
   readiness score for the associated standard.
 ---
 
-# Resource `awsutils_security_hub_control_disablement`
+# awsutils_security_hub_control_disablement (Resource)
 
 Disables a Security Hub control in the configured region.
 
@@ -54,14 +54,14 @@ data "aws_caller_identity" "this" {}
 
 ### Required
 
-- **control_arn** (String) The ARN of the Security Hub Standards Control to disable.
+- `control_arn` (String) The ARN of the Security Hub Standards Control to disable.
 
 ### Optional
 
-- **reason** (String) The reason the control is being disabed.
+- `reason` (String) The reason the control is being disabed.
 
-### Read-only
+### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 

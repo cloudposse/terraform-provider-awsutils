@@ -42,3 +42,7 @@ terraform-provider-awsutils
 
 docs/targets.md
 docs/terraform.md
+
+# nix files
+.envrc
+.direnv/

@@ -19,10 +19,13 @@ Use this data source to get the access to the effective
 
 ### Read-Only
 
-- `account_id` (String)
-- `arn` (String)
-- `eks_role_arn` (String)
-- `id` (String) The ID of this resource.
-- `user_id` (String)
+- `account_id` (String) AWS Account ID number of the account that owns or contains the calling entity.
+- `arn` (String) The AWS ARN associated with the calling entity.
+- `eks_role_arn` (String) If the calling identity is an assumed role, this is the transformation of that assumed role ARN
+				into something suitable for use in configuring EKS access. See
+				[Add IAM principals to your Amazon EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html#aws-auth-users).
+				Otherwise, `null`.
+- `id` (String) AWS Account ID number of the account that owns or contains the calling entity.
+- `user_id` (String) Unique identifier of the calling entity.
 
 

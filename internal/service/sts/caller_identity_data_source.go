@@ -18,23 +18,36 @@ func DataSourceCallerIdentity() *schema.Resource {
 		Read: dataSourceCallerIdentityRead,
 		Schema: map[string]*schema.Schema{
 			"account_id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: `AWS Account ID number of the account that owns or contains the calling entity.`,
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 
 			"arn": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: `The AWS ARN associated with the calling entity.`,
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 
 			"eks_role_arn": {
+				Description: `If the calling identity is an assumed role, this is the transformation of that assumed role ARN
+				into something suitable for use in configuring EKS access. See
+				[Add IAM principals to your Amazon EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/add-user-role.html#aws-auth-users).
+				Otherwise, ` + "`null`" + `.`,
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 
+			"id": {
+				Description: `AWS Account ID number of the account that owns or contains the calling entity.`,
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
+
 			"user_id": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: `Unique identifier of the calling entity.`,
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 		},
 	}

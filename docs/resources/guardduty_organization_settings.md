@@ -9,7 +9,7 @@ description: |-
   enable existing accounts. Use this resource to enable a list of existing accounts
 ---
 
-# Resource `awsutils_guardduty_organization_settings`
+# awsutils_guardduty_organization_settings (Resource)
 
 Enables a list of accounts as GuardDuty member accounts in an existing AWS Organization.
 
@@ -47,11 +47,11 @@ resource "awsutils_guardduty_organization_settings" "default" {
 
 ### Required
 
-- **detector_id** (String)
-- **member_accounts** (Set of String) A list of AWS Organization member accounts to associate with the GuardDuty Administrator account.
+- `detector_id` (String)
+- `member_accounts` (Set of String) A list of AWS Organization member accounts to associate with the GuardDuty Administrator account.
 
-### Read-only
+### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
 
 

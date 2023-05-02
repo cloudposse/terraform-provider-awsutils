@@ -4,7 +4,7 @@ NAMESPACE=cloudposse
 NAME=awsutils
 BINARY=terraform-provider-${NAME}
 VERSION=9999.99.99
-OS_ARCH=darwin_amd64
+export OS_ARCH ?= $(shell go env GOOS)_$(shell go env GOARCH)
 SHELL := /bin/bash
 
 # List of targets the `readme` target should call before generating the readme
@@ -25,7 +25,7 @@ tfdocs:
 
 install: build
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	cp ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}/
 
 # Lint terraform code
 lint:

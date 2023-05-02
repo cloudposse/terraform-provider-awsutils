@@ -37,7 +37,7 @@ badges:
 related:
   - name: "Cloud Posse Terraform Utils Provider"
     description: |-
-      Terraform provider for various utilities (deep merging, stack configuration management), and to add additional 
+      Terraform provider for various utilities (deep merging, stack configuration management), and to add additional
       missing functionality to Terraform
     url: "https://github.com/cloudposse/terraform-provider-awsutils"
 
@@ -51,15 +51,15 @@ references:
 
 # Short description of this project
 description: |-
-  Terraform provider for performing various tasks that cannot be performed with the official 
-  [AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws) from Hashicorp.  
+  Terraform provider for performing various tasks that cannot be performed with the official
+  [AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws) from Hashicorp.
 
-  This provider is derived in large parts from the official HashiCorp AWS provider. We copied all the boilerplate 
-  functionality so that it follows the `terraform-provider-aws` conventions, but then removed all the standard 
-  resources and added in our own. This module is intended to be used as an escape hatch to accomplish all the hard 
-  things that will never be supported by the official provider due to strong (and valid) opinions of how providers 
-  should manage the lifecycle of a resource. Unfortunately, in the real-world we have to make tradeoffs to get stuff 
-  done. That's this provider in a nutshell.
+  This provider is derived in large parts from the official HashiCorp AWS provider. We copied all the boilerplate
+  functionality so that it follows the `terraform-provider-aws` conventions, but then removed all the standard resources
+  and added in our own. This module is intended to be used as an escape hatch to accomplish all the hard things that
+  will never be supported by the official provider due to strong (and valid) opinions of how providers should manage the
+  lifecycle of a resource. Unfortunately, in the real-world we have to make tradeoffs to get stuff done. That's this
+  provider in a nutshell.
 
 #introduction: |-
 #  This is an introduction.

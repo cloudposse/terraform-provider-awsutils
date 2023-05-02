@@ -6,7 +6,7 @@ description: |-
   Provides an IAM access key that expires after max_age seconds. This is a set of credentials that allow API requests to be made as an IAM user.
 ---
 
-# Resource `awsutils_expiring_iam_access_key`
+# awsutils_expiring_iam_access_key (Resource)
 
 Provides an IAM access key that expires after max_age seconds. This is a set of credentials that allow API requests to be made as an IAM user.
 
@@ -49,23 +49,23 @@ output "id" {
 
 ### Required
 
-- **user** (String)
+- `user` (String)
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **max_age** (Number)
-- **pgp_key** (String)
-- **status** (String)
+- `max_age` (Number)
+- `pgp_key` (String)
+- `status` (String)
 
-### Read-only
+### Read-Only
 
-- **create_date** (String)
-- **encrypted_secret** (String)
-- **encrypted_ses_smtp_password_v4** (String)
-- **expiration_date** (String)
-- **key_fingerprint** (String)
-- **secret** (String, Sensitive)
-- **ses_smtp_password_v4** (String, Sensitive)
+- `create_date` (String)
+- `encrypted_secret` (String)
+- `encrypted_ses_smtp_password_v4` (String)
+- `expiration_date` (String)
+- `id` (String) The ID of this resource.
+- `key_fingerprint` (String)
+- `secret` (String, Sensitive)
+- `ses_smtp_password_v4` (String, Sensitive)
 
 

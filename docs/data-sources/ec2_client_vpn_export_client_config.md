@@ -6,7 +6,7 @@ description: |-
   Passthru for configuring and executing aws ec2 export-client-vpn-client-configuration
 ---
 
-# Data Source `awsutils_ec2_client_vpn_export_client_config`
+# awsutils_ec2_client_vpn_export_client_config (Data Source)
 
 Passthru for configuring and executing `aws ec2 export-client-vpn-client-configuration`
 
@@ -17,10 +17,10 @@ Passthru for configuring and executing `aws ec2 export-client-vpn-client-configu
 
 ### Required
 
-- **id** (String) The ID of the VPN endpoint to export the config for.
+- `id` (String) The ID of the VPN endpoint to export the config for.
 
-### Read-only
+### Read-Only
 
-- **client_configuration** (String) Output from 'export-client-vpn-client-configuration' call
+- `client_configuration` (String) Output from 'export-client-vpn-client-configuration' call
 
 

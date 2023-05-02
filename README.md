@@ -28,15 +28,15 @@
 
 -->
 
-Terraform provider for performing various tasks that cannot be performed with the official 
-[AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws) from Hashicorp.  
+Terraform provider for performing various tasks that cannot be performed with the official
+[AWS Terraform Provider](https://github.com/hashicorp/terraform-provider-aws) from Hashicorp.
 
-This provider is derived in large parts from the official HashiCorp AWS provider. We copied all the boilerplate 
-functionality so that it follows the `terraform-provider-aws` conventions, but then removed all the standard 
-resources and added in our own. This module is intended to be used as an escape hatch to accomplish all the hard 
-things that will never be supported by the official provider due to strong (and valid) opinions of how providers 
-should manage the lifecycle of a resource. Unfortunately, in the real-world we have to make tradeoffs to get stuff 
-done. That's this provider in a nutshell.
+This provider is derived in large parts from the official HashiCorp AWS provider. We copied all the boilerplate
+functionality so that it follows the `terraform-provider-aws` conventions, but then removed all the standard resources
+and added in our own. This module is intended to be used as an escape hatch to accomplish all the hard things that
+will never be supported by the official provider due to strong (and valid) opinions of how providers should manage the
+lifecycle of a resource. Unfortunately, in the real-world we have to make tradeoffs to get stuff done. That's this
+provider in a nutshell.
 
 ---
 
@@ -210,7 +210,7 @@ Are you using this project or any of our other projects? Consider [leaving a tes
 
 Check out these related projects.
 
-- [Cloud Posse Terraform Utils Provider](https://github.com/cloudposse/terraform-provider-awsutils) - Terraform provider for various utilities (deep merging, stack configuration management), and to add additional 
+- [Cloud Posse Terraform Utils Provider](https://github.com/cloudposse/terraform-provider-awsutils) - Terraform provider for various utilities (deep merging, stack configuration management), and to add additional
 missing functionality to Terraform
 
 
@@ -293,7 +293,7 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
 ## Copyrights
 
-Copyright © 2021-2022 [Cloud Posse, LLC](https://cloudposse.com)
+Copyright © 2021-2023 [Cloud Posse, LLC](https://cloudposse.com)
 
 
 
@@ -339,7 +339,7 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 
 [![README Footer][readme_footer_img]][readme_footer_link]
 [![Beacon][beacon]][website]
-
+<!-- markdownlint-disable -->
   [logo]: https://cloudposse.com/logo-300x69.svg
   [docs]: https://cpco.io/docs?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-provider-awsutils&utm_content=docs
   [website]: https://cpco.io/homepage?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-provider-awsutils&utm_content=website
@@ -370,3 +370,4 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
   [share_googleplus]: https://plus.google.com/share?url=https://github.com/cloudposse/terraform-provider-awsutils
   [share_email]: mailto:?subject=terraform-provider-awsutils&body=https://github.com/cloudposse/terraform-provider-awsutils
   [beacon]: https://ga-beacon.cloudposse.com/UA-76589703-4/cloudposse/terraform-provider-awsutils?pixel&cs=github&cm=readme&an=terraform-provider-awsutils
+<!-- markdownlint-restore -->

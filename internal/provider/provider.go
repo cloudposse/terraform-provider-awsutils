@@ -15,6 +15,7 @@ import (
 	"github.com/cloudposse/terraform-provider-awsutils/internal/service/guardduty"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/service/iam"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/service/securityhub"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/sts"
 	tftags "github.com/cloudposse/terraform-provider-awsutils/internal/tags"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/verify"
 	"github.com/cloudposse/terraform-provider-awsutils/names"
@@ -245,6 +246,7 @@ func New(_ context.Context) (*schema.Provider, error) {
 
 		DataSourcesMap: map[string]*schema.Resource{
 			"awsutils_ec2_client_vpn_export_client_config": ec2.DataSourceEC2ExportClientVpnClientConfiguration(),
+			"awsutils_caller_identity":                     sts.DataSourceCallerIdentity(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{

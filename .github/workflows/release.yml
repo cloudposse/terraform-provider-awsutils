@@ -26,8 +26,21 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Check disk space
-        run: df -h
+      - name: Check disk space before
+        shell: bash
+        run: |-
+          set -x
+          printf "\nPWD is %s\n\n" $(pwd -P)
+          df -h $(pwd -P)
+          if [[ -n $TMPDIR ]]; then
+            printf "\n\nTMPDIR set to %s\n\n" "$TMPDIR"
+            df -h "$TMPDIR"
+          else 
+            printf "\n\nTMPDIR not set, showing space in /tmp\n\n"
+            df -h /tmp
+          fi
+          printf "\n\nAll disk space:\n"
+          df -h
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
@@ -37,3 +50,19 @@ jobs:
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check disk space after
+        shell: bash
+        run: |-
+          set -x
+          printf "\nPWD is %s\n\n" $(pwd -P)
+          df -h $(pwd -P)
+          if [[ -n $TMPDIR ]]; then
+            printf "\n\nTMPDIR set to %s\n\n" "$TMPDIR"
+            df -h "$TMPDIR"
+          else 
+            printf "\n\nTMPDIR not set, showing space in /tmp\n\n"
+            df -h /tmp
+          fi
+          printf "\n\nAll disk space:\n"
+          df -h

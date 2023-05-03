@@ -42,7 +42,7 @@ jobs:
           printf "\n\nAll disk space:\n"
           df -h
 
-      - name: Run GoReleaser
+      - name: Run GoReleaser part 1
         uses: goreleaser/goreleaser-action@v4
         with:
           version: latest
@@ -51,15 +51,39 @@ jobs:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check disk space after
+      - name: Check disk space after part 1
         if: success() || failure()
         shell: bash
         run: |-
-          set -x
-          printf "\nPWD is %s\n\n" $(pwd -P)
+          printf "\nPWD is %s\ndf -h %s\n\n" "$(pwd -P)" "$(pwd -P)"
           df -h $(pwd -P)
           if [[ -n $TMPDIR ]]; then
-            printf "\n\nTMPDIR set to %s\n\n" "$TMPDIR"
+            printf "\n\nTMPDIR set to %s\ndf -h %s\n\n" "$TMPDIR" "$TMPDIR"
+            df -h "$TMPDIR"
+          else 
+            printf "\n\nTMPDIR not set, showing space in /tmp\n\n"
+            df -h /tmp
+          fi
+          printf "\n\nAll disk space:\n"
+          df -h
+
+      - name: Run GoReleaser part 2
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          version: latest
+          args: release --config .goreleaser-part-2.yml --clean --timeout 120m
+        env:
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check disk space after part 2
+        if: success() || failure()
+        shell: bash
+        run: |-
+          printf "\nPWD is %s\ndf -h %s\n\n" "$(pwd -P)" "$(pwd -P)"
+          df -h $(pwd -P)
+          if [[ -n $TMPDIR ]]; then
+            printf "\n\nTMPDIR set to %s\ndf -h %s\n\n" "$TMPDIR" "$TMPDIR"
             df -h "$TMPDIR"
           else 
             printf "\n\nTMPDIR not set, showing space in /tmp\n\n"

@@ -52,6 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check disk space after
+        if: success() || failure()
         shell: bash
         run: |-
           set -x

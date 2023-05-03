@@ -4,9 +4,15 @@ on:
   push:
     tags:
       - "*"
+
+  workflow_dispatch:
+
 jobs:
   goreleaser:
-    runs-on: ubuntu-latest
+    runs-on:
+      - "self-hosted"
+      - "amd64"
+      - "large"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -21,38 +27,12 @@ jobs:
 
       - name: Import GPG key
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v5.1.0
+        uses: crazy-max/ghaction-import-gpg@v5
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
 
       - name: Check disk space before
-        shell: bash
-        run: |-
-          set -x
-          printf "\nPWD is %s\n\n" $(pwd -P)
-          df -h $(pwd -P)
-          if [[ -n $TMPDIR ]]; then
-            printf "\n\nTMPDIR set to %s\n\n" "$TMPDIR"
-            df -h "$TMPDIR"
-          else 
-            printf "\n\nTMPDIR not set, showing space in /tmp\n\n"
-            df -h /tmp
-          fi
-          printf "\n\nAll disk space:\n"
-          df -h
-
-      - name: Run GoReleaser part 1
-        uses: goreleaser/goreleaser-action@v4
-        with:
-          version: latest
-          args: release --clean --timeout 120m
-        env:
-          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check disk space after part 1
-        if: success() || failure()
         shell: bash
         run: |-
           printf "\nPWD is %s\ndf -h %s\n\n" "$(pwd -P)" "$(pwd -P)"
@@ -67,16 +47,16 @@ jobs:
           printf "\n\nAll disk space:\n"
           df -h
 
-      - name: Run GoReleaser part 2
+      - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
           version: latest
-          args: release --config .goreleaser-part-2.yml --clean --timeout 120m
+          args: release --clean --timeout 120m
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check disk space after part 2
+      - name: Check disk space after
         if: success() || failure()
         shell: bash
         run: |-

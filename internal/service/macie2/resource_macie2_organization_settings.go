@@ -2,6 +2,8 @@ package macie2
 
 import (
 	"fmt"
+	"log"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/macie2"
@@ -45,6 +47,20 @@ func getMemberAccounts(d *schema.ResourceData) []string {
 	return memberAccounts
 }
 
+func getMemberAccountsFromAws(conn *macie2.Macie2) ([]string, error) {
+	memberAccounts, err := conn.ListMembers(&macie2.ListMembersInput{})
+	if err != nil {
+		return nil, fmt.Errorf("error reading macie2 organization members: %s", err)
+	}
+
+	var memberAccountIDs []string
+
+	for i := range memberAccounts.Members {
+		memberAccountIDs = append(memberAccountIDs, *memberAccounts.Members[i].AccountId)
+	}
+	return memberAccountIDs, nil
+}
+
 func resourceAwsMacie2OrganizationSettingsCreate(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*conns.AWSClient).Macie2Conn
 	memberAccounts := getMemberAccounts(d)
@@ -59,30 +75,37 @@ func resourceAwsMacie2OrganizationSettingsCreate(d *schema.ResourceData, meta in
 }
 
 func resourceAwsMacie2OrganizationSettingsRead(d *schema.ResourceData, meta interface{}) error {
+	conn := meta.(*conns.AWSClient).Macie2Conn
+	memberAccounts, err := getMemberAccountsFromAws(conn)
+	if err != nil {
+		return err
+	}
+
+	d.Set("member_accounts", memberAccounts)
+
 	return nil
 }
 
 func resourceAwsMacie2OrganizationSettingsUpdate(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*conns.AWSClient).Macie2Conn
+	currentMemberAccounts, err := getMemberAccountsFromAws(conn)
+	if err != nil {
+		return err
+	}
 
-	if d.HasChange("member_accounts") {
-		old, new := d.GetChange("member_accounts")
+	desiredMemberAccounts := flex.ExpandStringSliceofPointers(flex.ExpandStringSet(d.Get("member_accounts").(*schema.Set)))
 
-		oldExpanded := flex.ExpandStringSliceofPointers(flex.ExpandStringSet(old.(*schema.Set)))
-		newExpanded := flex.ExpandStringSliceofPointers(flex.ExpandStringSet(new.(*schema.Set)))
-
-		membersToAdd := flex.Diff(newExpanded, oldExpanded)
-		if len(membersToAdd) > 0 {
-			if err := addMacie2OrganizationMembers(conn, membersToAdd); err != nil {
-				return fmt.Errorf("error setting macie2 organization members: %s", err)
-			}
+	membersToAdd := flex.Diff(desiredMemberAccounts, currentMemberAccounts)
+	if len(membersToAdd) > 0 {
+		if err := addMacie2OrganizationMembers(conn, membersToAdd); err != nil {
+			return fmt.Errorf("error setting macie2 organization members: %s", err)
 		}
+	}
 
-		membersToRemove := flex.Diff(oldExpanded, newExpanded)
-		if len(membersToRemove) > 0 {
-			if err := removeMacie2OrganizationMembers(conn, membersToRemove); err != nil {
-				return fmt.Errorf("error removing macie2 organization members: %s", err)
-			}
+	membersToRemove := flex.Diff(currentMemberAccounts, desiredMemberAccounts)
+	if len(membersToRemove) > 0 {
+		if err := removeMacie2OrganizationMembers(conn, membersToRemove); err != nil {
+			return fmt.Errorf("error removing macie2 organization members: %s", err)
 		}
 	}
 	return nil
@@ -154,10 +177,14 @@ func removeMacie2OrganizationMembers(conn *macie2.Macie2, memberAccounts []strin
 			}
 
 			if _, err := conn.DeleteMember(deleteMemberInput); err != nil {
-				return fmt.Errorf("error removing macie2 administrator account members: %s", err)
+				log.Printf("[WARN] Error deleting macie2 administrator account member: %s", err.Error())
+				if strings.Contains(err.Error(), "specified account is not associated with your account") {
+					log.Printf("[WARN] The specified member account (%s) isn't associated with the delegated administrator account", *disassociateMemberInput.Id)
+				} else {
+					return fmt.Errorf("error removing macie2 administrator account members: %s", err)
+				}
 			}
 		}
-
 	}
 	return nil
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/cloudposse/terraform-provider-awsutils/internal/service/ec2"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/service/guardduty"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/service/iam"
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/macie2"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/service/securityhub"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/service/sts"
 	tftags "github.com/cloudposse/terraform-provider-awsutils/internal/tags"
@@ -253,6 +254,7 @@ func New(_ context.Context) (*schema.Provider, error) {
 			"awsutils_default_vpc_deletion":               ec2.ResourceDefaultVpcDeletion(),
 			"awsutils_expiring_iam_access_key":            iam.ResourceExpiringAccessKey(),
 			"awsutils_guardduty_organization_settings":    guardduty.ResourceAwsUtilsGuardDutyOrganizationSettings(),
+			"awsutils_macie2_organization_settings":       macie2.ResourceAwsUtilsMacie2OrganizationSettings(),
 			"awsutils_security_hub_control_disablement":   securityhub.ResourceSecurityHubControlDisablement(),
 			"awsutils_security_hub_organization_settings": securityhub.ResourceSecurityHubOrganizationSettings(),
 		},

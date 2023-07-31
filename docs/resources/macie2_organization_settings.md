@@ -5,7 +5,7 @@ subcategory: ""
 description: |-
   Enables a list of accounts as Macie2 member accounts in an existing AWS Organization.
   Designating an account as the Macie2 Administrator account in an AWS Organization can optionally enable all
-  newly created accounts and accounts that join the organization after the setting is enabled, however it does not
+  newly created accounts and accounts that join the organization after the setting is enabled, however, it does not
   enable existing accounts. Use this resource to enable a list of existing accounts.
 ---
 
@@ -14,7 +14,7 @@ description: |-
 Enables a list of accounts as Macie2 member accounts in an existing AWS Organization.
 
 Designating an account as the Macie2 Administrator account in an AWS Organization can optionally enable all
-newly created accounts and accounts that join the organization after the setting is enabled, however it does not
+newly created accounts and accounts that join the organization after the setting is enabled, however, it does not
 enable existing accounts. Use this resource to enable a list of existing accounts.
 
 ## Example Usage

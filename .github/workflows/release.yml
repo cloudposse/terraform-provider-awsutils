@@ -11,9 +11,9 @@ jobs:
   goreleaser:
     runs-on: "self-hosted-large"
     steps:
-      - name: Install Git
+      - name: Install Git & GPG
         run: |-
-          sudo apt-get update && sudo apt-get install -y git
+          sudo apt-get update && sudo apt-get install -y git gnupg2
           
       - name: Checkout
         uses: actions/checkout@v3

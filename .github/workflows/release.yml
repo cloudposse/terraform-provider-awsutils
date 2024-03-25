@@ -11,12 +11,15 @@ jobs:
   goreleaser:
     runs-on: "self-hosted-large"
     steps:
+      - name: Install Git
+        run: |-
+          sudo apt-get update && sudo apt-get install -y git
+          
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Unshallow
         run: |-
-          sudo apt-get update && sudo apt-get install -y git
           git fetch --prune --unshallow
 
       - name: Set up Go

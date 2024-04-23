@@ -4,10 +4,21 @@ on:
     types: [opened, synchronize, reopened]
     paths-ignore:
       - "README.md"
-  release:
-    types: [created]
+
+  push:
+    branches:
+      - main
+      - release/v*
     paths-ignore:
-      - "README.md"
+      - '.github/**'
+      - 'docs/**'
+      - 'examples/**'
+      - 'test/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   # ensure the code builds...
   build:
@@ -15,14 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2.1.3
-        with:
-          go-version: "1.20"
-        id: go
-
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2.3.3
+        uses: actions/checkout@v4
+
+      - name: 'Setup Go'
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+        id: go
 
       - name: Get dependencies
         run: |
@@ -53,14 +64,14 @@ jobs:
           - "1.4.0"
           - "1.5.0"
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2.1.3
-        with:
-          go-version: "1.20"
-        id: go
-
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2.3.3
+        uses: actions/checkout@v4
+
+      - name: 'Setup Go'
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+        id: go
 
       - name: Get dependencies
         run: |
@@ -73,3 +84,11 @@ jobs:
           TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
         run: |
           make testacc
+
+  release:
+    needs: test
+    if: github.event_name == 'push'
+    uses: cloudposse/.github/.github/workflows/shared-go-auto-release.yml@main
+    with:
+      publish: true
+    secrets: inherit

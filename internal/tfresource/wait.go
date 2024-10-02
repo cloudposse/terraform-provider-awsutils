@@ -8,10 +8,10 @@ import (
 )
 
 type WaitOpts struct {
-	ContinuousTargetOccurrence int           // Number of times the target state has to occur continuously.
-	Delay                      time.Duration // Wait this time before starting checks.
-	MinTimeout                 time.Duration // Smallest time to wait before refreshes.
-	PollInterval               time.Duration // Override MinTimeout/backoff and only poll this often.
+	ContinuousTargetOccurence int           // Number of times the target state has to occur continuously.
+	Delay                     time.Duration // Wait this time before starting checks.
+	MinTimeout                time.Duration // Smallest time to wait before refreshes.
+	PollInterval              time.Duration // Override MinTimeout/backoff and only poll this often.
 }
 
 const (
@@ -40,14 +40,14 @@ func WaitUntilContext(ctx context.Context, timeout time.Duration, f func() (bool
 	}
 
 	stateConf := &resource.StateChangeConf{
-		Pending:                    []string{targetStateFalse},
-		Target:                     []string{targetStateTrue},
-		Refresh:                    refresh,
-		Timeout:                    timeout,
-		ContinuousTargetOccurrence: opts.ContinuousTargetOccurrence,
-		Delay:                      opts.Delay,
-		MinTimeout:                 opts.MinTimeout,
-		PollInterval:               opts.PollInterval,
+		Pending:                   []string{targetStateFalse},
+		Target:                    []string{targetStateTrue},
+		Refresh:                   refresh,
+		Timeout:                   timeout,
+		ContinuousTargetOccurence: opts.ContinuousTargetOccurence,
+		Delay:                     opts.Delay,
+		MinTimeout:                opts.MinTimeout,
+		PollInterval:              opts.PollInterval,
 	}
 
 	_, err := stateConf.WaitForStateContext(ctx)

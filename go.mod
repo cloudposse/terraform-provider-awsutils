@@ -1,7 +1,6 @@
 module github.com/cloudposse/terraform-provider-awsutils
 
 go 1.22
-
 toolchain go1.23.1
 
 require (

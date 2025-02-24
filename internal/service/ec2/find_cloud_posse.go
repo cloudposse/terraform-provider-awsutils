@@ -39,7 +39,7 @@ func FindInternetGatewayForVPC(conn *ec2.EC2, vpcID string) (*ec2.InternetGatewa
 	return nil, nil
 }
 
-// SubnetsForVPC looks up a the Subnets for a VPC. When not found, returns nil and potentially an API error.
+// SubnetsForVPC looks up the Subnets for a VPC. When not found, returns nil and potentially an API error.
 func FindSubnetsForVPC(conn *ec2.EC2, vpcID string) ([]*ec2.Subnet, error) {
 	filters := []*ec2.Filter{
 		{

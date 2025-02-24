@@ -8,7 +8,7 @@
 // (internal/provider/provider.go), generators, and the skaff tool.
 //
 // It is very important that information in the names_data.csv be exactly
-// correct because the Terrform AWS Provider relies on the information to
+// correct because the Terraform AWS Provider relies on the information to
 // function correctly.
 
 package names

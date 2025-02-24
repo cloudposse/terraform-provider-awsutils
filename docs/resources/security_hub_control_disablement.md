@@ -58,7 +58,7 @@ data "aws_caller_identity" "this" {}
 
 ### Optional
 
-- `reason` (String) The reason the control is being disabed.
+- `reason` (String) The reason the control is being disabled.
 
 ### Read-Only
 

@@ -66,7 +66,7 @@ terraform {
   }
 }
 
-provdier "awsutils" {
+provider "awsutils" {
   region = "us-east-2"
 }
 ```

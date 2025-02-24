@@ -281,7 +281,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, terraformVer
 		EC2MetadataServiceEndpoint:     d.Get("ec2_metadata_service_endpoint").(string),
 		EC2MetadataServiceEndpointMode: d.Get("ec2_metadata_service_endpoint_mode").(string),
 		Endpoints:                      make(map[string]string),
-		HTTPProxy:                      d.Get("http_proxy").(string),
+		HTTPProxy:                      d.Get("http_proxy").(*string),
 		IgnoreTagsConfig:               expandProviderIgnoreTags(d.Get("ignore_tags").([]interface{})),
 		Insecure:                       d.Get("insecure").(bool),
 		MaxRetries:                     25, // Set default here, not in schema (muxing with v6 provider).

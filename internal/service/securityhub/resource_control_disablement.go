@@ -37,7 +37,7 @@ readiness score for the associated standard.`,
 				Required:    true,
 			},
 			"reason": {
-				Description: "The reason the control is being disabed.",
+				Description: "The reason the control is being disabled.",
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "",

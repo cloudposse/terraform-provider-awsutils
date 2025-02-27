@@ -91,4 +91,5 @@ jobs:
     uses: cloudposse/.github/.github/workflows/shared-go-auto-release.yml@main
     with:
       publish: true
+      runs-on: '["runs-on=${{ github.run_id }}", "runner=medium", "disk=large"]'
     secrets: inherit

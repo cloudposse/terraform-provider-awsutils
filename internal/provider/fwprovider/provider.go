@@ -311,7 +311,7 @@ func (p *fwprovider) GetDataSources(ctx context.Context) (map[string]provider.Da
 	var diags diag.Diagnostics
 	dataSources := make(map[string]provider.DataSourceType)
 
-	// TODO: This should be done via service-level self-registration and initializatin in the primary provider.
+	// TODO: This should be done via service-level self-registration and initialization in the primary provider.
 	t, err := meta.NewDataSourceARNType(ctx)
 
 	if err != nil {

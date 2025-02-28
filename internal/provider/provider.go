@@ -274,6 +274,7 @@ func New(_ context.Context) (*schema.Provider, error) {
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData, terraformVersion string) (interface{}, diag.Diagnostics) {
+	httpProxy := d.Get("http_proxy").(string)
 	config := conns.Config{
 		AccessKey:                      d.Get("access_key").(string),
 		DefaultTagsConfig:              expandProviderDefaultTags(d.Get("default_tags").([]interface{})),
@@ -281,7 +282,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, terraformVer
 		EC2MetadataServiceEndpoint:     d.Get("ec2_metadata_service_endpoint").(string),
 		EC2MetadataServiceEndpointMode: d.Get("ec2_metadata_service_endpoint_mode").(string),
 		Endpoints:                      make(map[string]string),
-		HTTPProxy:                      d.Get("http_proxy").(*string),
+		HTTPProxy:                      &httpProxy,
 		IgnoreTagsConfig:               expandProviderIgnoreTags(d.Get("ignore_tags").([]interface{})),
 		Insecure:                       d.Get("insecure").(bool),
 		MaxRetries:                     25, // Set default here, not in schema (muxing with v6 provider).

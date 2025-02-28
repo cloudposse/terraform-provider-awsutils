@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/account"
 	"github.com/aws/aws-sdk-go/service/acm"
 	"github.com/aws/aws-sdk-go/service/acmpca"
+	"github.com/aws/aws-sdk-go/service/alexaforbusiness"
 	"github.com/aws/aws-sdk-go/service/amplify"
 	"github.com/aws/aws-sdk-go/service/amplifybackend"
 	"github.com/aws/aws-sdk-go/service/amplifyuibuilder"
@@ -130,7 +131,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/groundstation"
 	"github.com/aws/aws-sdk-go/service/guardduty"
 	"github.com/aws/aws-sdk-go/service/health"
-	"github.com/aws/aws-sdk-go/service/healthlake" 
+	"github.com/aws/aws-sdk-go/service/healthlake"
+	"github.com/aws/aws-sdk-go/service/honeycode"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/identitystore"
 	"github.com/aws/aws-sdk-go/service/imagebuilder"
@@ -175,7 +177,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/lookoutequipment"
 	"github.com/aws/aws-sdk-go/service/lookoutforvision"
 	"github.com/aws/aws-sdk-go/service/lookoutmetrics"
-	"github.com/aws/aws-sdk-go/service/machinelearning" 
+	"github.com/aws/aws-sdk-go/service/machinelearning"
+	"github.com/aws/aws-sdk-go/service/macie"
 	"github.com/aws/aws-sdk-go/service/macie2"
 	"github.com/aws/aws-sdk-go/service/managedblockchain"
 	"github.com/aws/aws-sdk-go/service/managedgrafana"
@@ -196,7 +199,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/migrationhub"
 	"github.com/aws/aws-sdk-go/service/migrationhubconfig"
 	"github.com/aws/aws-sdk-go/service/migrationhubrefactorspaces"
-	"github.com/aws/aws-sdk-go/service/migrationhubstrategyrecommendations" 
+	"github.com/aws/aws-sdk-go/service/migrationhubstrategyrecommendations"
+	"github.com/aws/aws-sdk-go/service/mobile"
 	"github.com/aws/aws-sdk-go/service/mq"
 	"github.com/aws/aws-sdk-go/service/mturk"
 	"github.com/aws/aws-sdk-go/service/mwaa"
@@ -303,6 +307,7 @@ func (c *Config) clientConns(sess *session.Session) *AWSClient {
 		APIGatewayV2Conn:                 apigatewayv2.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.APIGatewayV2])})),
 		AccessAnalyzerConn:               accessanalyzer.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.AccessAnalyzer])})),
 		AccountConn:                      account.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.Account])})),
+		AlexaForBusinessConn:             alexaforbusiness.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.AlexaForBusiness])})),
 		AmplifyConn:                      amplify.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.Amplify])})),
 		AmplifyBackendConn:               amplifybackend.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.AmplifyBackend])})),
 		AmplifyUIBuilderConn:             amplifyuibuilder.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.AmplifyUIBuilder])})),
@@ -419,6 +424,7 @@ func (c *Config) clientConns(sess *session.Session) *AWSClient {
 		GuardDutyConn:                    guardduty.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.GuardDuty])})),
 		HealthConn:                       health.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.Health])})),
 		HealthLakeConn:                   healthlake.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.HealthLake])})),
+		HoneycodeConn:                    honeycode.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.Honeycode])})),
 		IAMConn:                          iam.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.IAM])})),
 		IVSConn:                          ivs.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.IVS])})),
 		IdentityStoreConn:                identitystore.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.IdentityStore])})),
@@ -468,6 +474,7 @@ func (c *Config) clientConns(sess *session.Session) *AWSClient {
 		MTurkConn:                        mturk.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.MTurk])})),
 		MWAAConn:                         mwaa.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.MWAA])})),
 		MachineLearningConn:              machinelearning.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.MachineLearning])})),
+		MacieConn:                        macie.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.Macie])})),
 		Macie2Conn:                       macie2.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.Macie2])})),
 		ManagedBlockchainConn:            managedblockchain.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.ManagedBlockchain])})),
 		MarketplaceCatalogConn:           marketplacecatalog.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.MarketplaceCatalog])})),
@@ -488,6 +495,7 @@ func (c *Config) clientConns(sess *session.Session) *AWSClient {
 		MigrationHubConfigConn:           migrationhubconfig.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.MigrationHubConfig])})),
 		MigrationHubRefactorSpacesConn:   migrationhubrefactorspaces.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.MigrationHubRefactorSpaces])})),
 		MigrationHubStrategyConn:         migrationhubstrategyrecommendations.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.MigrationHubStrategy])})),
+		MobileConn:                       mobile.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.Mobile])})),
 		NeptuneConn:                      neptune.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.Neptune])})),
 		NetworkFirewallConn:              networkfirewall.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.NetworkFirewall])})),
 		NetworkManagerConn:               networkmanager.New(sess.Copy(&aws.Config{Endpoint: aws.String(c.Endpoints[names.NetworkManager])})),

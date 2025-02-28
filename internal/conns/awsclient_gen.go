@@ -14,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/account"
 	"github.com/aws/aws-sdk-go/service/acm"
 	"github.com/aws/aws-sdk-go/service/acmpca"
+	"github.com/aws/aws-sdk-go/service/alexaforbusiness"
 	"github.com/aws/aws-sdk-go/service/amplify"
 	"github.com/aws/aws-sdk-go/service/amplifybackend"
 	"github.com/aws/aws-sdk-go/service/amplifyuibuilder"
@@ -138,6 +139,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/guardduty"
 	"github.com/aws/aws-sdk-go/service/health"
 	"github.com/aws/aws-sdk-go/service/healthlake"
+	"github.com/aws/aws-sdk-go/service/honeycode"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/identitystore"
 	"github.com/aws/aws-sdk-go/service/imagebuilder"
@@ -182,7 +184,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/lookoutequipment"
 	"github.com/aws/aws-sdk-go/service/lookoutforvision"
 	"github.com/aws/aws-sdk-go/service/lookoutmetrics"
-	"github.com/aws/aws-sdk-go/service/machinelearning" 
+	"github.com/aws/aws-sdk-go/service/machinelearning"
+	"github.com/aws/aws-sdk-go/service/macie"
 	"github.com/aws/aws-sdk-go/service/macie2"
 	"github.com/aws/aws-sdk-go/service/managedblockchain"
 	"github.com/aws/aws-sdk-go/service/managedgrafana"
@@ -204,6 +207,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/migrationhubconfig"
 	"github.com/aws/aws-sdk-go/service/migrationhubrefactorspaces"
 	"github.com/aws/aws-sdk-go/service/migrationhubstrategyrecommendations"
+	"github.com/aws/aws-sdk-go/service/mobile"
 	"github.com/aws/aws-sdk-go/service/mq"
 	"github.com/aws/aws-sdk-go/service/mturk"
 	"github.com/aws/aws-sdk-go/service/mwaa"
@@ -327,7 +331,8 @@ type AWSClient struct {
 	APIGatewayManagementAPIConn      *apigatewaymanagementapi.ApiGatewayManagementApi
 	APIGatewayV2Conn                 *apigatewayv2.ApiGatewayV2
 	AccessAnalyzerConn               *accessanalyzer.AccessAnalyzer
-	AccountConn                      *account.Account 
+	AccountConn                      *account.Account
+	AlexaForBusinessConn             *alexaforbusiness.AlexaForBusiness
 	AmplifyConn                      *amplify.Amplify
 	AmplifyBackendConn               *amplifybackend.AmplifyBackend
 	AmplifyUIBuilderConn             *amplifyuibuilder.AmplifyUIBuilder
@@ -446,6 +451,7 @@ type AWSClient struct {
 	GuardDutyConn                    *guardduty.GuardDuty
 	HealthConn                       *health.Health
 	HealthLakeConn                   *healthlake.HealthLake
+	HoneycodeConn                    *honeycode.Honeycode
 	IAMConn                          *iam.IAM
 	IVSConn                          *ivs.IVS
 	IdentityStoreConn                *identitystore.IdentityStore
@@ -495,7 +501,8 @@ type AWSClient struct {
 	MQConn                           *mq.MQ
 	MTurkConn                        *mturk.MTurk
 	MWAAConn                         *mwaa.MWAA
-	MachineLearningConn              *machinelearning.MachineLearning 
+	MachineLearningConn              *machinelearning.MachineLearning
+	MacieConn                        *macie.Macie
 	Macie2Conn                       *macie2.Macie2
 	ManagedBlockchainConn            *managedblockchain.ManagedBlockchain
 	MarketplaceCatalogConn           *marketplacecatalog.MarketplaceCatalog
@@ -516,6 +523,7 @@ type AWSClient struct {
 	MigrationHubConfigConn           *migrationhubconfig.MigrationHubConfig
 	MigrationHubRefactorSpacesConn   *migrationhubrefactorspaces.MigrationHubRefactorSpaces
 	MigrationHubStrategyConn         *migrationhubstrategyrecommendations.MigrationHubStrategyRecommendations
+	MobileConn                       *mobile.Mobile
 	NeptuneConn                      *neptune.Neptune
 	NetworkFirewallConn              *networkfirewall.NetworkFirewall
 	NetworkManagerConn               *networkmanager.NetworkManager

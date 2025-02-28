@@ -59,7 +59,7 @@ type Config struct {
 	EC2MetadataServiceEndpointMode string
 	Endpoints                      map[string]string
 	ForbiddenAccountIds            []string
-	HTTPProxy                      *string
+	HTTPProxy                      string
 	IgnoreTagsConfig               *tftags.IgnoreConfig
 	Insecure                       bool
 	MaxRetries                     int
@@ -107,7 +107,7 @@ func (c *Config) Client(ctx context.Context) (interface{}, diag.Diagnostics) {
 	}
 
 	if c.AssumeRole != nil && c.AssumeRole.RoleARN != "" {
-		awsbaseConfig.AssumeRole = []awsbase.AssumeRole{*c.AssumeRole}
+		awsbaseConfig.AssumeRole = c.AssumeRole
 	}
 
 	if c.CustomCABundle != "" {
@@ -131,21 +131,19 @@ func (c *Config) Client(ctx context.Context) (interface{}, diag.Diagnostics) {
 		awsbaseConfig.StsRegion = c.STSRegion
 	}
 
-	ctx, cfg, diags := awsbase.GetAwsConfig(ctx, &awsbaseConfig)
-	if diags.HasError() {
-		return nil, diag.Errorf("error configuring Terraform AWS Provider: %s", diags.Errors())
+	cfg, err := awsbase.GetAwsConfig(ctx, &awsbaseConfig)
+	if err != nil {
+		return nil, diag.Errorf("error configuring Terraform AWS Provider: %s", err)
 	}
 
 	if !c.SkipRegionValidation {
-		resolver := endpoints.AwsPartition()
-		if _, ok := resolver.Regions()[cfg.Region]; !ok {
-			return nil, diag.Errorf("invalid AWS region: %s", cfg.Region)
+		if err := awsbase.ValidateRegion(cfg.Region); err != nil {
+			return nil, diag.FromErr(err)
 		}
 	}
-
 	c.Region = cfg.Region
 
-	sess, err := awsbasev1.GetSession(ctx, &cfg, &awsbaseConfig)
+	sess, err := awsbasev1.GetSession(&cfg, &awsbaseConfig)
 	if err != nil {
 		return nil, diag.Errorf("error creating AWS SDK v1 session: %s", err)
 	}
@@ -369,7 +367,7 @@ func (c *Config) Client(ctx context.Context) (interface{}, diag.Diagnostics) {
 			}
 		case "DeleteOrganizationConformancePack", "DescribeOrganizationConformancePacks", "DescribeOrganizationConformancePackStatuses", "PutOrganizationConformancePack":
 			if !tfawserr.ErrCodeEquals(r.Error, configservice.ErrCodeOrganizationAccessDeniedException) {
-				if r.Operation.Name == "DeleteOrganizationConformancePack" && tfawserr.ErrCodeEquals(r.Error, configservice.ErrCodeResourceInUseException) {
+				if r.Operation.Name == "DeleteOrganizationConformancePack" && tfawserr.ErrCodeEquals(err, configservice.ErrCodeResourceInUseException) {
 					r.Retryable = aws.Bool(true)
 				}
 				return
@@ -544,7 +542,7 @@ func (c *Config) Client(ctx context.Context) (interface{}, diag.Diagnostics) {
 			if tfawserr.ErrMessageContains(r.Error, wafv2.ErrCodeWAFTagOperationException, "Retry your request") {
 				r.Retryable = aws.Bool(true)
 			}
-			if tfawserr.ErrMessageContains(r.Error, wafv2.ErrCodeWAFTagOperationInternalErrorException, "Retry your request") {
+			if tfawserr.ErrMessageContains(err, wafv2.ErrCodeWAFTagOperationInternalErrorException, "Retry your request") {
 				r.Retryable = aws.Bool(true)
 			}
 		}

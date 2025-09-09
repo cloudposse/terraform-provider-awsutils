@@ -24,6 +24,7 @@ website/node_modules
 .idea
 *.iml
 *.test
+.atmos
 
 website/vendor
 

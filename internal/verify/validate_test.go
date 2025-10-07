@@ -173,8 +173,8 @@ func TestValidARN(t *testing.T) {
 		"arn",
 		"123456789012",
 		"arn:aws",
-		"arn:aws:logs",            //lintignore:AWSAT005
-		"arn:aws:logs:region:*:*", //lintignore:AWSAT005
+		"arn:aws:logs",            // lintignore:AWSAT005
+		"arn:aws:logs:region:*:*", // lintignore:AWSAT005
 	}
 	for _, v := range invalidNames {
 		_, errors := ValidARN(v, "arn")

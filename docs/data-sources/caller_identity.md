@@ -27,5 +27,3 @@ Use this data source to get the access to the effective
 				Otherwise, `null`.
 - `id` (String) AWS Account ID number of the account that owns or contains the calling entity.
 - `user_id` (String) Unique identifier of the calling entity.
-
-

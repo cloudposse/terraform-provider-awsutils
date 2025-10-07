@@ -13,8 +13,8 @@ description: |-
 
 Enables a list of accounts as GuardDuty member accounts in an existing AWS Organization.
 
-Designating an account as the GuardDuty Administrator account in an AWS Organization can optionally enable all 
-newly created accounts and accounts that join the organization after the setting is enabled, however it does not 
+Designating an account as the GuardDuty Administrator account in an AWS Organization can optionally enable all
+newly created accounts and accounts that join the organization after the setting is enabled, however it does not
 enable existing accounts. Use this resource to enable a list of existing accounts
 
 ## Example Usage
@@ -25,7 +25,7 @@ terraform {
     awsutils = {
       source = "cloudposse/awsutils"
       # For local development,
-      # install the provider on local computer by running `make install` from the root of the repo, and uncomment the 
+      # install the provider on local computer by running `make install` from the root of the repo, and uncomment the
       # version below
       # version = "9999.99.99"
     }
@@ -53,5 +53,3 @@ resource "awsutils_guardduty_organization_settings" "default" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-
-

@@ -192,7 +192,6 @@ func resourceOrganizationCreate(d *schema.ResourceData, meta interface{}) error 
 
 		log.Printf("[DEBUG] Enabling AWS Service Access in Organization: %s", input)
 		_, err := conn.EnableAWSServiceAccess(input)
-
 		if err != nil {
 			return fmt.Errorf("error enabling AWS Service Access (%s) in Organization: %s", principal, err)
 		}
@@ -202,7 +201,6 @@ func resourceOrganizationCreate(d *schema.ResourceData, meta interface{}) error 
 
 	if len(enabledPolicyTypes) > 0 {
 		defaultRoot, err := getOrganizationDefaultRoot(conn)
-
 		if err != nil {
 			return fmt.Errorf("error getting AWS Organization (%s) default root: %s", d.Id(), err)
 		}
@@ -299,7 +297,6 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 			}
 			return !lastPage
 		})
-
 		if err != nil {
 			return fmt.Errorf("error listing AWS Service Access for Organization (%s): %s", d.Id(), err)
 		}
@@ -340,7 +337,6 @@ func resourceOrganizationUpdate(d *schema.ResourceData, meta interface{}) error 
 
 			log.Printf("[DEBUG] Disabling AWS Service Access in Organization: %s", input)
 			_, err := conn.DisableAWSServiceAccess(input)
-
 			if err != nil {
 				return fmt.Errorf("error disabling AWS Service Access (%s) in Organization: %s", principal, err)
 			}
@@ -354,7 +350,6 @@ func resourceOrganizationUpdate(d *schema.ResourceData, meta interface{}) error 
 
 			log.Printf("[DEBUG] Enabling AWS Service Access in Organization: %s", input)
 			_, err := conn.EnableAWSServiceAccess(input)
-
 			if err != nil {
 				return fmt.Errorf("error enabling AWS Service Access (%s) in Organization: %s", principal, err)
 			}
@@ -479,7 +474,6 @@ func getOrganizationDefaultRoot(conn *organizations.Organizations) (*organizatio
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -494,7 +488,6 @@ func getOrganizationDefaultRoot(conn *organizations.Organizations) (*organizatio
 func getOrganizationDefaultRootPolicyTypeRefreshFunc(conn *organizations.Organizations, policyType string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		defaultRoot, err := getOrganizationDefaultRoot(conn)
-
 		if err != nil {
 			return nil, "", fmt.Errorf("error getting default root: %s", err)
 		}

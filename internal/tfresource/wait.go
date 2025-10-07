@@ -27,7 +27,6 @@ const (
 func WaitUntilContext(ctx context.Context, timeout time.Duration, f func() (bool, error), opts WaitOpts) error {
 	refresh := func() (interface{}, string, error) {
 		done, err := f()
-
 		if err != nil {
 			return nil, targetStateError, err
 		}

@@ -313,7 +313,6 @@ func (p *fwprovider) GetDataSources(ctx context.Context) (map[string]provider.Da
 
 	// TODO: This should be done via service-level self-registration and initialization in the primary provider.
 	t, err := meta.NewDataSourceARNType(ctx)
-
 	if err != nil {
 		diags.AddError("UhOh", err.Error())
 		return nil, diags

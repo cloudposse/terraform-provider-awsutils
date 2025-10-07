@@ -29,8 +29,7 @@ func RetrieveGPGKey(pgpKey string) (string, error) {
 // EncryptValue encrypts the given value with the given encryption key. Description
 // should be set such that errors return a meaningful user-facing response.
 func EncryptValue(encryptionKey, value, description string) (string, string, error) {
-	fingerprints, encryptedValue, err :=
-		pgpkeys.EncryptShares([][]byte{[]byte(value)}, []string{encryptionKey})
+	fingerprints, encryptedValue, err := pgpkeys.EncryptShares([][]byte{[]byte(value)}, []string{encryptionKey})
 	if err != nil {
 		return "", "", fmt.Errorf("Error encrypting %s: %w", description, err)
 	}

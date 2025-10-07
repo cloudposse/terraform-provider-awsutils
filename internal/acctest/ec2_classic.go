@@ -39,7 +39,6 @@ func PreCheckEC2Classic(t *testing.T) {
 		ctx := context.Background()
 		var err error
 		ProviderEC2Classic, err = provider.New(ctx)
-
 		if err != nil {
 			t.Fatal(err)
 		}

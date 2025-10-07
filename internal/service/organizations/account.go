@@ -127,13 +127,11 @@ func resourceAccountCreate(d *schema.ResourceData, meta interface{}) error {
 		Tags(tags.IgnoreAWS()),
 		d.Get("create_govcloud").(bool),
 	)
-
 	if err != nil {
 		return fmt.Errorf("error creating AWS Organizations Account (%s): %w", d.Get("name").(string), err)
 	}
 
 	output, err := waitAccountCreated(conn, aws.StringValue(s.Id))
-
 	if err != nil {
 		return fmt.Errorf("error waiting for AWS Organizations Account (%s) create: %w", d.Get("name").(string), err)
 	}
@@ -143,7 +141,6 @@ func resourceAccountCreate(d *schema.ResourceData, meta interface{}) error {
 
 	if v, ok := d.GetOk("parent_id"); ok {
 		oldParentAccountID, err := findParentAccountID(conn, d.Id())
-
 		if err != nil {
 			return fmt.Errorf("error reading AWS Organizations Account (%s) parent: %w", d.Id(), err)
 		}
@@ -183,7 +180,6 @@ func resourceAccountRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	parentAccountID, err := findParentAccountID(conn, d.Id())
-
 	if err != nil {
 		return fmt.Errorf("error reading AWS Organizations Account (%s) parent: %w", d.Id(), err)
 	}
@@ -197,14 +193,13 @@ func resourceAccountRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("status", account.Status)
 
 	tags, err := ListTags(conn, d.Id())
-
 	if err != nil {
 		return fmt.Errorf("error listing tags for AWS Organizations Account (%s): %w", d.Id(), err)
 	}
 
 	tags = tags.IgnoreAWS().IgnoreConfig(ignoreTagsConfig)
 
-	//lintignore:AWSR002
+	// lintignore:AWSR002
 	if err := d.Set("tags", tags.RemoveDefaultConfig(defaultTagsConfig).Map()); err != nil {
 		return fmt.Errorf("error setting tags: %w", err)
 	}
@@ -305,7 +300,6 @@ func createAccount(conn *organizations.Organizations, name, email string, iamUse
 			},
 			organizations.ErrCodeFinalizingOrganizationException,
 		)
-
 		if err != nil {
 			return nil, err
 		}
@@ -337,7 +331,6 @@ func createAccount(conn *organizations.Organizations, name, email string, iamUse
 		},
 		organizations.ErrCodeFinalizingOrganizationException,
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -356,7 +349,6 @@ func findParentAccountID(conn *organizations.Organizations, id string) (string, 
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return "", err
 	}

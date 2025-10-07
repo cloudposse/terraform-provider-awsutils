@@ -326,7 +326,6 @@ func testAccCheckOrganizationExists(n string, org *organizations.Organization) r
 		params := &organizations.DescribeOrganizationInput{}
 
 		resp, err := conn.DescribeOrganization(params)
-
 		if err != nil {
 			return err
 		}

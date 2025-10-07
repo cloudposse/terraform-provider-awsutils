@@ -160,7 +160,6 @@ func addMacie2OrganizationMembers(conn *macie2.Macie2, memberAccounts []string) 
 func removeMacie2OrganizationMembers(conn *macie2.Macie2, memberAccounts []string) error {
 	accountIDs := makeMacie2AccountIDs(memberAccounts)
 	if len(memberAccounts) > 0 {
-
 		for i := range memberAccounts {
 			disassociateMemberInput := &macie2.DisassociateMemberInput{
 				Id: accountIDs[i],

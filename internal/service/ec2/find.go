@@ -15,7 +15,6 @@ import (
 
 func FindAvailabilityZones(conn *ec2.EC2, input *ec2.DescribeAvailabilityZonesInput) ([]*ec2.AvailabilityZone, error) {
 	output, err := conn.DescribeAvailabilityZones(input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +28,6 @@ func FindAvailabilityZones(conn *ec2.EC2, input *ec2.DescribeAvailabilityZonesIn
 
 func FindAvailabilityZone(conn *ec2.EC2, input *ec2.DescribeAvailabilityZonesInput) (*ec2.AvailabilityZone, error) {
 	output, err := FindAvailabilityZones(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +52,6 @@ func FindAvailabilityZoneGroupByName(conn *ec2.EC2, name string) (*ec2.Availabil
 	}
 
 	output, err := FindAvailabilityZones(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +75,6 @@ func FindAvailabilityZoneGroupByName(conn *ec2.EC2, name string) (*ec2.Availabil
 
 func FindCapacityReservation(conn *ec2.EC2, input *ec2.DescribeCapacityReservationsInput) (*ec2.CapacityReservation, error) {
 	output, err := FindCapacityReservations(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +127,6 @@ func FindCapacityReservationByID(conn *ec2.EC2, id string) (*ec2.CapacityReserva
 	}
 
 	output, err := FindCapacityReservation(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +170,6 @@ func FindCarrierGatewayByID(conn *ec2.EC2, id string) (*ec2.CarrierGateway, erro
 
 func FindClientVPNEndpoint(conn *ec2.EC2, input *ec2.DescribeClientVpnEndpointsInput) (*ec2.ClientVpnEndpoint, error) {
 	output, err := FindClientVPNEndpoints(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +224,6 @@ func FindClientVPNEndpointByID(conn *ec2.EC2, id string) (*ec2.ClientVpnEndpoint
 	}
 
 	output, err := FindClientVPNEndpoint(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -254,7 +247,6 @@ func FindClientVPNEndpointByID(conn *ec2.EC2, id string) (*ec2.ClientVpnEndpoint
 
 func FindClientVPNEndpointClientConnectResponseOptionsByID(conn *ec2.EC2, id string) (*ec2.ClientConnectResponseOptions, error) {
 	output, err := FindClientVPNEndpointByID(conn, id)
-
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +260,6 @@ func FindClientVPNEndpointClientConnectResponseOptionsByID(conn *ec2.EC2, id str
 
 func FindClientVPNAuthorizationRule(conn *ec2.EC2, input *ec2.DescribeClientVpnAuthorizationRulesInput) (*ec2.AuthorizationRule, error) {
 	output, err := FindClientVPNAuthorizationRules(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -334,7 +325,6 @@ func FindClientVPNAuthorizationRuleByThreePartKey(conn *ec2.EC2, endpointID, tar
 
 func FindClientVPNNetworkAssociation(conn *ec2.EC2, input *ec2.DescribeClientVpnTargetNetworksInput) (*ec2.TargetNetwork, error) {
 	output, err := FindClientVPNNetworkAssociations(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -390,7 +380,6 @@ func FindClientVPNNetworkAssociationByIDs(conn *ec2.EC2, associationID, endpoint
 	}
 
 	output, err := FindClientVPNNetworkAssociation(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -414,7 +403,6 @@ func FindClientVPNNetworkAssociationByIDs(conn *ec2.EC2, associationID, endpoint
 
 func FindClientVPNRoute(conn *ec2.EC2, input *ec2.DescribeClientVpnRoutesInput) (*ec2.ClientVpnRoute, error) {
 	output, err := FindClientVPNRoutes(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -508,7 +496,6 @@ func FindCOIPPools(conn *ec2.EC2, input *ec2.DescribeCoipPoolsInput) ([]*ec2.Coi
 
 func FindCOIPPool(conn *ec2.EC2, input *ec2.DescribeCoipPoolsInput) (*ec2.CoipPool, error) {
 	output, err := FindCOIPPools(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -557,7 +544,6 @@ func FindEBSVolumes(conn *ec2.EC2, input *ec2.DescribeVolumesInput) ([]*ec2.Volu
 
 func FindEBSVolume(conn *ec2.EC2, input *ec2.DescribeVolumesInput) (*ec2.Volume, error) {
 	output, err := FindEBSVolumes(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -579,7 +565,6 @@ func FindEBSVolumeByID(conn *ec2.EC2, id string) (*ec2.Volume, error) {
 	}
 
 	output, err := FindEBSVolume(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -611,7 +596,6 @@ func FindEBSVolumeAttachment(conn *ec2.EC2, volumeID, instanceID, deviceName str
 	}
 
 	output, err := FindEBSVolume(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -755,7 +739,6 @@ func FindImageByID(conn *ec2.EC2, id string) (*ec2.Image, error) {
 	}
 
 	output, err := FindImage(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -805,7 +788,6 @@ func FindImageLaunchPermissionsByID(ctx context.Context, conn *ec2.EC2, id strin
 	}
 
 	output, err := FindImageAttribute(ctx, conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -819,7 +801,6 @@ func FindImageLaunchPermissionsByID(ctx context.Context, conn *ec2.EC2, id strin
 
 func FindImageLaunchPermission(ctx context.Context, conn *ec2.EC2, imageID, accountID, group, organizationARN, organizationalUnitARN string) (*ec2.LaunchPermission, error) {
 	output, err := FindImageLaunchPermissionsByID(ctx, conn, imageID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -873,7 +854,6 @@ func FindInstances(conn *ec2.EC2, input *ec2.DescribeInstancesInput) ([]*ec2.Ins
 
 func FindInstance(conn *ec2.EC2, input *ec2.DescribeInstancesInput) (*ec2.Instance, error) {
 	output, err := FindInstances(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -895,7 +875,6 @@ func FindInstanceByID(conn *ec2.EC2, id string) (*ec2.Instance, error) {
 	}
 
 	output, err := FindInstance(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -950,7 +929,6 @@ func FindInstanceCreditSpecifications(conn *ec2.EC2, input *ec2.DescribeInstance
 
 func FindInstanceCreditSpecification(conn *ec2.EC2, input *ec2.DescribeInstanceCreditSpecificationsInput) (*ec2.InstanceCreditSpecification, error) {
 	output, err := FindInstanceCreditSpecifications(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -972,7 +950,6 @@ func FindInstanceCreditSpecificationByID(conn *ec2.EC2, id string) (*ec2.Instanc
 	}
 
 	output, err := FindInstanceCreditSpecification(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1003,7 +980,6 @@ func FindInstanceTypes(conn *ec2.EC2, input *ec2.DescribeInstanceTypesInput) ([]
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -1013,7 +989,6 @@ func FindInstanceTypes(conn *ec2.EC2, input *ec2.DescribeInstanceTypesInput) ([]
 
 func FindInstanceType(conn *ec2.EC2, input *ec2.DescribeInstanceTypesInput) (*ec2.InstanceTypeInfo, error) {
 	output, err := FindInstanceTypes(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1035,7 +1010,6 @@ func FindInstanceTypeByName(conn *ec2.EC2, name string) (*ec2.InstanceTypeInfo, 
 	}
 
 	output, err := FindInstanceType(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1059,7 +1033,6 @@ func FindInstanceTypeOfferings(conn *ec2.EC2, input *ec2.DescribeInstanceTypeOff
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -1083,7 +1056,6 @@ func FindLocalGatewayRouteTables(conn *ec2.EC2, input *ec2.DescribeLocalGatewayR
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -1093,7 +1065,6 @@ func FindLocalGatewayRouteTables(conn *ec2.EC2, input *ec2.DescribeLocalGatewayR
 
 func FindLocalGatewayRouteTable(conn *ec2.EC2, input *ec2.DescribeLocalGatewayRouteTablesInput) (*ec2.LocalGatewayRouteTable, error) {
 	output, err := FindLocalGatewayRouteTables(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1125,7 +1096,6 @@ func FindLocalGatewayVirtualInterfaceGroups(conn *ec2.EC2, input *ec2.DescribeLo
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -1135,7 +1105,6 @@ func FindLocalGatewayVirtualInterfaceGroups(conn *ec2.EC2, input *ec2.DescribeLo
 
 func FindLocalGatewayVirtualInterfaceGroup(conn *ec2.EC2, input *ec2.DescribeLocalGatewayVirtualInterfaceGroupsInput) (*ec2.LocalGatewayVirtualInterfaceGroup, error) {
 	output, err := FindLocalGatewayVirtualInterfaceGroups(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1167,7 +1136,6 @@ func FindLocalGateways(conn *ec2.EC2, input *ec2.DescribeLocalGatewaysInput) ([]
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -1177,7 +1145,6 @@ func FindLocalGateways(conn *ec2.EC2, input *ec2.DescribeLocalGatewaysInput) ([]
 
 func FindLocalGateway(conn *ec2.EC2, input *ec2.DescribeLocalGatewaysInput) (*ec2.LocalGateway, error) {
 	output, err := FindLocalGateways(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1195,7 +1162,6 @@ func FindLocalGateway(conn *ec2.EC2, input *ec2.DescribeLocalGatewaysInput) (*ec
 
 func FindNetworkACL(conn *ec2.EC2, input *ec2.DescribeNetworkAclsInput) (*ec2.NetworkAcl, error) {
 	output, err := FindNetworkACLs(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1250,7 +1216,6 @@ func FindNetworkACLByID(conn *ec2.EC2, id string) (*ec2.NetworkAcl, error) {
 	}
 
 	output, err := FindNetworkACL(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1273,7 +1238,6 @@ func FindNetworkACLAssociationByID(conn *ec2.EC2, associationID string) (*ec2.Ne
 	}
 
 	output, err := FindNetworkACL(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1295,7 +1259,6 @@ func FindNetworkACLAssociationBySubnetID(conn *ec2.EC2, subnetID string) (*ec2.N
 	}
 
 	output, err := FindNetworkACL(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1319,7 +1282,6 @@ func FindNetworkACLEntryByThreePartKey(conn *ec2.EC2, naclID string, egress bool
 	}
 
 	output, err := FindNetworkACL(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1335,7 +1297,6 @@ func FindNetworkACLEntryByThreePartKey(conn *ec2.EC2, naclID string, egress bool
 
 func FindNetworkInterface(conn *ec2.EC2, input *ec2.DescribeNetworkInterfacesInput) (*ec2.NetworkInterface, error) {
 	output, err := FindNetworkInterfaces(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1388,7 +1349,6 @@ func FindNetworkInterfaceByID(conn *ec2.EC2, id string) (*ec2.NetworkInterface, 
 	}
 
 	output, err := FindNetworkInterface(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1422,7 +1382,6 @@ func FindNetworkInterfaceAttachmentByID(conn *ec2.EC2, id string) (*ec2.NetworkI
 	}
 
 	networkInterface, err := FindNetworkInterface(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1436,7 +1395,6 @@ func FindNetworkInterfaceAttachmentByID(conn *ec2.EC2, id string) (*ec2.NetworkI
 
 func FindNetworkInterfaceSecurityGroup(conn *ec2.EC2, networkInterfaceID string, securityGroupID string) (*ec2.GroupIdentifier, error) {
 	networkInterface, err := FindNetworkInterfaceByID(conn, networkInterfaceID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1454,7 +1412,6 @@ func FindNetworkInterfaceSecurityGroup(conn *ec2.EC2, networkInterfaceID string,
 
 func FindNetworkInsightsPath(conn *ec2.EC2, input *ec2.DescribeNetworkInsightsPathsInput) (*ec2.NetworkInsightsPath, error) {
 	output, err := FindNetworkInsightsPaths(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1507,7 +1464,6 @@ func FindNetworkInsightsPathByID(conn *ec2.EC2, id string) (*ec2.NetworkInsights
 	}
 
 	output, err := FindNetworkInsightsPath(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1526,7 +1482,6 @@ func FindNetworkInsightsPathByID(conn *ec2.EC2, id string) (*ec2.NetworkInsights
 // Returns NotFoundError if no route table association is found.
 func FindMainRouteTableAssociationByID(conn *ec2.EC2, associationID string) (*ec2.RouteTableAssociation, error) {
 	association, err := FindRouteTableAssociationByID(conn, associationID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1544,7 +1499,6 @@ func FindMainRouteTableAssociationByID(conn *ec2.EC2, associationID string) (*ec
 // Returns NotFoundError if no route table association is found.
 func FindMainRouteTableAssociationByVPCID(conn *ec2.EC2, vpcID string) (*ec2.RouteTableAssociation, error) {
 	routeTable, err := FindMainRouteTableByVPCID(conn, vpcID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1574,7 +1528,6 @@ func FindRouteTableAssociationByID(conn *ec2.EC2, associationID string) (*ec2.Ro
 	}
 
 	routeTable, err := FindRouteTable(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1619,7 +1572,6 @@ func FindRouteTableByID(conn *ec2.EC2, routeTableID string) (*ec2.RouteTable, er
 
 func FindRouteTable(conn *ec2.EC2, input *ec2.DescribeRouteTablesInput) (*ec2.RouteTable, error) {
 	output, err := FindRouteTables(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1676,7 +1628,6 @@ type RouteFinder func(*ec2.EC2, string, string) (*ec2.Route, error)
 // Returns NotFoundError if no route is found.
 func FindRouteByIPv4Destination(conn *ec2.EC2, routeTableID, destinationCidr string) (*ec2.Route, error) {
 	routeTable, err := FindRouteTableByID(conn, routeTableID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1696,7 +1647,6 @@ func FindRouteByIPv4Destination(conn *ec2.EC2, routeTableID, destinationCidr str
 // Returns NotFoundError if no route is found.
 func FindRouteByIPv6Destination(conn *ec2.EC2, routeTableID, destinationIpv6Cidr string) (*ec2.Route, error) {
 	routeTable, err := FindRouteTableByID(conn, routeTableID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1737,7 +1687,6 @@ func FindSecurityGroupByID(conn *ec2.EC2, id string) (*ec2.SecurityGroup, error)
 	}
 
 	output, err := FindSecurityGroup(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1768,7 +1717,6 @@ func FindSecurityGroupByNameAndVPCID(conn *ec2.EC2, name, vpcID string) (*ec2.Se
 // FindSecurityGroup looks up a security group using an ec2.DescribeSecurityGroupsInput. Returns a resource.NotFoundError if not found.
 func FindSecurityGroup(conn *ec2.EC2, input *ec2.DescribeSecurityGroupsInput) (*ec2.SecurityGroup, error) {
 	output, err := FindSecurityGroups(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1850,7 +1798,6 @@ func FindSpotFleetRequests(conn *ec2.EC2, input *ec2.DescribeSpotFleetRequestsIn
 
 func FindSpotFleetRequest(conn *ec2.EC2, input *ec2.DescribeSpotFleetRequestsInput) (*ec2.SpotFleetRequestConfig, error) {
 	output, err := FindSpotFleetRequests(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1872,7 +1819,6 @@ func FindSpotFleetRequestByID(conn *ec2.EC2, id string) (*ec2.SpotFleetRequestCo
 	}
 
 	output, err := FindSpotFleetRequest(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1927,7 +1873,6 @@ func FindSpotInstanceRequests(conn *ec2.EC2, input *ec2.DescribeSpotInstanceRequ
 
 func FindSpotInstanceRequest(conn *ec2.EC2, input *ec2.DescribeSpotInstanceRequestsInput) (*ec2.SpotInstanceRequest, error) {
 	output, err := FindSpotInstanceRequests(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1949,7 +1894,6 @@ func FindSpotInstanceRequestByID(conn *ec2.EC2, id string) (*ec2.SpotInstanceReq
 	}
 
 	output, err := FindSpotInstanceRequest(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1977,7 +1921,6 @@ func FindSubnetByID(conn *ec2.EC2, id string) (*ec2.Subnet, error) {
 	}
 
 	output, err := FindSubnet(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -1994,7 +1937,6 @@ func FindSubnetByID(conn *ec2.EC2, id string) (*ec2.Subnet, error) {
 
 func FindSubnet(conn *ec2.EC2, input *ec2.DescribeSubnetsInput) (*ec2.Subnet, error) {
 	output, err := FindSubnets(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2087,7 +2029,6 @@ func FindSubnetIPv6CIDRBlockAssociationByID(conn *ec2.EC2, associationID string)
 	}
 
 	output, err := FindSubnet(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2138,7 +2079,6 @@ func FindVolumeModifications(conn *ec2.EC2, input *ec2.DescribeVolumesModificati
 
 func FindVolumeModification(conn *ec2.EC2, input *ec2.DescribeVolumesModificationsInput) (*ec2.VolumeModification, error) {
 	output, err := FindVolumeModifications(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2160,7 +2100,6 @@ func FindVolumeModificationByID(conn *ec2.EC2, id string) (*ec2.VolumeModificati
 	}
 
 	output, err := FindVolumeModification(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2294,7 +2233,6 @@ func FindVPCClassicLinkDNSSupported(conn *ec2.EC2, vpcID string) (bool, error) {
 
 func FindVPC(conn *ec2.EC2, input *ec2.DescribeVpcsInput) (*ec2.Vpc, error) {
 	output, err := FindVPCs(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2347,7 +2285,6 @@ func FindVPCByID(conn *ec2.EC2, id string) (*ec2.Vpc, error) {
 	}
 
 	output, err := FindVPC(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2364,7 +2301,6 @@ func FindVPCByID(conn *ec2.EC2, id string) (*ec2.Vpc, error) {
 
 func FindVPCDHCPOptionsAssociation(conn *ec2.EC2, vpcID string, dhcpOptionsID string) error {
 	vpc, err := FindVPCByID(conn, vpcID)
-
 	if err != nil {
 		return err
 	}
@@ -2386,7 +2322,6 @@ func FindVPCCIDRBlockAssociationByID(conn *ec2.EC2, id string) (*ec2.VpcCidrBloc
 	}
 
 	vpc, err := FindVPC(conn, input)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -2412,7 +2347,6 @@ func FindVPCIPv6CIDRBlockAssociationByID(conn *ec2.EC2, id string) (*ec2.VpcIpv6
 	}
 
 	vpc, err := FindVPC(conn, input)
-
 	if err != nil {
 		return nil, nil, err
 	}
@@ -2465,7 +2399,6 @@ func FindVPCMainRouteTable(conn *ec2.EC2, id string) (*ec2.RouteTable, error) {
 
 func FindVPCEndpoint(conn *ec2.EC2, input *ec2.DescribeVpcEndpointsInput) (*ec2.VpcEndpoint, error) {
 	output, err := FindVPCEndpoints(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2518,7 +2451,6 @@ func FindVPCEndpointByID(conn *ec2.EC2, id string) (*ec2.VpcEndpoint, error) {
 	}
 
 	output, err := FindVPCEndpoint(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2542,7 +2474,6 @@ func FindVPCEndpointByID(conn *ec2.EC2, id string) (*ec2.VpcEndpoint, error) {
 
 func FindVPCEndpointServiceConfiguration(conn *ec2.EC2, input *ec2.DescribeVpcEndpointServiceConfigurationsInput) (*ec2.ServiceConfiguration, error) {
 	output, err := FindVPCEndpointServiceConfigurations(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2605,7 +2536,6 @@ func FindVPCEndpointServiceConfigurationByID(conn *ec2.EC2, id string) (*ec2.Ser
 	}
 
 	output, err := FindVPCEndpointServiceConfiguration(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2668,7 +2598,6 @@ func FindVPCEndpointServicePermissionsByID(conn *ec2.EC2, id string) ([]*ec2.All
 
 func FindVPCEndpointServicePermissionExists(conn *ec2.EC2, serviceID, principalARN string) error {
 	allowedPrincipals, err := FindVPCEndpointServicePermissionsByID(conn, serviceID)
-
 	if err != nil {
 		return err
 	}
@@ -2687,7 +2616,6 @@ func FindVPCEndpointServicePermissionExists(conn *ec2.EC2, serviceID, principalA
 // FindVPCEndpointRouteTableAssociationExists returns NotFoundError if no association for the specified VPC endpoint and route table IDs is found.
 func FindVPCEndpointRouteTableAssociationExists(conn *ec2.EC2, vpcEndpointID string, routeTableID string) error {
 	vpcEndpoint, err := FindVPCEndpointByID(conn, vpcEndpointID)
-
 	if err != nil {
 		return err
 	}
@@ -2706,7 +2634,6 @@ func FindVPCEndpointRouteTableAssociationExists(conn *ec2.EC2, vpcEndpointID str
 // FindVPCEndpointSecurityGroupAssociationExists returns NotFoundError if no association for the specified VPC endpoint and security group IDs is found.
 func FindVPCEndpointSecurityGroupAssociationExists(conn *ec2.EC2, vpcEndpointID, securityGroupID string) error {
 	vpcEndpoint, err := FindVPCEndpointByID(conn, vpcEndpointID)
-
 	if err != nil {
 		return err
 	}
@@ -2725,7 +2652,6 @@ func FindVPCEndpointSecurityGroupAssociationExists(conn *ec2.EC2, vpcEndpointID,
 // FindVPCEndpointSubnetAssociationExists returns NotFoundError if no association for the specified VPC endpoint and subnet IDs is found.
 func FindVPCEndpointSubnetAssociationExists(conn *ec2.EC2, vpcEndpointID string, subnetID string) error {
 	vpcEndpoint, err := FindVPCEndpointByID(conn, vpcEndpointID)
-
 	if err != nil {
 		return err
 	}
@@ -2743,7 +2669,6 @@ func FindVPCEndpointSubnetAssociationExists(conn *ec2.EC2, vpcEndpointID string,
 
 func FindVPCPeeringConnection(conn *ec2.EC2, input *ec2.DescribeVpcPeeringConnectionsInput) (*ec2.VpcPeeringConnection, error) {
 	output, err := FindVPCPeeringConnections(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2796,7 +2721,6 @@ func FindVPCPeeringConnectionByID(conn *ec2.EC2, id string) (*ec2.VpcPeeringConn
 	}
 
 	output, err := FindVPCPeeringConnection(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2826,7 +2750,6 @@ func FindVPCPeeringConnectionByID(conn *ec2.EC2, id string) (*ec2.VpcPeeringConn
 // FindVPNGatewayRoutePropagationExists returns NotFoundError if no route propagation for the specified VPN gateway is found.
 func FindVPNGatewayRoutePropagationExists(conn *ec2.EC2, routeTableID, gatewayID string) error {
 	routeTable, err := FindRouteTableByID(conn, routeTableID)
-
 	if err != nil {
 		return err
 	}
@@ -2844,7 +2767,6 @@ func FindVPNGatewayRoutePropagationExists(conn *ec2.EC2, routeTableID, gatewayID
 
 func FindVPNGatewayVPCAttachment(conn *ec2.EC2, vpnGatewayID, vpcID string) (*ec2.VpcAttachment, error) {
 	vpnGateway, err := FindVPNGatewayByID(conn, vpnGatewayID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2871,7 +2793,6 @@ func FindVPNGatewayByID(conn *ec2.EC2, id string) (*ec2.VpnGateway, error) {
 	}
 
 	output, err := FindVPNGateway(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2924,7 +2845,6 @@ func FindCustomerGatewayByID(conn *ec2.EC2, id string) (*ec2.CustomerGateway, er
 	}
 
 	output, err := FindCustomerGateway(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -2977,7 +2897,6 @@ func FindVPNConnectionByID(conn *ec2.EC2, id string) (*ec2.VpnConnection, error)
 	}
 
 	output, err := FindVPNConnection(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3033,7 +2952,6 @@ func FindVPNConnectionRouteByVPNConnectionIDAndCIDR(conn *ec2.EC2, vpnConnection
 	}
 
 	output, err := FindVPNConnection(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3051,7 +2969,6 @@ func FindVPNConnectionRouteByVPNConnectionIDAndCIDR(conn *ec2.EC2, vpnConnection
 
 func FindTransitGateway(conn *ec2.EC2, input *ec2.DescribeTransitGatewaysInput) (*ec2.TransitGateway, error) {
 	output, err := FindTransitGateways(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3104,7 +3021,6 @@ func FindTransitGatewayByID(conn *ec2.EC2, id string) (*ec2.TransitGateway, erro
 	}
 
 	output, err := FindTransitGateway(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3128,7 +3044,6 @@ func FindTransitGatewayByID(conn *ec2.EC2, id string) (*ec2.TransitGateway, erro
 
 func FindTransitGatewayAttachment(conn *ec2.EC2, input *ec2.DescribeTransitGatewayAttachmentsInput) (*ec2.TransitGatewayAttachment, error) {
 	output, err := FindTransitGatewayAttachments(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3181,7 +3096,6 @@ func FindTransitGatewayAttachmentByID(conn *ec2.EC2, id string) (*ec2.TransitGat
 	}
 
 	output, err := FindTransitGatewayAttachment(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3198,7 +3112,6 @@ func FindTransitGatewayAttachmentByID(conn *ec2.EC2, id string) (*ec2.TransitGat
 
 func FindTransitGatewayConnect(conn *ec2.EC2, input *ec2.DescribeTransitGatewayConnectsInput) (*ec2.TransitGatewayConnect, error) {
 	output, err := FindTransitGatewayConnects(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3251,7 +3164,6 @@ func FindTransitGatewayConnectByID(conn *ec2.EC2, id string) (*ec2.TransitGatewa
 	}
 
 	output, err := FindTransitGatewayConnect(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3275,7 +3187,6 @@ func FindTransitGatewayConnectByID(conn *ec2.EC2, id string) (*ec2.TransitGatewa
 
 func FindTransitGatewayConnectPeer(conn *ec2.EC2, input *ec2.DescribeTransitGatewayConnectPeersInput) (*ec2.TransitGatewayConnectPeer, error) {
 	output, err := FindTransitGatewayConnectPeers(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3329,7 +3240,6 @@ func FindTransitGatewayConnectPeerByID(conn *ec2.EC2, id string) (*ec2.TransitGa
 	}
 
 	output, err := FindTransitGatewayConnectPeer(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3353,7 +3263,6 @@ func FindTransitGatewayConnectPeerByID(conn *ec2.EC2, id string) (*ec2.TransitGa
 
 func FindTransitGatewayMulticastDomain(conn *ec2.EC2, input *ec2.DescribeTransitGatewayMulticastDomainsInput) (*ec2.TransitGatewayMulticastDomain, error) {
 	output, err := FindTransitGatewayMulticastDomains(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3406,7 +3315,6 @@ func FindTransitGatewayMulticastDomainByID(conn *ec2.EC2, id string) (*ec2.Trans
 	}
 
 	output, err := FindTransitGatewayMulticastDomain(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3430,7 +3338,6 @@ func FindTransitGatewayMulticastDomainByID(conn *ec2.EC2, id string) (*ec2.Trans
 
 func FindTransitGatewayMulticastDomainAssociation(conn *ec2.EC2, input *ec2.GetTransitGatewayMulticastDomainAssociationsInput) (*ec2.TransitGatewayMulticastDomainAssociation, error) {
 	output, err := FindTransitGatewayMulticastDomainAssociations(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3487,7 +3394,6 @@ func FindTransitGatewayMulticastDomainAssociationByThreePartKey(conn *ec2.EC2, m
 	}
 
 	output, err := FindTransitGatewayMulticastDomainAssociation(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3551,7 +3457,6 @@ func FindTransitGatewayMulticastGroupMemberByThreePartKey(conn *ec2.EC2, multica
 	}
 
 	output, err := FindTransitGatewayMulticastGroups(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3587,7 +3492,6 @@ func FindTransitGatewayMulticastGroupSourceByThreePartKey(conn *ec2.EC2, multica
 	}
 
 	output, err := FindTransitGatewayMulticastGroups(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3614,7 +3518,6 @@ func FindTransitGatewayMulticastGroupSourceByThreePartKey(conn *ec2.EC2, multica
 
 func FindTransitGatewayPrefixListReference(conn *ec2.EC2, input *ec2.GetTransitGatewayPrefixListReferencesInput) (*ec2.TransitGatewayPrefixListReference, error) {
 	output, err := FindTransitGatewayPrefixListReferences(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3670,7 +3573,6 @@ func FindTransitGatewayPrefixListReferenceByTwoPartKey(conn *ec2.EC2, transitGat
 	}
 
 	output, err := FindTransitGatewayPrefixListReference(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3798,7 +3700,6 @@ func FindTransitGatewayRouteTablePropagation(conn *ec2.EC2, transitGatewayRouteT
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -3808,7 +3709,6 @@ func FindTransitGatewayRouteTablePropagation(conn *ec2.EC2, transitGatewayRouteT
 
 func FindTransitGatewayVPCAttachment(conn *ec2.EC2, input *ec2.DescribeTransitGatewayVpcAttachmentsInput) (*ec2.TransitGatewayVpcAttachment, error) {
 	output, err := FindTransitGatewayVPCAttachments(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3861,7 +3761,6 @@ func FindTransitGatewayVPCAttachmentByID(conn *ec2.EC2, id string) (*ec2.Transit
 	}
 
 	output, err := FindTransitGatewayVPCAttachment(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3875,7 +3774,6 @@ func FindTransitGatewayVPCAttachmentByID(conn *ec2.EC2, id string) (*ec2.Transit
 			Message:     state,
 			LastRequest: input,
 		}
-
 	}
 
 	// Eventual consistency check.
@@ -3890,7 +3788,6 @@ func FindTransitGatewayVPCAttachmentByID(conn *ec2.EC2, id string) (*ec2.Transit
 
 func FindDHCPOptions(conn *ec2.EC2, input *ec2.DescribeDhcpOptionsInput) (*ec2.DhcpOptions, error) {
 	output, err := FindDHCPOptionses(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3943,7 +3840,6 @@ func FindDHCPOptionsByID(conn *ec2.EC2, id string) (*ec2.DhcpOptions, error) {
 	}
 
 	output, err := FindDHCPOptions(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3960,7 +3856,6 @@ func FindDHCPOptionsByID(conn *ec2.EC2, id string) (*ec2.DhcpOptions, error) {
 
 func FindEgressOnlyInternetGateway(conn *ec2.EC2, input *ec2.DescribeEgressOnlyInternetGatewaysInput) (*ec2.EgressOnlyInternetGateway, error) {
 	output, err := FindEgressOnlyInternetGateways(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -3992,7 +3887,6 @@ func FindEgressOnlyInternetGateways(conn *ec2.EC2, input *ec2.DescribeEgressOnly
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -4006,7 +3900,6 @@ func FindEgressOnlyInternetGatewayByID(conn *ec2.EC2, id string) (*ec2.EgressOnl
 	}
 
 	output, err := FindEgressOnlyInternetGateway(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4023,7 +3916,6 @@ func FindEgressOnlyInternetGatewayByID(conn *ec2.EC2, id string) (*ec2.EgressOnl
 
 func FindFleet(conn *ec2.EC2, input *ec2.DescribeFleetsInput) (*ec2.FleetData, error) {
 	output, err := FindFleets(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4076,7 +3968,6 @@ func FindFleetByID(conn *ec2.EC2, id string) (*ec2.FleetData, error) {
 	}
 
 	output, err := FindFleet(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4104,7 +3995,6 @@ func FindFlowLogByID(conn *ec2.EC2, id string) (*ec2.FlowLog, error) {
 	}
 
 	output, err := conn.DescribeFlowLogs(input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4122,7 +4012,6 @@ func FindFlowLogByID(conn *ec2.EC2, id string) (*ec2.FlowLog, error) {
 
 func FindInternetGateway(conn *ec2.EC2, input *ec2.DescribeInternetGatewaysInput) (*ec2.InternetGateway, error) {
 	output, err := FindInternetGateways(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4175,7 +4064,6 @@ func FindInternetGatewayByID(conn *ec2.EC2, id string) (*ec2.InternetGateway, er
 	}
 
 	output, err := FindInternetGateway(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4192,7 +4080,6 @@ func FindInternetGatewayByID(conn *ec2.EC2, id string) (*ec2.InternetGateway, er
 
 func FindInternetGatewayAttachment(conn *ec2.EC2, internetGatewayID, vpcID string) (*ec2.InternetGatewayAttachment, error) {
 	internetGateway, err := FindInternetGatewayByID(conn, internetGatewayID)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4216,7 +4103,6 @@ func FindInternetGatewayAttachment(conn *ec2.EC2, internetGatewayID, vpcID strin
 
 func FindKeyPair(conn *ec2.EC2, input *ec2.DescribeKeyPairsInput) (*ec2.KeyPairInfo, error) {
 	output, err := FindKeyPairs(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4255,7 +4141,6 @@ func FindKeyPairByName(conn *ec2.EC2, name string) (*ec2.KeyPairInfo, error) {
 	}
 
 	output, err := FindKeyPair(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4272,7 +4157,6 @@ func FindKeyPairByName(conn *ec2.EC2, name string) (*ec2.KeyPairInfo, error) {
 
 func FindLaunchTemplate(conn *ec2.EC2, input *ec2.DescribeLaunchTemplatesInput) (*ec2.LaunchTemplate, error) {
 	output, err := FindLaunchTemplates(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4325,7 +4209,6 @@ func FindLaunchTemplateByID(conn *ec2.EC2, id string) (*ec2.LaunchTemplate, erro
 	}
 
 	output, err := FindLaunchTemplate(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4342,7 +4225,6 @@ func FindLaunchTemplateByID(conn *ec2.EC2, id string) (*ec2.LaunchTemplate, erro
 
 func FindLaunchTemplateVersion(conn *ec2.EC2, input *ec2.DescribeLaunchTemplateVersionsInput) (*ec2.LaunchTemplateVersion, error) {
 	output, err := FindLaunchTemplateVersions(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4396,7 +4278,6 @@ func FindLaunchTemplateVersionByTwoPartKey(conn *ec2.EC2, launchTemplateID, vers
 	}
 
 	output, err := FindLaunchTemplateVersion(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4488,7 +4369,6 @@ func FindManagedPrefixListEntriesByID(conn *ec2.EC2, id string) ([]*ec2.PrefixLi
 
 func FindManagedPrefixListEntryByIDAndCIDR(conn *ec2.EC2, id, cidr string) (*ec2.PrefixListEntry, error) {
 	prefixListEntries, err := FindManagedPrefixListEntriesByID(conn, id)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4504,7 +4384,6 @@ func FindManagedPrefixListEntryByIDAndCIDR(conn *ec2.EC2, id, cidr string) (*ec2
 
 func FindNATGateway(conn *ec2.EC2, input *ec2.DescribeNatGatewaysInput) (*ec2.NatGateway, error) {
 	output, err := FindNATGateways(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4557,7 +4436,6 @@ func FindNATGatewayByID(conn *ec2.EC2, id string) (*ec2.NatGateway, error) {
 	}
 
 	output, err := FindNATGateway(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4619,7 +4497,6 @@ func FindPlacementGroupByName(conn *ec2.EC2, name string) (*ec2.PlacementGroup, 
 
 func FindPrefixList(conn *ec2.EC2, input *ec2.DescribePrefixListsInput) (*ec2.PrefixList, error) {
 	output, err := FindPrefixLists(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4702,7 +4579,6 @@ func FindVPCEndpointConnectionByServiceIDAndVPCEndpointID(conn *ec2.EC2, service
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -4754,7 +4630,6 @@ func FindImportSnapshotTasks(conn *ec2.EC2, input *ec2.DescribeImportSnapshotTas
 
 func FindImportSnapshotTask(conn *ec2.EC2, input *ec2.DescribeImportSnapshotTasksInput) (*ec2.ImportSnapshotTask, error) {
 	output, err := FindImportSnapshotTasks(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4776,7 +4651,6 @@ func FindImportSnapshotTaskByID(conn *ec2.EC2, id string) (*ec2.ImportSnapshotTa
 	}
 
 	output, err := FindImportSnapshotTask(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4824,7 +4698,6 @@ func FindSnapshots(conn *ec2.EC2, input *ec2.DescribeSnapshotsInput) ([]*ec2.Sna
 
 func FindSnapshot(conn *ec2.EC2, input *ec2.DescribeSnapshotsInput) (*ec2.Snapshot, error) {
 	output, err := FindSnapshots(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4846,7 +4719,6 @@ func FindSnapshotByID(conn *ec2.EC2, id string) (*ec2.Snapshot, error) {
 	}
 
 	output, err := FindSnapshot(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4889,7 +4761,6 @@ func FindCreateSnapshotCreateVolumePermissionByTwoPartKey(conn *ec2.EC2, snapsho
 	}
 
 	output, err := FindSnapshotAttribute(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4919,7 +4790,6 @@ func FindFindSnapshotTierStatuses(conn *ec2.EC2, input *ec2.DescribeSnapshotTier
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -4929,7 +4799,6 @@ func FindFindSnapshotTierStatuses(conn *ec2.EC2, input *ec2.DescribeSnapshotTier
 
 func FindFindSnapshotTierStatus(conn *ec2.EC2, input *ec2.DescribeSnapshotTierStatusInput) (*ec2.SnapshotTierStatus, error) {
 	output, err := FindFindSnapshotTierStatuses(conn, input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -4953,7 +4822,6 @@ func FindSnapshotTierStatusBySnapshotID(conn *ec2.EC2, id string) (*ec2.Snapshot
 	}
 
 	output, err := FindFindSnapshotTierStatus(conn, input)
-
 	if err != nil {
 		return nil, err
 	}

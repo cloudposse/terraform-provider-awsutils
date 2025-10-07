@@ -84,7 +84,6 @@ func resourcePolicyCreate(ctx context.Context, d *schema.ResourceData, meta inte
 	var resp *organizations.CreatePolicyOutput
 	err = resource.Retry(4*time.Minute, func() *resource.RetryError {
 		resp, err = conn.CreatePolicy(input)
-
 		if err != nil {
 			if tfawserr.ErrCodeEquals(err, organizations.ErrCodeFinalizingOrganizationException) {
 				log.Printf("[DEBUG] Retrying creating Organizations Policy (%s): %s", name, err)
@@ -158,7 +157,7 @@ func resourcePolicyRead(ctx context.Context, d *schema.ResourceData, meta interf
 
 	tags = tags.IgnoreAWS().IgnoreConfig(ignoreTagsConfig)
 
-	//lintignore:AWSR002
+	// lintignore:AWSR002
 	if err := d.Set("tags", tags.RemoveDefaultConfig(defaultTagsConfig).Map()); err != nil {
 		return diag.FromErr(fmt.Errorf("error setting tags: %w", err))
 	}

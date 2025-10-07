@@ -35,18 +35,18 @@ func ValidateTypeStringNullableInt(v interface{}, k string) (ws []string, es []e
 	value, ok := v.(string)
 	if !ok {
 		es = append(es, fmt.Errorf("expected type of %s to be string", k))
-		return
+		return ws, es
 	}
 
 	if value == "" {
-		return
+		return ws, es
 	}
 
 	if _, err := strconv.ParseInt(value, 10, 64); err != nil {
 		es = append(es, fmt.Errorf("%s: cannot parse '%s' as int: %w", k, value, err))
 	}
 
-	return
+	return ws, es
 }
 
 // ValidateTypeStringNullableIntAtLeast provides custom error messaging for TypeString ints
@@ -56,24 +56,24 @@ func ValidateTypeStringNullableIntAtLeast(min int) schema.SchemaValidateFunc {
 		value, ok := i.(string)
 		if !ok {
 			es = append(es, fmt.Errorf("expected type of %s to be string", k))
-			return
+			return ws, es
 		}
 
 		if value == "" {
-			return
+			return ws, es
 		}
 
 		v, err := strconv.ParseInt(value, 10, 64)
 		if err != nil {
 			es = append(es, fmt.Errorf("%s: cannot parse '%s' as int: %w", k, value, err))
-			return
+			return ws, es
 		}
 
 		if v < int64(min) {
 			es = append(es, fmt.Errorf("expected %s to be at least (%d), got %d", k, min, v))
 		}
 
-		return
+		return ws, es
 	}
 }
 
@@ -84,23 +84,23 @@ func ValidateTypeStringNullableIntBetween(min int, max int) schema.SchemaValidat
 		value, ok := i.(string)
 		if !ok {
 			es = append(es, fmt.Errorf("expected type of %s to be string", k))
-			return
+			return ws, es
 		}
 
 		if value == "" {
-			return
+			return ws, es
 		}
 
 		v, err := strconv.ParseInt(value, 10, 64)
 		if err != nil {
 			es = append(es, fmt.Errorf("%s: cannot parse '%s' as int: %w", k, value, err))
-			return
+			return ws, es
 		}
 
 		if v < int64(min) || v > int64(max) {
 			es = append(es, fmt.Errorf("expected %s to be at between (%d) and (%d), got %d", k, min, max, v))
 		}
 
-		return
+		return ws, es
 	}
 }

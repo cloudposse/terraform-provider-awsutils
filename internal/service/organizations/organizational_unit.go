@@ -153,7 +153,6 @@ func resourceOrganizationalUnitRead(d *schema.ResourceData, meta interface{}) er
 	}
 
 	parentId, err := resourceOrganizationalUnitGetParentID(conn, d.Id())
-
 	if err != nil {
 		return fmt.Errorf("error listing Organizations Organizational Unit (%s) parents: %w", d.Id(), err)
 	}
@@ -168,7 +167,6 @@ func resourceOrganizationalUnitRead(d *schema.ResourceData, meta interface{}) er
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return fmt.Errorf("error listing Organizations Organizational Unit (%s) accounts: %w", d.Id(), err)
 	}
@@ -182,14 +180,13 @@ func resourceOrganizationalUnitRead(d *schema.ResourceData, meta interface{}) er
 	d.Set("parent_id", parentId)
 
 	tags, err := ListTags(conn, d.Id())
-
 	if err != nil {
 		return fmt.Errorf("error listing tags for Organizations Organizational Unit (%s): %w", d.Id(), err)
 	}
 
 	tags = tags.IgnoreAWS().IgnoreConfig(ignoreTagsConfig)
 
-	//lintignore:AWSR002
+	// lintignore:AWSR002
 	if err := d.Set("tags", tags.RemoveDefaultConfig(defaultTagsConfig).Map()); err != nil {
 		return fmt.Errorf("error setting tags: %w", err)
 	}
@@ -262,7 +259,6 @@ func resourceOrganizationalUnitGetParentID(conn *organizations.Organizations, ch
 
 		return !lastPage
 	})
-
 	if err != nil {
 		return "", err
 	}

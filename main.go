@@ -9,13 +9,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov5/tf5server"
 )
 
-
 func main() {
 	debugFlag := flag.Bool("debug", false, "Start provider in debug mode.")
 	flag.Parse()
 
 	serverFactory, err := provider.ProtoV5ProviderServerFactory(context.Background())
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,7 +33,6 @@ func main() {
 		serverFactory,
 		serveOpts...,
 	)
-
 	if err != nil {
 		log.Fatal(err)
 	}

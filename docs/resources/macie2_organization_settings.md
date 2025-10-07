@@ -51,5 +51,3 @@ resource "awsutils_macie2_organization_settings" "default" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-
-

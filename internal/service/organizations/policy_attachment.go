@@ -54,7 +54,6 @@ func resourcePolicyAttachmentCreate(d *schema.ResourceData, meta interface{}) er
 
 	err := resource.Retry(4*time.Minute, func() *resource.RetryError {
 		_, err := conn.AttachPolicy(input)
-
 		if err != nil {
 			if tfawserr.ErrCodeEquals(err, organizations.ErrCodeFinalizingOrganizationException) {
 				log.Printf("[DEBUG] Trying to create policy attachment again: %q", err.Error())
@@ -103,7 +102,6 @@ func resourcePolicyAttachmentRead(d *schema.ResourceData, meta interface{}) erro
 		}
 		return !lastPage
 	})
-
 	if err != nil {
 		if tfawserr.ErrCodeEquals(err, organizations.ErrCodeTargetNotFoundException) {
 			log.Printf("[WARN] Target does not exist, removing from state: %s", d.Id())

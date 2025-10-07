@@ -151,7 +151,6 @@ func UnsuccessfulItemsError(apiObjects []*ec2.UnsuccessfulItem) error {
 		}
 
 		err := UnsuccessfulItemError(apiObject.Error)
-
 		if err != nil {
 			errors = multierror.Append(errors, fmt.Errorf("%s: %w", aws.StringValue(apiObject.ResourceId), err))
 		}

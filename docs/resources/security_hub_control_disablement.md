@@ -15,10 +15,10 @@ description: |-
 
 Disables a Security Hub control in the configured region.
 
-It can be useful to turn off security checks for controls that are not relevant to your environment. For example, you 
-might use a single Amazon S3 bucket to log your CloudTrail logs. If so, you can turn off controls related to CloudTrail 
-logging in all accounts and Regions except for the account and Region where the centralized S3 bucket is located. 
-Disabling irrelevant controls reduces the number of irrelevant findings. It also removes the failed check from the 
+It can be useful to turn off security checks for controls that are not relevant to your environment. For example, you
+might use a single Amazon S3 bucket to log your CloudTrail logs. If so, you can turn off controls related to CloudTrail
+logging in all accounts and Regions except for the account and Region where the centralized S3 bucket is located.
+Disabling irrelevant controls reduces the number of irrelevant findings. It also removes the failed check from the
 readiness score for the associated standard.
 
 ## Example Usage
@@ -29,7 +29,7 @@ terraform {
     awsutils = {
       source = "cloudposse/awsutils"
       # For local development,
-      # install the provider on local computer by running `make install` from the root of the repo, and uncomment the 
+      # install the provider on local computer by running `make install` from the root of the repo, and uncomment the
       # version below
       # version = "9999.99.99"
     }
@@ -63,5 +63,3 @@ data "aws_caller_identity" "this" {}
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-
-

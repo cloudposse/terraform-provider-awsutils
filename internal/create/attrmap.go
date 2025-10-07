@@ -52,13 +52,11 @@ func (m AttributeMap) ApiAttributesToResourceData(apiAttributes map[string]strin
 			switch t := attributeInfo.tfType; t {
 			case schema.TypeBool:
 				tfAttributeValue, err = strconv.ParseBool(v)
-
 				if err != nil {
 					return fmt.Errorf("error parsing %s value (%s) into boolean: %w", tfAttributeName, v, err)
 				}
 			case schema.TypeInt:
 				tfAttributeValue, err = strconv.Atoi(v)
-
 				if err != nil {
 					return fmt.Errorf("error parsing %s value (%s) into integer: %w", tfAttributeName, v, err)
 				}

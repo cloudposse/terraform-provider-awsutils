@@ -39,18 +39,18 @@ func ValidateTypeStringNullableBool(v interface{}, k string) (ws []string, es []
 	value, ok := v.(string)
 	if !ok {
 		es = append(es, fmt.Errorf("expected type of %s to be string", k))
-		return
+		return ws, es
 	}
 
 	if value == "" {
-		return
+		return ws, es
 	}
 
 	if _, err := strconv.ParseBool(value); err != nil {
 		es = append(es, fmt.Errorf("%s: cannot parse '%s' as boolean: %w", k, value, err))
 	}
 
-	return
+	return ws, es
 }
 
 // DiffSuppressNullableBoolFalseAsNull allows false to be treated equivalently to null.

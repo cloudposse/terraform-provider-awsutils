@@ -44,8 +44,7 @@ func HasResourceUniqueIdPlusAdditionalSuffix(s string, additionalSuffix string) 
 //
 // An expected usage might be:
 //
-//   d.Set("name_prefix", naming.NamePrefixFromName(d.Id()))
-//
+//	d.Set("name_prefix", naming.NamePrefixFromName(d.Id()))
 func NamePrefixFromName(name string) *string {
 	return NamePrefixFromNameWithSuffix(name, "")
 }
@@ -76,7 +75,6 @@ func TestCheckResourceAttrNameWithSuffixFromPrefix(resourceName string, attribut
 	return func(s *terraform.State) error {
 		nameRegexpPattern := resourcePrefixedUniqueIDPlusAdditionalSuffixRegexpPattern(prefix, suffix)
 		attributeMatch, err := regexp.Compile(nameRegexpPattern)
-
 		if err != nil {
 			return fmt.Errorf("Unable to compile name regexp (%s): %w", nameRegexpPattern, err)
 		}

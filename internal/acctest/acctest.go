@@ -58,9 +58,11 @@ const (
 	ResourcePrefix = "tf-acc-test"
 )
 
-const RFC3339RegexPattern = `^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[Tt]([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]+)?([Zz]|([+-]([01][0-9]|2[0-3]):[0-5][0-9]))$`
-const regionRegexp = `[a-z]{2}(-[a-z]+)+-\d`
-const accountIDRegexp = `(aws|aws-managed|\d{12})`
+const (
+	RFC3339RegexPattern = `^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[Tt]([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]+)?([Zz]|([+-]([01][0-9]|2[0-3]):[0-5][0-9]))$`
+	regionRegexp        = `[a-z]{2}(-[a-z]+)+-\d`
+	accountIDRegexp     = `(aws|aws-managed|\d{12})`
+)
 
 // Skip implements a wrapper for (*testing.T).Skip() to prevent unused linting reports
 //
@@ -94,7 +96,6 @@ var testAccProviderConfigure sync.Once
 func init() {
 	var err error
 	Provider, err = provider.New(context.Background())
-
 	if err != nil {
 		panic(err)
 	}
@@ -110,7 +111,6 @@ func protoV5ProviderFactoriesInit(providerNames ...string) map[string]func() (tf
 	for _, name := range providerNames {
 		factories[name] = func() (tfprotov5.ProviderServer, error) {
 			providerServerFactory, err := provider.ProtoV5ProviderServerFactory(context.Background())
-
 			if err != nil {
 				return nil, err
 			}
@@ -124,11 +124,10 @@ func protoV5ProviderFactoriesInit(providerNames ...string) map[string]func() (tf
 
 func factoriesInit(t *testing.T, providers *[]*schema.Provider, providerNames []string) map[string]func() (*schema.Provider, error) {
 	ctx := context.Background()
-	var factories = make(map[string]func() (*schema.Provider, error), len(providerNames))
+	factories := make(map[string]func() (*schema.Provider, error), len(providerNames))
 
 	for _, name := range providerNames {
 		p, err := provider.New(ctx)
-
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -326,7 +325,6 @@ func MatchResourceAttrRegionalARN(resourceName, attributeName, arnService string
 		}.String()
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
-
 		if err != nil {
 			return fmt.Errorf("unable to compile ARN regexp (%s): %w", arnRegexp, err)
 		}
@@ -346,7 +344,6 @@ func MatchResourceAttrRegionalARNNoAccount(resourceName, attributeName, arnServi
 		}.String()
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
-
 		if err != nil {
 			return fmt.Errorf("unable to compile ARN regexp (%s): %s", arnRegexp, err)
 		}
@@ -367,7 +364,6 @@ func MatchResourceAttrRegionalARNAccountID(resourceName, attributeName, arnServi
 		}.String()
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
-
 		if err != nil {
 			return fmt.Errorf("unable to compile ARN regexp (%s): %w", arnRegexp, err)
 		}
@@ -382,7 +378,6 @@ func MatchResourceAttrRegionalHostname(resourceName, attributeName, serviceName 
 		hostnameRegexpPattern := fmt.Sprintf("%s\\.%s\\.%s\\.%s$", hostnamePrefixRegexp.String(), serviceName, Region(), PartitionDNSSuffix())
 
 		hostnameRegexp, err := regexp.Compile(hostnameRegexpPattern)
-
 		if err != nil {
 			return fmt.Errorf("unable to compile hostname regexp (%s): %w", hostnameRegexp, err)
 		}
@@ -397,7 +392,6 @@ func MatchResourceAttrGlobalHostname(resourceName, attributeName, serviceName st
 		hostnameRegexpPattern := fmt.Sprintf("%s\\.%s\\.%s$", hostnamePrefixRegexp.String(), serviceName, PartitionDNSSuffix())
 
 		hostnameRegexp, err := regexp.Compile(hostnameRegexpPattern)
-
 		if err != nil {
 			return fmt.Errorf("unable to compile hostname regexp (%s): %w", hostnameRegexp, err)
 		}
@@ -455,7 +449,6 @@ func MatchResourceAttrGlobalARN(resourceName, attributeName, arnService string, 
 		}.String()
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
-
 		if err != nil {
 			return fmt.Errorf("unable to compile ARN regexp (%s): %w", arnRegexp, err)
 		}
@@ -476,7 +469,6 @@ func CheckResourceAttrRegionalARNIgnoreRegionAndAccount(resourceName, attributeN
 		}.String()
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
-
 		if err != nil {
 			return fmt.Errorf("unable to compile ARN regexp (%s): %w", arnRegexp, err)
 		}
@@ -495,7 +487,6 @@ func MatchResourceAttrGlobalARNNoAccount(resourceName, attributeName, arnService
 		}.String()
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
-
 		if err != nil {
 			return fmt.Errorf("unable to compile ARN regexp (%s): %s", arnRegexp, err)
 		}
@@ -720,13 +711,11 @@ func PreCheckOrganizationsEnabled(t *testing.T) {
 
 func PreCheckOrganizationManagementAccount(t *testing.T) {
 	organization, err := tforganizations.FindOrganization(Provider.Meta().(*conns.AWSClient).OrganizationsConn)
-
 	if err != nil {
 		t.Fatalf("error describing AWS Organization: %s", err)
 	}
 
 	callerIdentity, err := tfsts.FindCallerIdentity(Provider.Meta().(*conns.AWSClient).STSConn)
-
 	if err != nil {
 		t.Fatalf("error getting current identity: %s", err)
 	}
@@ -814,7 +803,7 @@ func PreCheckIAMServiceLinkedRole(t *testing.T, pathPrefix string) {
 }
 
 func ConfigAlternateAccountProvider() string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return fmt.Sprintf(`
 provider "awsalternate" {
   access_key = %[1]q
@@ -842,7 +831,7 @@ func ConfigMultipleRegionProvider(regions int) string {
 }
 
 func ConfigDefaultAndIgnoreTagsKeyPrefixes1(key1, value1, keyPrefix1 string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return fmt.Sprintf(`
 provider "aws" {
   default_tags {
@@ -858,7 +847,7 @@ provider "aws" {
 }
 
 func ConfigDefaultAndIgnoreTagsKeys1(key1, value1 string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return fmt.Sprintf(`
 provider "aws" {
   default_tags {
@@ -874,7 +863,7 @@ provider "aws" {
 }
 
 func ConfigIgnoreTagsKeyPrefixes1(keyPrefix1 string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return fmt.Sprintf(`
 provider "aws" {
   ignore_tags {
@@ -885,7 +874,7 @@ provider "aws" {
 }
 
 func ConfigIgnoreTagsKeys(key1 string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return fmt.Sprintf(`
 provider "aws" {
   ignore_tags {
@@ -899,7 +888,7 @@ provider "aws" {
 //
 // This can be used to build multiple provider configuration testing.
 func ConfigNamedRegionalProvider(providerName string, region string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return fmt.Sprintf(`
 provider %[1]q {
   region = %[2]q
@@ -912,7 +901,7 @@ provider %[1]q {
 // This can only be used for single provider configuration testing as it
 // overwrites the "aws" provider configuration.
 func ConfigRegionalProvider(region string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return fmt.Sprintf(`
 provider "aws" {
   region = %[1]q
@@ -1043,7 +1032,7 @@ func RegisterServiceErrorCheckFunc(endpointID string, f ServiceErrorCheckFunc) {
 
 	if _, ok := serviceErrorCheckFuncs[endpointID]; ok {
 		// already registered
-		panic(fmt.Sprintf("Cannot re-register a service! ServiceErrorCheckFunc exists for %s", endpointID)) //lintignore:R009
+		panic(fmt.Sprintf("Cannot re-register a service! ServiceErrorCheckFunc exists for %s", endpointID)) // lintignore:R009
 	}
 
 	serviceErrorCheckFuncs[endpointID] = f
@@ -1138,7 +1127,7 @@ func PreCheckSkipError(err error) bool {
 }
 
 func ConfigDefaultTags_Tags0() string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return ConfigCompose(
 		testAccProviderConfigBase,
 		`
@@ -1152,7 +1141,7 @@ provider "aws" {
 }
 
 func ConfigDefaultTags_Tags1(tag1, value1 string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return ConfigCompose(
 		testAccProviderConfigBase,
 		fmt.Sprintf(`
@@ -1172,7 +1161,7 @@ provider "aws" {
 }
 
 func ConfigDefaultTags_Tags2(tag1, value1, tag2, value2 string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return ConfigCompose(
 		testAccProviderConfigBase,
 		fmt.Sprintf(`
@@ -1197,7 +1186,7 @@ func PreCheckAssumeRoleARN(t *testing.T) {
 }
 
 func ConfigAssumeRolePolicy(policy string) string {
-	//lintignore:AT004
+	// lintignore:AT004
 	return fmt.Sprintf(`
 provider "aws" {
   assume_role {
@@ -1369,7 +1358,6 @@ func CheckACMPCACertificateAuthorityActivateRootCA(certificateAuthority *acmpca.
 		getCsrOutput, err := conn.GetCertificateAuthorityCsr(&acmpca.GetCertificateAuthorityCsrInput{
 			CertificateAuthorityArn: aws.String(arn),
 		})
-
 		if err != nil {
 			return fmt.Errorf("error getting ACM PCA Certificate Authority (%s) CSR: %w", arn, err)
 		}
@@ -1385,7 +1373,6 @@ func CheckACMPCACertificateAuthorityActivateRootCA(certificateAuthority *acmpca.
 				Value: aws.Int64(10),
 			},
 		})
-
 		if err != nil {
 			return fmt.Errorf("error issuing ACM PCA Certificate Authority (%s) Root CA certificate from CSR: %w", arn, err)
 		}
@@ -1395,7 +1382,6 @@ func CheckACMPCACertificateAuthorityActivateRootCA(certificateAuthority *acmpca.
 			CertificateAuthorityArn: aws.String(arn),
 			CertificateArn:          issueCertOutput.CertificateArn,
 		})
-
 		if err != nil {
 			return fmt.Errorf("error waiting for ACM PCA Certificate Authority (%s) Root CA certificate to become ISSUED: %w", arn, err)
 		}
@@ -1404,7 +1390,6 @@ func CheckACMPCACertificateAuthorityActivateRootCA(certificateAuthority *acmpca.
 			CertificateAuthorityArn: aws.String(arn),
 			CertificateArn:          issueCertOutput.CertificateArn,
 		})
-
 		if err != nil {
 			return fmt.Errorf("error getting ACM PCA Certificate Authority (%s) issued Root CA certificate: %w", arn, err)
 		}
@@ -1413,7 +1398,6 @@ func CheckACMPCACertificateAuthorityActivateRootCA(certificateAuthority *acmpca.
 			CertificateAuthorityArn: aws.String(arn),
 			Certificate:             []byte(aws.StringValue(getCertOutput.Certificate)),
 		})
-
 		if err != nil {
 			return fmt.Errorf("error importing ACM PCA Certificate Authority (%s) Root CA certificate: %w", arn, err)
 		}
@@ -1435,7 +1419,6 @@ func CheckACMPCACertificateAuthorityActivateSubordinateCA(rootCertificateAuthori
 		getCsrOutput, err := conn.GetCertificateAuthorityCsr(&acmpca.GetCertificateAuthorityCsrInput{
 			CertificateAuthorityArn: aws.String(arn),
 		})
-
 		if err != nil {
 			return fmt.Errorf("error getting ACM PCA Certificate Authority (%s) CSR: %w", arn, err)
 		}
@@ -1453,7 +1436,6 @@ func CheckACMPCACertificateAuthorityActivateSubordinateCA(rootCertificateAuthori
 				Value: aws.Int64(3),
 			},
 		})
-
 		if err != nil {
 			return fmt.Errorf("error issuing ACM PCA Certificate Authority (%s) Subordinate CA certificate from CSR: %w", arn, err)
 		}
@@ -1463,7 +1445,6 @@ func CheckACMPCACertificateAuthorityActivateSubordinateCA(rootCertificateAuthori
 			CertificateAuthorityArn: aws.String(rootCertificateAuthorityArn),
 			CertificateArn:          issueCertOutput.CertificateArn,
 		})
-
 		if err != nil {
 			return fmt.Errorf("error waiting for ACM PCA Certificate Authority (%s) Subordinate CA certificate to become ISSUED: %w", arn, err)
 		}
@@ -1472,7 +1453,6 @@ func CheckACMPCACertificateAuthorityActivateSubordinateCA(rootCertificateAuthori
 			CertificateAuthorityArn: aws.String(rootCertificateAuthorityArn),
 			CertificateArn:          issueCertOutput.CertificateArn,
 		})
-
 		if err != nil {
 			return fmt.Errorf("error getting ACM PCA Certificate Authority (%s) issued Subordinate CA certificate: %w", arn, err)
 		}
@@ -1482,7 +1462,6 @@ func CheckACMPCACertificateAuthorityActivateSubordinateCA(rootCertificateAuthori
 			Certificate:             []byte(aws.StringValue(getCertOutput.Certificate)),
 			CertificateChain:        []byte(aws.StringValue(getCertOutput.CertificateChain)),
 		})
-
 		if err != nil {
 			return fmt.Errorf("error importing ACM PCA Certificate Authority (%s) Subordinate CA certificate: %w", arn, err)
 		}
@@ -1522,7 +1501,6 @@ func CheckACMPCACertificateAuthorityExists(n string, certificateAuthority *acmpc
 		}
 
 		output, err := conn.DescribeCertificateAuthority(input)
-
 		if err != nil {
 			return err
 		}
@@ -1618,9 +1596,10 @@ data "aws_availability_zones" "available" {
 // AvailableEC2InstanceTypeForAvailabilityZone returns the configuration for a data source that describes
 // the first available EC2 instance type offering in the specified availability zone from a list of preferred instance types.
 // The first argument is either an Availability Zone name or Terraform configuration reference to one, e.g.
-//   * data.aws_availability_zones.available.names[0]
-//   * aws_subnet.test.availability_zone
-//   * us-west-2a
+//   - data.aws_availability_zones.available.names[0]
+//   - aws_subnet.test.availability_zone
+//   - us-west-2a
+//
 // The data source is named 'available'.
 func AvailableEC2InstanceTypeForAvailabilityZone(availabilityZoneName string, preferredInstanceTypes ...string) string {
 	if !strings.Contains(availabilityZoneName, ".") {
@@ -1905,7 +1884,6 @@ func CheckVPCExists(n string, v *ec2.Vpc) resource.TestCheckFunc {
 		conn := Provider.Meta().(*conns.AWSClient).EC2Conn
 
 		output, err := tfec2.FindVPCByID(conn, rs.Primary.ID)
-
 		if err != nil {
 			return err
 		}
@@ -1960,6 +1938,5 @@ func CheckResourceAttrGreaterThanValue(n, key, value string) resource.TestCheckF
 		}
 
 		return nil
-
 	}
 }

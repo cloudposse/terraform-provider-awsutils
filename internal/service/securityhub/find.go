@@ -56,7 +56,6 @@ func FindSecurityHubControl(conn *securityhub.SecurityHub, controlArn string) (*
 			}
 			return !lastPage
 		})
-
 		if err != nil {
 			return nil, err
 		}

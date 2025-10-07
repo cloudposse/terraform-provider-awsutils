@@ -24,7 +24,6 @@ func ListTagsWithContext(ctx context.Context, conn organizationsiface.Organizati
 	}
 
 	output, err := conn.ListTagsForResourceWithContext(ctx, input)
-
 	if err != nil {
 		return tftags.New(nil), err
 	}
@@ -67,6 +66,7 @@ func KeyValueTags(tags []*organizations.Tag) tftags.KeyValueTags {
 func UpdateTags(conn organizationsiface.OrganizationsAPI, identifier string, oldTags interface{}, newTags interface{}) error {
 	return UpdateTagsWithContext(context.Background(), conn, identifier, oldTags, newTags)
 }
+
 func UpdateTagsWithContext(ctx context.Context, conn organizationsiface.OrganizationsAPI, identifier string, oldTagsMap interface{}, newTagsMap interface{}) error {
 	oldTags := tftags.New(oldTagsMap)
 	newTags := tftags.New(newTagsMap)
@@ -78,7 +78,6 @@ func UpdateTagsWithContext(ctx context.Context, conn organizationsiface.Organiza
 		}
 
 		_, err := conn.UntagResourceWithContext(ctx, input)
-
 		if err != nil {
 			return fmt.Errorf("untagging resource (%s): %w", identifier, err)
 		}
@@ -91,7 +90,6 @@ func UpdateTagsWithContext(ctx context.Context, conn organizationsiface.Organiza
 		}
 
 		_, err := conn.TagResourceWithContext(ctx, input)
-
 		if err != nil {
 			return fmt.Errorf("tagging resource (%s): %w", identifier, err)
 		}

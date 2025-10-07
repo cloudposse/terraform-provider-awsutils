@@ -11,7 +11,7 @@ import (
 func TestFlattenOrganizationalUnits(t *testing.T) {
 	input := []*organizations.OrganizationalUnit{
 		{
-			Arn:  aws.String("arn:aws:organizations::123456789012:ou/o-abcde12345/ou-ab12-abcd1234"), //lintignore:AWSAT005
+			Arn:  aws.String("arn:aws:organizations::123456789012:ou/o-abcde12345/ou-ab12-abcd1234"), // lintignore:AWSAT005
 			Id:   aws.String("ou-ab12-abcd1234"),
 			Name: aws.String("Engineering"),
 		},
@@ -19,7 +19,7 @@ func TestFlattenOrganizationalUnits(t *testing.T) {
 
 	expected_output := []map[string]interface{}{
 		{
-			"arn":  "arn:aws:organizations::123456789012:ou/o-abcde12345/ou-ab12-abcd1234", //lintignore:AWSAT005
+			"arn":  "arn:aws:organizations::123456789012:ou/o-abcde12345/ou-ab12-abcd1234", // lintignore:AWSAT005
 			"id":   "ou-ab12-abcd1234",
 			"name": "Engineering",
 		},

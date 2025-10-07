@@ -19,9 +19,7 @@ const (
 	DurationType durationType = iota
 )
 
-var (
-	_ xattr.TypeWithValidate = DurationType
-)
+var _ xattr.TypeWithValidate = DurationType
 
 func (d durationType) TerraformType(_ context.Context) tftypes.Type {
 	return tftypes.String

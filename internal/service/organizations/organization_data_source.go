@@ -193,7 +193,6 @@ func dataSourceOrganizationRead(d *schema.ResourceData, meta interface{}) error 
 				}
 				return !lastPage
 			})
-
 			if err != nil {
 				return fmt.Errorf("error listing AWS Service Access for Organization (%s): %w", d.Id(), err)
 			}

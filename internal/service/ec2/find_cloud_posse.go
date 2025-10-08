@@ -19,7 +19,6 @@ func FindInternetGatewayForVPC(conn *ec2.EC2, vpcID string) (*ec2.InternetGatewa
 	}
 
 	output, err := conn.DescribeInternetGateways(input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +52,6 @@ func FindSubnetsForVPC(conn *ec2.EC2, vpcID string) ([]*ec2.Subnet, error) {
 	}
 
 	output, err := conn.DescribeSubnets(input)
-
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +77,6 @@ func FindDefaultVpc(conn *ec2.EC2) (*ec2.Vpc, error) {
 	}
 
 	output, err := conn.DescribeVpcs(input)
-
 	if err != nil {
 		return nil, err
 	}

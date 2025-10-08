@@ -16,8 +16,8 @@ func ResourceAwsUtilsGuardDutyOrganizationSettings() *schema.Resource {
 	return &schema.Resource{
 		Description: `Enables a list of accounts as GuardDuty member accounts in an existing AWS Organization.
 
-Designating an account as the GuardDuty Administrator account in an AWS Organization can optionally enable all 
-newly created accounts and accounts that join the organization after the setting is enabled, however it does not 
+Designating an account as the GuardDuty Administrator account in an AWS Organization can optionally enable all
+newly created accounts and accounts that join the organization after the setting is enabled, however it does not
 enable existing accounts. Use this resource to enable a list of existing accounts`,
 		Create:        resourceAwsGuardDutyOrganizationSettingsCreate,
 		Read:          resourceAwsGuardDutyOrganizationSettingsRead,

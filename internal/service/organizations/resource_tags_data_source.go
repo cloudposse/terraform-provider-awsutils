@@ -41,7 +41,6 @@ func dataSourceResourceTagsRead(d *schema.ResourceData, meta interface{}) error 
 
 			return !lastPage
 		})
-
 	if err != nil {
 		return fmt.Errorf("error listing tags for resource (%s): %w", resource_id, err)
 	}

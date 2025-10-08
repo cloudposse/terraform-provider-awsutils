@@ -79,7 +79,6 @@ func dataSourceCallerIdentityRead(d *schema.ResourceData, meta interface{}) erro
 
 	log.Printf("[DEBUG] Reading Caller Identity")
 	res, err := client.GetCallerIdentity(&sts.GetCallerIdentityInput{})
-
 	if err != nil {
 		return fmt.Errorf("getting Caller Identity: %w", err)
 	}

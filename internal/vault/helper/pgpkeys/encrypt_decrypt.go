@@ -53,7 +53,6 @@ func GetFingerprints(pgpKeys []string, entities []*openpgp.Entity) ([]string, er
 	if entities == nil {
 		var err error
 		entities, err = GetEntities(pgpKeys)
-
 		if err != nil {
 			return nil, err
 		}
@@ -112,7 +111,6 @@ func DecryptBytes(encodedCrypt, privKey string) (*bytes.Buffer, error) {
 
 	ptBuf := bytes.NewBuffer(nil)
 	_, err = ptBuf.ReadFrom(md.UnverifiedBody)
-
 	if err != nil {
 		return nil, fmt.Errorf("error reading the messages: %w", err)
 	}

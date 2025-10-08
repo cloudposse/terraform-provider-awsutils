@@ -2,14 +2,15 @@ package provider
 
 import (
 	"context"
-	"github.com/cloudposse/terraform-provider-awsutils/internal/service/sts"
-	"github.com/hashicorp/aws-sdk-go-base/v2/servicemocks"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"io"
 	"log"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/cloudposse/terraform-provider-awsutils/internal/service/sts"
+	"github.com/hashicorp/aws-sdk-go-base/v2/servicemocks"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/cloudposse/terraform-provider-awsutils/names"
 	"github.com/hashicorp/aws-sdk-go-base/v2/mockdata"
@@ -102,7 +103,6 @@ func TestProviderConfig(t *testing.T) {
 			t.Errorf("Expected %s to be %q, got %q", k, expected, v)
 		}
 	}
-
 }
 
 func TestExpandEndpoints(t *testing.T) {

@@ -75,14 +75,12 @@ func DataSourceIPRanges() *schema.Resource {
 }
 
 func dataSourceIPRangesRead(d *schema.ResourceData, meta interface{}) error {
-
 	conn := cleanhttp.DefaultClient()
 	url := d.Get("url").(string)
 
 	log.Printf("[DEBUG] Reading IP ranges from %s", url)
 
 	res, err := conn.Get(url)
-
 	if err != nil {
 		return fmt.Errorf("Error listing IP ranges from (%s): %w", url, err)
 	}
@@ -90,7 +88,6 @@ func dataSourceIPRangesRead(d *schema.ResourceData, meta interface{}) error {
 	defer res.Body.Close()
 
 	data, err := io.ReadAll(res.Body)
-
 	if err != nil {
 		return fmt.Errorf("Error reading response body from (%s): %w", url, err)
 	}
@@ -106,7 +103,6 @@ func dataSourceIPRangesRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	syncToken, err := strconv.Atoi(result.SyncToken)
-
 	if err != nil {
 		return fmt.Errorf("Error while converting sync token: %w", err)
 	}
@@ -118,7 +114,6 @@ func dataSourceIPRangesRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	get := func(key string) *schema.Set {
-
 		set := d.Get(key).(*schema.Set)
 
 		for _, e := range set.List() {
@@ -131,7 +126,6 @@ func dataSourceIPRangesRead(d *schema.ResourceData, meta interface{}) error {
 		}
 
 		return set
-
 	}
 
 	var (
@@ -173,5 +167,4 @@ func dataSourceIPRangesRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	return nil
-
 }

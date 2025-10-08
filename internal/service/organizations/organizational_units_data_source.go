@@ -59,7 +59,6 @@ func dataSourceOrganizationalUnitsRead(d *schema.ResourceData, meta interface{})
 
 			return !lastPage
 		})
-
 	if err != nil {
 		return fmt.Errorf("error listing Organizations Organization Units for parent (%s): %w", parent_id, err)
 	}

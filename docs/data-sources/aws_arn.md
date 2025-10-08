@@ -3,7 +3,7 @@
 page_title: "aws_arn Data Source - terraform-provider-awsutils"
 subcategory: ""
 description: |-
-  
+
 ---
 
 # aws_arn (Data Source)
@@ -27,5 +27,3 @@ description: |-
 - `region` (String)
 - `resource` (String)
 - `service` (String)
-
-

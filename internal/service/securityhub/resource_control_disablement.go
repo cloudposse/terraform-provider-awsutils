@@ -14,10 +14,10 @@ func ResourceSecurityHubControlDisablement() *schema.Resource {
 	return &schema.Resource{
 		Description: `Disables a Security Hub control in the configured region.
 
-It can be useful to turn off security checks for controls that are not relevant to your environment. For example, you 
-might use a single Amazon S3 bucket to log your CloudTrail logs. If so, you can turn off controls related to CloudTrail 
-logging in all accounts and Regions except for the account and Region where the centralized S3 bucket is located. 
-Disabling irrelevant controls reduces the number of irrelevant findings. It also removes the failed check from the 
+It can be useful to turn off security checks for controls that are not relevant to your environment. For example, you
+might use a single Amazon S3 bucket to log your CloudTrail logs. If so, you can turn off controls related to CloudTrail
+logging in all accounts and Regions except for the account and Region where the centralized S3 bucket is located.
+Disabling irrelevant controls reduces the number of irrelevant findings. It also removes the failed check from the
 readiness score for the associated standard.`,
 		Create:        resourceAwsSecurityHubControlDisablementCreate,
 		Read:          resourceAwsSecurityHubControlDisablementRead,

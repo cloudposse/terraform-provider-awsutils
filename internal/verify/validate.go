@@ -13,9 +13,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-var accountIDRegexp = regexp.MustCompile(`^(aws|\d{12})$`)
-var partitionRegexp = regexp.MustCompile(`^aws(-[a-z]+)*$`)
-var regionRegexp = regexp.MustCompile(`^[a-z]{2}(-[a-z]+)+-\d$`)
+var (
+	accountIDRegexp = regexp.MustCompile(`^(aws|\d{12})$`)
+	partitionRegexp = regexp.MustCompile(`^aws(-[a-z]+)*$`)
+	regionRegexp    = regexp.MustCompile(`^[a-z]{2}(-[a-z]+)+-\d$`)
+)
 
 func ValidARN(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
@@ -25,7 +27,6 @@ func ValidARN(v interface{}, k string) (ws []string, errors []error) {
 	}
 
 	parsedARN, err := arn.Parse(value)
-
 	if err != nil {
 		errors = append(errors, fmt.Errorf("%q (%s) is an invalid ARN: %s", k, value, err))
 		return ws, errors
@@ -63,7 +64,7 @@ func ValidAccountID(v interface{}, k string) (ws []string, errors []error) {
 			k, value))
 	}
 
-	return
+	return ws, errors
 }
 
 // validateCIDRBlock validates that the specified CIDR block is valid:
@@ -87,10 +88,10 @@ func validateCIDRBlock(cidr string) error {
 func ValidCIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := validateCIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
-		return
+		return ws, errors
 	}
 
-	return
+	return ws, errors
 }
 
 func ValidIAMPolicyJSON(v interface{}, k string) (ws []string, errors []error) {
@@ -98,16 +99,16 @@ func ValidIAMPolicyJSON(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
 	if len(value) < 1 {
 		errors = append(errors, fmt.Errorf("%q contains an invalid JSON policy", k))
-		return
+		return ws, errors
 	}
 	if value[:1] != "{" {
 		errors = append(errors, fmt.Errorf("%q contains an invalid JSON policy", k))
-		return
+		return ws, errors
 	}
 	if _, err := structure.NormalizeJsonString(v); err != nil {
 		errors = append(errors, fmt.Errorf("%q contains an invalid JSON: %s", k, err))
 	}
-	return
+	return ws, errors
 }
 
 // ValidateIPv4CIDRBlock validates that the specified CIDR block is valid:
@@ -159,10 +160,10 @@ func ValidateIPv6CIDRBlock(cidr string) error {
 func ValidIPv4CIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := ValidateIPv4CIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
-		return
+		return ws, errors
 	}
 
-	return
+	return ws, errors
 }
 
 // ValidIPv6CIDRNetworkAddress ensures that the string value is a valid IPv6 CIDR that
@@ -170,10 +171,10 @@ func ValidIPv4CIDRNetworkAddress(v interface{}, k string) (ws []string, errors [
 func ValidIPv6CIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := ValidateIPv6CIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
-		return
+		return ws, errors
 	}
 
-	return
+	return ws, errors
 }
 
 func ValidLaunchTemplateID(v interface{}, k string) (ws []string, errors []error) {
@@ -186,7 +187,7 @@ func ValidLaunchTemplateID(v interface{}, k string) (ws []string, errors []error
 		errors = append(errors, fmt.Errorf(
 			"%q must begin with 'lt-' and be comprised of only alphanumeric characters: %v", k, value))
 	}
-	return
+	return ws, errors
 }
 
 func ValidLaunchTemplateName(v interface{}, k string) (ws []string, errors []error) {
@@ -200,7 +201,7 @@ func ValidLaunchTemplateName(v interface{}, k string) (ws []string, errors []err
 	} else if !regexp.MustCompile(`^[0-9a-zA-Z()./_\-]+$`).MatchString(value) {
 		errors = append(errors, fmt.Errorf("%q can only alphanumeric characters and ()./_- symbols", k))
 	}
-	return
+	return ws, errors
 }
 
 func ValidOnceADayWindowFormat(v interface{}, k string) (ws []string, errors []error) {
@@ -213,7 +214,7 @@ func ValidOnceADayWindowFormat(v interface{}, k string) (ws []string, errors []e
 		errors = append(errors, fmt.Errorf(
 			"%q must satisfy the format of \"hh24:mi-hh24:mi\".", k))
 	}
-	return
+	return ws, errors
 }
 
 func ValidOnceAWeekWindowFormat(v interface{}, k string) (ws []string, errors []error) {
@@ -226,7 +227,7 @@ func ValidOnceAWeekWindowFormat(v interface{}, k string) (ws []string, errors []
 		errors = append(errors, fmt.Errorf(
 			"%q must satisfy the format of \"ddd:hh24:mi-ddd:hh24:mi\".", k))
 	}
-	return
+	return ws, errors
 }
 
 func ValidStringIsJSONOrYAML(v interface{}, k string) (ws []string, errors []error) {
@@ -239,7 +240,7 @@ func ValidStringIsJSONOrYAML(v interface{}, k string) (ws []string, errors []err
 			errors = append(errors, fmt.Errorf("%q contains an invalid YAML: %s", k, err))
 		}
 	}
-	return
+	return ws, errors
 }
 
 // ValidTypeStringNullableBoolean provides custom error messaging for TypeString booleans
@@ -251,17 +252,17 @@ func ValidTypeStringNullableBoolean(v interface{}, k string) (ws []string, es []
 	value, ok := v.(string)
 	if !ok {
 		es = append(es, fmt.Errorf("expected type of %s to be string", k))
-		return
+		return ws, es
 	}
 
 	for _, str := range []string{"", "0", "1", "false", "true"} {
 		if value == str {
-			return
+			return ws, es
 		}
 	}
 
 	es = append(es, fmt.Errorf("expected %s to be one of [\"\", false, true], got %s", k, value))
-	return
+	return ws, es
 }
 
 // ValidTypeStringNullableFloat provides custom error messaging for TypeString floats
@@ -270,18 +271,18 @@ func ValidTypeStringNullableFloat(v interface{}, k string) (ws []string, es []er
 	value, ok := v.(string)
 	if !ok {
 		es = append(es, fmt.Errorf("expected type of %s to be string", k))
-		return
+		return ws, es
 	}
 
 	if value == "" {
-		return
+		return ws, es
 	}
 
 	if _, err := strconv.ParseFloat(value, 64); err != nil {
 		es = append(es, fmt.Errorf("%s: cannot parse '%s' as float: %s", k, value, err))
 	}
 
-	return
+	return ws, es
 }
 
 // ValidUTCTimestamp validates a string in UTC Format required by APIs including:
@@ -293,7 +294,7 @@ func ValidUTCTimestamp(v interface{}, k string) (ws []string, errors []error) {
 	if err != nil {
 		errors = append(errors, fmt.Errorf("%q must be in RFC3339 time format %q. Example: %s", k, time.RFC3339, err))
 	}
-	return
+	return ws, errors
 }
 
 var ValidStringDateOrPositiveInt = validation.Any(

@@ -19,9 +19,7 @@ const (
 	ARNType arnType = iota
 )
 
-var (
-	_ xattr.TypeWithValidate = ARNType
-)
+var _ xattr.TypeWithValidate = ARNType
 
 func (t arnType) TerraformType(_ context.Context) tftypes.Type {
 	return tftypes.String

@@ -12,17 +12,16 @@ import (
 // and is within a minimum of 15 minutes and maximum of 12 hours
 func validAssumeRoleDuration(v interface{}, k string) (ws []string, errors []error) {
 	duration, err := time.ParseDuration(v.(string))
-
 	if err != nil {
 		errors = append(errors, fmt.Errorf("%q cannot be parsed as a duration: %w", k, err))
-		return
+		return ws, errors
 	}
 
 	if duration.Minutes() < 15 || duration.Hours() > 12 {
 		errors = append(errors, fmt.Errorf("duration %q must be between 15 minutes (15m) and 12 hours (12h), inclusive", k))
 	}
 
-	return
+	return ws, errors
 }
 
 var validAssumeRoleSessionName = validation.All(

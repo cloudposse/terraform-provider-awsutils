@@ -40,7 +40,6 @@ func ResourceExpiringAccessKey() *schema.Resource {
 				}
 
 				output, err := conn.GetAccessKeyLastUsed(input)
-
 				if err != nil {
 					return nil, fmt.Errorf("error fetching IAM Access Key (%s) username via GetAccessKeyLastUsed: %w", d.Id(), err)
 				}
@@ -121,7 +120,6 @@ func resourceAccessKeyDiff(ctx context.Context, d *schema.ResourceDiff, meta int
 	if v, ok := d.GetOk("expiration_date"); ok {
 		now := time.Now().UTC()
 		rotationTimestamp, err := time.Parse(time.RFC3339, v.(string))
-
 		if err != nil {
 			return fmt.Errorf("error parsing expiration_date (%s): %s", v.(string), err)
 		}
@@ -198,7 +196,6 @@ func resourceAccessKeyCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 
 		_, err := conn.UpdateAccessKey(input)
-
 		if err != nil {
 			return fmt.Errorf("error deactivating IAM Access Key (%s): %w", d.Id(), err)
 		}

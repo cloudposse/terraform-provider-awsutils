@@ -78,9 +78,9 @@ func SuppressEquivalentTypeStringBoolean(k, old, new string, d *schema.ResourceD
 }
 
 // SuppressMissingOptionalConfigurationBlock handles configuration block attributes in the following scenario:
-//  * The resource schema includes an optional configuration block with defaults
-//  * The API response includes those defaults to refresh into the Terraform state
-//  * The operator's configuration omits the optional configuration block
+//   - The resource schema includes an optional configuration block with defaults
+//   - The API response includes those defaults to refresh into the Terraform state
+//   - The operator's configuration omits the optional configuration block
 func SuppressMissingOptionalConfigurationBlock(k, old, new string, d *schema.ResourceData) bool {
 	return old == "1" && new == "0"
 }
@@ -101,14 +101,12 @@ func SuppressEquivalentJSONDiffs(k, old, new string, d *schema.ResourceData) boo
 
 func SuppressEquivalentJSONOrYAMLDiffs(k, old, new string, d *schema.ResourceData) bool {
 	normalizedOld, err := NormalizeJSONOrYAMLString(old)
-
 	if err != nil {
 		log.Printf("[WARN] Unable to normalize Terraform state CloudFormation template body: %s", err)
 		return false
 	}
 
 	normalizedNew, err := NormalizeJSONOrYAMLString(new)
-
 	if err != nil {
 		log.Printf("[WARN] Unable to normalize Terraform configuration CloudFormation template body: %s", err)
 		return false

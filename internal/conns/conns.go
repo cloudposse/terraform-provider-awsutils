@@ -14,7 +14,6 @@ import (
 
 func NewSessionForRegion(cfg *aws.Config, region, terraformVersion string) (*session.Session, error) {
 	session, err := session.NewSession(cfg)
-
 	if err != nil {
 		return nil, err
 	}

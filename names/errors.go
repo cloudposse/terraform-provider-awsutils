@@ -28,7 +28,6 @@ const (
 // ProblemStandardMessage is a standardized message for reporting errors and warnings
 func ProblemStandardMessage(service, action, resource, id string, gotError error) string {
 	hf, err := FullHumanFriendly(service)
-
 	if err != nil {
 		return fmt.Sprintf("finding human-friendly name for service (%s) while creating error (%s, %s, %s, %s): %s", service, action, resource, id, gotError, err)
 	}

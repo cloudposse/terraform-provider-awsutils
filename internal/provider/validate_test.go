@@ -27,14 +27,12 @@ func TestValidAssumeRoleDuration(t *testing.T) {
 			expectedErr: regexp.MustCompile(`must be between 15 minutes \(15m\) and 12 hours \(12h\)`),
 		},
 		{
-
 			val: "15m",
 		},
 		{
 			val: "1h10m10s",
 		},
 		{
-
 			val: "12h",
 		},
 	}

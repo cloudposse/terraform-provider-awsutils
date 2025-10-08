@@ -22,5 +22,3 @@ Passthru for configuring and executing `aws ec2 export-client-vpn-client-configu
 ### Read-Only
 
 - `client_configuration` (String) Output from 'export-client-vpn-client-configuration' call
-
-

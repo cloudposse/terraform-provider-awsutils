@@ -9,7 +9,6 @@ func FindCallerIdentity(conn *sts.STS) (*sts.GetCallerIdentityOutput, error) {
 	input := &sts.GetCallerIdentityInput{}
 
 	output, err := conn.GetCallerIdentity(input)
-
 	if err != nil {
 		return nil, err
 	}

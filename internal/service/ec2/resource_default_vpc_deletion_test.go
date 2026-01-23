@@ -89,8 +89,8 @@ func TestGetEC2ConnForRegion_UsesResourceRegion(t *testing.T) {
 		t.Error("expected a new EC2 client when region is specified, got provider's EC2Conn")
 	}
 
-	if *conn.Config.Region != resourceRegion {
-		t.Errorf("expected EC2 client region %q, got %q", resourceRegion, *conn.Config.Region)
+	if aws.StringValue(conn.Config.Region) != resourceRegion {
+		t.Errorf("expected EC2 client region %q, got %q", resourceRegion, aws.StringValue(conn.Config.Region))
 	}
 }
 

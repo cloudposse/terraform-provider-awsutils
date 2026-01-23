@@ -15,7 +15,7 @@ const noDefaultVPC string = "no-default-vpc-found"
 func ResourceDefaultVpcDeletion() *schema.Resource {
 	return &schema.Resource{
 		Description: `Deletes the default VPC along with the child resources of the VPC including Subnets, Route Tables, NACLs and Internet
-Gateways in the configured region.
+Gateways in the specified region.
 
 Best-practices call for not using the default VPC, but rather, creating a new set of VPCs as necessary. AWS Security
 Hub will flag the default VPCs as non-compliant if they aren't configured with best-practices. Rather than jumping
@@ -30,6 +30,13 @@ deletion and nothing will be restored when ` + "`terraform destroy`" + ` is run.
 		Delete:        resourceDefaultVpcDeletionDelete,
 		SchemaVersion: 1,
 		Schema: map[string]*schema.Schema{
+			"region": {
+				Description: "The region to delete the default VPC from. If not specified, uses the provider's region.",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				ForceNew:    true,
+			},
 			"id": {
 				Description: "The ID of the VPC that was deleted.",
 				Type:        schema.TypeString,
@@ -39,9 +46,37 @@ deletion and nothing will be restored when ` + "`terraform destroy`" + ` is run.
 	}
 }
 
-func resourceDefaultVpcDeletionCreate(d *schema.ResourceData, meta interface{}) error {
-	conn := meta.(*conns.AWSClient).EC2Conn
-	var vpc *ec2.Vpc
+// getEC2ConnForRegion returns an EC2 connection for the specified region,
+// or the default connection if no region is specified.
+func getEC2ConnForRegion(d *schema.ResourceData, meta any) (*ec2.EC2, string, error) {
+	client := meta.(*conns.AWSClient)
+
+	// Check if region is explicitly set on the resource
+	if v, ok := d.GetOk("region"); ok && v.(string) != "" {
+		region := v.(string)
+		log.Printf("[DEBUG] Creating EC2 client for account %s in region %s", client.AccountID, region)
+		// Create a new EC2 client for the specified region
+		sess, err := conns.NewSessionForRegion(client.Session.Config, region, client.TerraformVersion)
+		if err != nil {
+			return nil, "", fmt.Errorf("error creating session for region %s: %w", region, err)
+		}
+		return ec2.New(sess), region, nil
+	}
+
+	// Use the provider's default region
+	return client.EC2Conn, client.Region, nil
+}
+
+func resourceDefaultVpcDeletionCreate(d *schema.ResourceData, meta any) error {
+	conn, region, err := getEC2ConnForRegion(d, meta)
+	if err != nil {
+		return err
+	}
+
+	// Store the region in state
+	if err := d.Set("region", region); err != nil {
+		return fmt.Errorf("error setting region: %w", err)
+	}
 
 	vpc, err := FindDefaultVpc(conn)
 	if err != nil {
@@ -54,6 +89,7 @@ func resourceDefaultVpcDeletionCreate(d *schema.ResourceData, meta interface{}) 
 	}
 
 	vpcid := aws.StringValue(vpc.VpcId)
+	log.Printf("[INFO] Deleting default VPC %s in account %s region %s", vpcid, meta.(*conns.AWSClient).AccountID, region)
 
 	if err = deleteInternetGateway(conn, vpcid); err != nil {
 		return err
@@ -72,9 +108,11 @@ func resourceDefaultVpcDeletionCreate(d *schema.ResourceData, meta interface{}) 
 	return resourceDefaultVpcDeletionRead(d, meta)
 }
 
-func resourceDefaultVpcDeletionRead(d *schema.ResourceData, meta interface{}) error {
-	conn := meta.(*conns.AWSClient).EC2Conn
-	var vpc *ec2.Vpc
+func resourceDefaultVpcDeletionRead(d *schema.ResourceData, meta any) error {
+	conn, _, err := getEC2ConnForRegion(d, meta)
+	if err != nil {
+		return err
+	}
 
 	vpc, err := FindDefaultVpc(conn)
 	if err != nil {
@@ -88,7 +126,7 @@ func resourceDefaultVpcDeletionRead(d *schema.ResourceData, meta interface{}) er
 	return nil
 }
 
-func resourceDefaultVpcDeletionDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceDefaultVpcDeletionDelete(d *schema.ResourceData, meta any) error {
 	log.Printf("[INFO] Removing default VPC deletion state")
 	return nil
 }

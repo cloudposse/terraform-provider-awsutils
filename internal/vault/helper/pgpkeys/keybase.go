@@ -3,6 +3,7 @@ package pgpkeys
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -15,6 +16,15 @@ const (
 	kbPrefix = "keybase:"
 )
 
+var (
+	errNoHTTPClient            = errors.New("unable to create an http client")
+	errNonOKResponse           = errors.New("got non-OK response")
+	errPrimaryKeyParseFailed   = errors.New("primary key could not be parsed for user")
+	errPrimaryKeyNil           = errors.New("primary key was nil for user")
+	errKeybaseFetchFailed      = errors.New("unable to fetch keys for user(s) from keybase")
+	errPGPInputKeysMismatch    = errors.New("mismatch between number items to encrypt and number of PGP keys")
+)
+
 // FetchKeybasePubkeys fetches public keys from Keybase given a set of
 // usernames, which are derived from correctly formatted input entries. It
 // doesn't use their client code due to both the API and the fact that it is
@@ -23,7 +33,7 @@ const (
 func FetchKeybasePubkeys(input []string) (map[string]string, error) {
 	client := cleanhttp.DefaultClient()
 	if client == nil {
-		return nil, fmt.Errorf("unable to create an http client")
+		return nil, errNoHTTPClient
 	}
 
 	if len(input) == 0 {
@@ -75,7 +85,7 @@ func FetchKeybasePubkeys(input []string) (map[string]string, error) {
 	}
 
 	if out.Status.Name != "OK" {
-		return nil, fmt.Errorf("got non-OK response: %q", out.Status.Name)
+		return nil, fmt.Errorf("%w: %q", errNonOKResponse, out.Status.Name)
 	}
 
 	missingNames := make([]string, 0, len(usernames))
@@ -92,10 +102,10 @@ func FetchKeybasePubkeys(input []string) (map[string]string, error) {
 			return nil, err
 		}
 		if len(entityList) != 1 {
-			return nil, fmt.Errorf("primary key could not be parsed for user %q", usernames[i])
+			return nil, fmt.Errorf("%w: %q", errPrimaryKeyParseFailed, usernames[i])
 		}
 		if entityList[0] == nil {
-			return nil, fmt.Errorf("primary key was nil for user %q", usernames[i])
+			return nil, fmt.Errorf("%w: %q", errPrimaryKeyNil, usernames[i])
 		}
 
 		serializedEntity.Reset()
@@ -109,7 +119,7 @@ func FetchKeybasePubkeys(input []string) (map[string]string, error) {
 	}
 
 	if len(missingNames) > 0 {
-		return nil, fmt.Errorf("unable to fetch keys for user(s) %q from keybase", strings.Join(missingNames, ","))
+		return nil, fmt.Errorf("%w: %q", errKeybaseFetchFailed, strings.Join(missingNames, ","))
 	}
 
 	return ret, nil

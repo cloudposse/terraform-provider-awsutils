@@ -2,6 +2,7 @@ package organizations
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -15,6 +16,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
+
+var errInvalidDelegatedAdminID = errors.New("expected ID in the form of account_id/service_principal")
 
 func ResourceDelegatedAdministrator() *schema.Resource {
 	return &schema.Resource{
@@ -172,7 +175,7 @@ func resourceDelegatedAdministratorDelete(ctx context.Context, d *schema.Resourc
 func DecodeOrganizationDelegatedAdministratorID(id string) (string, string, error) {
 	idParts := strings.Split(id, "/")
 	if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-		return "", "", fmt.Errorf("expected ID in the form of account_id/service_principal, given: %q", id)
+		return "", "", fmt.Errorf("%w, given: %q", errInvalidDelegatedAdminID, id)
 	}
 	return idParts[0], idParts[1], nil
 }

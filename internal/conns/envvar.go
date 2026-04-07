@@ -1,10 +1,16 @@
 package conns
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/mitchellh/go-testing-interface"
+)
+
+var (
+	errEnvVarRequiredOneOf = errors.New("at least one environment variable must be set")
+	errEnvVarRequired      = errors.New("environment variable must be set")
 )
 
 // Standard AWS environment variables used in the Terraform AWS Provider testing.
@@ -95,7 +101,7 @@ func RequireOneOfEnvVar(names []string, usageMessage string) (string, string, er
 		}
 	}
 
-	return "", "", fmt.Errorf("at least one environment variable of %v must be set. Usage: %s", names, usageMessage)
+	return "", "", fmt.Errorf("%w: of %v. Usage: %s", errEnvVarRequiredOneOf, names, usageMessage)
 }
 
 // RequireEnvVar verifies that an environment variable is non-empty or returns an error.
@@ -103,7 +109,7 @@ func RequireEnvVar(name string, usageMessage string) (string, error) {
 	value := os.Getenv(name)
 
 	if value == "" {
-		return "", fmt.Errorf("environment variable %s must be set. Usage: %s", name, usageMessage)
+		return "", fmt.Errorf("%w: %s. Usage: %s", errEnvVarRequired, name, usageMessage)
 	}
 
 	return value, nil

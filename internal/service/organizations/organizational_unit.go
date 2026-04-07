@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"regexp"
@@ -16,6 +17,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+)
+
+var (
+	errOUEmptyResponse        = errors.New("empty response")
+	errOUNotFoundAfterCreate  = errors.New("not found after creation")
 )
 
 func ResourceOrganizationalUnit() *schema.Resource {
@@ -138,13 +144,13 @@ func resourceOrganizationalUnitRead(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if resp == nil {
-		return fmt.Errorf("error reading Organizations Organizational Unit (%s): empty response", d.Id())
+		return fmt.Errorf("error reading Organizations Organizational Unit (%s): %w", d.Id(), errOUEmptyResponse)
 	}
 
 	ou := resp.OrganizationalUnit
 	if ou == nil {
 		if d.IsNewResource() {
-			return fmt.Errorf("error reading Organizations Organizational Unit (%s): not found after creation", d.Id())
+			return fmt.Errorf("error reading Organizations Organizational Unit (%s): %w", d.Id(), errOUNotFoundAfterCreate)
 		}
 
 		log.Printf("[WARN] Organizations Organizational Unit (%s) does not exist, removing from state", d.Id())

@@ -19,6 +19,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+var errAccountCreateFailed = errors.New("account create failed")
+
 func ResourceAccount() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceAccountCreate,
@@ -436,7 +438,7 @@ func waitAccountCreated(conn *organizations.Organizations, id string) (*organiza
 
 	if output, ok := outputRaw.(*organizations.CreateAccountStatus); ok {
 		if state := aws.StringValue(output.State); state == organizations.CreateAccountStateFailed {
-			tfresource.SetLastError(err, errors.New(aws.StringValue(output.FailureReason)))
+			tfresource.SetLastError(err, fmt.Errorf("%w: %s", errAccountCreateFailed, aws.StringValue(output.FailureReason)))
 		}
 
 		return output, err

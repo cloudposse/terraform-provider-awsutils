@@ -61,7 +61,7 @@ func resourceAwsSecurityHubControlDisablementCreate(d *schema.ResourceData, meta
 	}
 
 	if _, err := conn.UpdateStandardsControl(input); err != nil {
-		return fmt.Errorf("error disabling security hub control %s: %s", controlArn, err)
+		return fmt.Errorf("error disabling security hub control %s: %w", controlArn, err)
 	}
 
 	d.SetId(controlArn)
@@ -75,7 +75,7 @@ func resourceAwsSecurityHubControlDisablementRead(d *schema.ResourceData, meta i
 
 	control, err := FindSecurityHubControl(conn, controlArn)
 	if err != nil {
-		return fmt.Errorf("error reading security hub control %s: %s", controlArn, err)
+		return fmt.Errorf("error reading security hub control %s: %w", controlArn, err)
 	}
 	log.Printf("[DEBUG] Received Security Hub Control: %s", control)
 
@@ -106,7 +106,7 @@ func resourceAwsSecurityHubControlDisablementUpdate(d *schema.ResourceData, meta
 		}
 
 		if _, err := conn.UpdateStandardsControl(input); err != nil {
-			return fmt.Errorf("error disabling security hub control %s: %s", controlArn, err)
+			return fmt.Errorf("error disabling security hub control %s: %w", controlArn, err)
 		}
 	}
 
@@ -124,7 +124,7 @@ func resourceAwsSecurityHubControlDisablementDelete(d *schema.ResourceData, meta
 	}
 
 	if _, err := conn.UpdateStandardsControl(input); err != nil {
-		return fmt.Errorf("error updating security hub control %s: %s", controlArn, err)
+		return fmt.Errorf("error updating security hub control %s: %w", controlArn, err)
 	}
 
 	return nil

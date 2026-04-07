@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -14,6 +15,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
+var errInvalidPolicyAttachmentID = errors.New("expected ID in format of TARGETID:POLICYID")
 
 func ResourcePolicyAttachment() *schema.Resource {
 	return &schema.Resource{
@@ -156,7 +159,7 @@ func resourcePolicyAttachmentDelete(d *schema.ResourceData, meta interface{}) er
 func DecodePolicyAttachmentID(id string) (string, string, error) {
 	idParts := strings.Split(id, ":")
 	if len(idParts) != 2 {
-		return "", "", fmt.Errorf("expected ID in format of TARGETID:POLICYID, received: %s", id)
+		return "", "", fmt.Errorf("%w, received: %s", errInvalidPolicyAttachmentID, id)
 	}
 	return idParts[0], idParts[1], nil
 }

@@ -2,6 +2,7 @@ package organizations
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -18,6 +19,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
+
+var errAWSManagedPolicyImport = errors.New("AWS-managed Organizations policy cannot be imported. Use the policy ID directly in your configuration")
 
 func ResourcePolicy() *schema.Resource {
 	return &schema.Resource{
@@ -244,7 +247,7 @@ func resourcePolicyImport(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	if aws.BoolValue(resp.Policy.PolicySummary.AwsManaged) {
-		return nil, fmt.Errorf("AWS-managed Organizations policy (%s) cannot be imported. Use the policy ID directly in your configuration.", d.Id())
+		return nil, fmt.Errorf("%w: %s", errAWSManagedPolicyImport, d.Id())
 	}
 
 	return []*schema.ResourceData{d}, nil

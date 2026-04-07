@@ -25,6 +25,11 @@ const (
 	ErrActionWaitingForUpdate     = "waiting for update"
 )
 
+var (
+	errProviderError              = errors.New("provider error")
+	errNotFoundRemovingFromState  = errors.New("not found, removing from state")
+)
+
 // ProblemStandardMessage is a standardized message for reporting errors and warnings.
 func ProblemStandardMessage(service, action, resource, id string, gotError error) string {
 	hf, err := FullHumanFriendly(service)
@@ -41,7 +46,7 @@ func ProblemStandardMessage(service, action, resource, id string, gotError error
 
 // Error returns an errors.Error with a standardized error message.
 func Error(service, action, resource, id string, gotError error) error {
-	return errors.New(ProblemStandardMessage(service, action, resource, id, gotError))
+	return fmt.Errorf("%w: %s", errProviderError, ProblemStandardMessage(service, action, resource, id, gotError))
 }
 
 // DiagError returns a 1-length diag.Diagnostics with a diag.Error-level diag.Diagnostic
@@ -58,7 +63,7 @@ func DiagError(service, action, resource, id string, gotError error) diag.Diagno
 // ErrorSetting returns an errors.Error with a standardized error message when setting
 // arguments and attributes values.
 func ErrorSetting(service, resource, id, argument string, gotError error) error {
-	return errors.New(ProblemStandardMessage(service, fmt.Sprintf("%s %s", ErrActionSetting, argument), resource, id, gotError))
+	return fmt.Errorf("%w: %s", errProviderError, ProblemStandardMessage(service, fmt.Sprintf("%s %s", ErrActionSetting, argument), resource, id, gotError))
 }
 
 // DiagErrorSetting returns an errors.Error with a standardized error message when setting
@@ -84,7 +89,7 @@ func AddWarningNotFoundRemoveState(service, action, resource, id string) diag.Di
 	return append(diag.Diagnostics{},
 		diag.Diagnostic{
 			Severity: diag.Warning,
-			Summary:  ProblemStandardMessage(service, action, resource, id, errors.New("not found, removing from state")),
+			Summary:  ProblemStandardMessage(service, action, resource, id, errNotFoundRemovingFromState),
 		},
 	)
 }
@@ -95,5 +100,5 @@ func WarnLog(service, action, resource, id string, gotError error) {
 }
 
 func LogNotFoundRemoveState(service, action, resource, id string) {
-	WarnLog(service, action, resource, id, errors.New("not found, removing from state"))
+	WarnLog(service, action, resource, id, errNotFoundRemovingFromState)
 }

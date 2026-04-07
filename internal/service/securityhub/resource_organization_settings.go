@@ -72,7 +72,9 @@ func resourceAwsSecurityHubOrganizationSettingsRead(d *schema.ResourceData, meta
 		return fmt.Errorf("error reading security hub organization settings: %s", err)
 	}
 
-	d.Set("auto_enable_new_accounts", enabled)
+	if err := d.Set("auto_enable_new_accounts", enabled); err != nil {
+		return fmt.Errorf("error setting auto_enable_new_accounts: %w", err)
+	}
 
 	return nil
 }

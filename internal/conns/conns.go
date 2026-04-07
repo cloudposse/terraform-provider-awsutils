@@ -66,7 +66,7 @@ func GetSupportedEC2Platforms(conn *ec2.EC2) ([]string, error) {
 	}
 
 	if len(platforms) == 0 {
-		return nil, fmt.Errorf("no EC2 platforms detected")
+		return nil, errNoEC2PlatformsDetected
 	}
 
 	return platforms, nil

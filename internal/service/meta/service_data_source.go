@@ -65,9 +65,15 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("reverse service DNS names must have at least 4 parts (%s has %d)", v.(string), len(serviceParts))
 		}
 
-		d.Set("service_id", serviceParts[len(serviceParts)-1])
-		d.Set("region", serviceParts[len(serviceParts)-2])
-		d.Set("reverse_dns_prefix", strings.Join(serviceParts[0:len(serviceParts)-2], "."))
+		if err := d.Set("service_id", serviceParts[len(serviceParts)-1]); err != nil {
+			return fmt.Errorf("error setting service_id: %w", err)
+		}
+		if err := d.Set("region", serviceParts[len(serviceParts)-2]); err != nil {
+			return fmt.Errorf("error setting region: %w", err)
+		}
+		if err := d.Set("reverse_dns_prefix", strings.Join(serviceParts[0:len(serviceParts)-2], ".")); err != nil {
+			return fmt.Errorf("error setting reverse_dns_prefix: %w", err)
+		}
 	}
 
 	if v, ok := d.GetOk("dns_name"); ok {
@@ -76,13 +82,21 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("service DNS names must have at least 4 parts (%s has %d)", v.(string), len(serviceParts))
 		}
 
-		d.Set("service_id", serviceParts[len(serviceParts)-1])
-		d.Set("region", serviceParts[len(serviceParts)-2])
-		d.Set("reverse_dns_prefix", strings.Join(serviceParts[0:len(serviceParts)-2], "."))
+		if err := d.Set("service_id", serviceParts[len(serviceParts)-1]); err != nil {
+			return fmt.Errorf("error setting service_id: %w", err)
+		}
+		if err := d.Set("region", serviceParts[len(serviceParts)-2]); err != nil {
+			return fmt.Errorf("error setting region: %w", err)
+		}
+		if err := d.Set("reverse_dns_prefix", strings.Join(serviceParts[0:len(serviceParts)-2], ".")); err != nil {
+			return fmt.Errorf("error setting reverse_dns_prefix: %w", err)
+		}
 	}
 
 	if _, ok := d.GetOk("region"); !ok {
-		d.Set("region", client.Region)
+		if err := d.Set("region", client.Region); err != nil {
+			return fmt.Errorf("error setting region: %w", err)
+		}
 	}
 
 	if _, ok := d.GetOk("service_id"); !ok {
@@ -91,18 +105,30 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 
 	if _, ok := d.GetOk("reverse_dns_prefix"); !ok {
 		dnsParts := strings.Split(meta.(*conns.AWSClient).DNSSuffix, ".")
-		d.Set("reverse_dns_prefix", strings.Join(InvertStringSlice(dnsParts), "."))
+		if err := d.Set("reverse_dns_prefix", strings.Join(InvertStringSlice(dnsParts), ".")); err != nil {
+			return fmt.Errorf("error setting reverse_dns_prefix: %w", err)
+		}
 	}
 
 	reverseDNS := fmt.Sprintf("%s.%s.%s", d.Get("reverse_dns_prefix").(string), d.Get("region").(string), d.Get("service_id").(string))
-	d.Set("reverse_dns_name", reverseDNS)
-	d.Set("dns_name", strings.ToLower(strings.Join(InvertStringSlice(strings.Split(reverseDNS, ".")), ".")))
+	if err := d.Set("reverse_dns_name", reverseDNS); err != nil {
+		return fmt.Errorf("error setting reverse_dns_name: %w", err)
+	}
+	if err := d.Set("dns_name", strings.ToLower(strings.Join(InvertStringSlice(strings.Split(reverseDNS, ".")), "."))); err != nil {
+		return fmt.Errorf("error setting dns_name: %w", err)
+	}
 
-	d.Set("supported", true)
+	if err := d.Set("supported", true); err != nil {
+		return fmt.Errorf("error setting supported: %w", err)
+	}
 	if partition, ok := endpoints.PartitionForRegion(endpoints.DefaultPartitions(), d.Get("region").(string)); ok {
-		d.Set("partition", partition.ID())
+		if err := d.Set("partition", partition.ID()); err != nil {
+			return fmt.Errorf("error setting partition: %w", err)
+		}
 		if _, ok := partition.Services()[d.Get("service_id").(string)]; !ok {
-			d.Set("supported", false)
+			if err := d.Set("supported", false); err != nil {
+				return fmt.Errorf("error setting supported: %w", err)
+			}
 		}
 	}
 

@@ -119,15 +119,33 @@ func resourceDelegatedAdministratorRead(ctx context.Context, d *schema.ResourceD
 		return nil
 	}
 
-	d.Set("arn", delegatedAccount.Arn)
-	d.Set("delegation_enabled_date", aws.TimeValue(delegatedAccount.DelegationEnabledDate).Format(time.RFC3339))
-	d.Set("email", delegatedAccount.Email)
-	d.Set("joined_method", delegatedAccount.JoinedMethod)
-	d.Set("joined_timestamp", aws.TimeValue(delegatedAccount.JoinedTimestamp).Format(time.RFC3339))
-	d.Set("name", delegatedAccount.Name)
-	d.Set("status", delegatedAccount.Status)
-	d.Set("account_id", accountID)
-	d.Set("service_principal", servicePrincipal)
+	if err := d.Set("arn", delegatedAccount.Arn); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting arn: %w", err))
+	}
+	if err := d.Set("delegation_enabled_date", aws.TimeValue(delegatedAccount.DelegationEnabledDate).Format(time.RFC3339)); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting delegation_enabled_date: %w", err))
+	}
+	if err := d.Set("email", delegatedAccount.Email); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting email: %w", err))
+	}
+	if err := d.Set("joined_method", delegatedAccount.JoinedMethod); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting joined_method: %w", err))
+	}
+	if err := d.Set("joined_timestamp", aws.TimeValue(delegatedAccount.JoinedTimestamp).Format(time.RFC3339)); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting joined_timestamp: %w", err))
+	}
+	if err := d.Set("name", delegatedAccount.Name); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting name: %w", err))
+	}
+	if err := d.Set("status", delegatedAccount.Status); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting status: %w", err))
+	}
+	if err := d.Set("account_id", accountID); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting account_id: %w", err))
+	}
+	if err := d.Set("service_principal", servicePrincipal); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting service_principal: %w", err))
+	}
 
 	return nil
 }

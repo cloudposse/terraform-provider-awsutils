@@ -69,8 +69,8 @@ func (m AttributeMap) ApiAttributesToResourceData(apiAttributes map[string]strin
 			if err := d.Set(tfAttributeName, tfAttributeValue); err != nil {
 				return fmt.Errorf("error setting %s: %w", tfAttributeName, err)
 			}
-		} else {
-			d.Set(tfAttributeName, nil)
+		} else if err := d.Set(tfAttributeName, nil); err != nil {
+			return fmt.Errorf("error setting %s: %w", tfAttributeName, err)
 		}
 	}
 

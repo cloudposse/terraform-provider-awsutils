@@ -75,11 +75,17 @@ func dataSourceRegionRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	d.Set("endpoint", strings.TrimPrefix(regionEndpointEc2.URL, "https://"))
+	if err := d.Set("endpoint", strings.TrimPrefix(regionEndpointEc2.URL, "https://")); err != nil {
+		return fmt.Errorf("error setting endpoint: %w", err)
+	}
 
-	d.Set("name", region.ID())
+	if err := d.Set("name", region.ID()); err != nil {
+		return fmt.Errorf("error setting name: %w", err)
+	}
 
-	d.Set("description", region.Description())
+	if err := d.Set("description", region.Description()); err != nil {
+		return fmt.Errorf("error setting description: %w", err)
+	}
 
 	return nil
 }

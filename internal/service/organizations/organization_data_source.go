@@ -151,11 +151,21 @@ func dataSourceOrganizationRead(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	d.SetId(aws.StringValue(org.Organization.Id))
-	d.Set("arn", org.Organization.Arn)
-	d.Set("feature_set", org.Organization.FeatureSet)
-	d.Set("master_account_arn", org.Organization.MasterAccountArn)
-	d.Set("master_account_email", org.Organization.MasterAccountEmail)
-	d.Set("master_account_id", org.Organization.MasterAccountId)
+	if err := d.Set("arn", org.Organization.Arn); err != nil {
+		return fmt.Errorf("error setting arn: %w", err)
+	}
+	if err := d.Set("feature_set", org.Organization.FeatureSet); err != nil {
+		return fmt.Errorf("error setting feature_set: %w", err)
+	}
+	if err := d.Set("master_account_arn", org.Organization.MasterAccountArn); err != nil {
+		return fmt.Errorf("error setting master_account_arn: %w", err)
+	}
+	if err := d.Set("master_account_email", org.Organization.MasterAccountEmail); err != nil {
+		return fmt.Errorf("error setting master_account_email: %w", err)
+	}
+	if err := d.Set("master_account_id", org.Organization.MasterAccountId); err != nil {
+		return fmt.Errorf("error setting master_account_id: %w", err)
+	}
 
 	if aws.StringValue(org.Organization.MasterAccountId) == meta.(*conns.AWSClient).AccountID {
 		var accounts []*organizations.Account

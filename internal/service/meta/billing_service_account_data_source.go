@@ -1,6 +1,8 @@
 package meta
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws/arn"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/conns"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -30,7 +32,9 @@ func dataSourceBillingServiceAccountRead(d *schema.ResourceData, meta interface{
 		AccountID: billingAccountId,
 		Resource:  "root",
 	}.String()
-	d.Set("arn", arn)
+	if err := d.Set("arn", arn); err != nil {
+		return fmt.Errorf("error setting arn: %w", err)
+	}
 
 	return nil
 }

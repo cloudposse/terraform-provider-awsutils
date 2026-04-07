@@ -175,9 +175,15 @@ func resourceOrganizationalUnitRead(d *schema.ResourceData, meta interface{}) er
 		return fmt.Errorf("error setting accounts: %w", err)
 	}
 
-	d.Set("arn", ou.Arn)
-	d.Set("name", ou.Name)
-	d.Set("parent_id", parentId)
+	if err := d.Set("arn", ou.Arn); err != nil {
+		return fmt.Errorf("error setting arn: %w", err)
+	}
+	if err := d.Set("name", ou.Name); err != nil {
+		return fmt.Errorf("error setting name: %w", err)
+	}
+	if err := d.Set("parent_id", parentId); err != nil {
+		return fmt.Errorf("error setting parent_id: %w", err)
+	}
 
 	tags, err := ListTags(conn, d.Id())
 	if err != nil {

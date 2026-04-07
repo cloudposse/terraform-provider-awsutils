@@ -117,8 +117,12 @@ func resourcePolicyAttachmentRead(d *schema.ResourceData, meta interface{}) erro
 		return nil
 	}
 
-	d.Set("policy_id", policyID)
-	d.Set("target_id", targetID)
+	if err := d.Set("policy_id", policyID); err != nil {
+		return fmt.Errorf("error setting policy_id: %w", err)
+	}
+	if err := d.Set("target_id", targetID); err != nil {
+		return fmt.Errorf("error setting target_id: %w", err)
+	}
 	return nil
 }
 

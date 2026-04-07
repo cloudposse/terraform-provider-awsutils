@@ -81,7 +81,9 @@ func resourceAwsMacie2OrganizationSettingsRead(d *schema.ResourceData, meta inte
 		return err
 	}
 
-	d.Set("member_accounts", memberAccounts)
+	if err := d.Set("member_accounts", memberAccounts); err != nil {
+		return fmt.Errorf("error setting member_accounts: %w", err)
+	}
 
 	return nil
 }

@@ -134,11 +134,21 @@ func resourcePolicyRead(ctx context.Context, d *schema.ResourceData, meta interf
 		return nil
 	}
 
-	d.Set("arn", resp.Policy.PolicySummary.Arn)
-	d.Set("content", resp.Policy.Content)
-	d.Set("description", resp.Policy.PolicySummary.Description)
-	d.Set("name", resp.Policy.PolicySummary.Name)
-	d.Set("type", resp.Policy.PolicySummary.Type)
+	if err := d.Set("arn", resp.Policy.PolicySummary.Arn); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting arn: %w", err))
+	}
+	if err := d.Set("content", resp.Policy.Content); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting content: %w", err))
+	}
+	if err := d.Set("description", resp.Policy.PolicySummary.Description); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting description: %w", err))
+	}
+	if err := d.Set("name", resp.Policy.PolicySummary.Name); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting name: %w", err))
+	}
+	if err := d.Set("type", resp.Policy.PolicySummary.Type); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting type: %w", err))
+	}
 
 	if aws.BoolValue(resp.Policy.PolicySummary.AwsManaged) {
 		return diag.Diagnostics{

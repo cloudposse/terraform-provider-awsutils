@@ -48,7 +48,9 @@ func ResourceExpiringAccessKey() *schema.Resource {
 					return nil, fmt.Errorf("error fetching IAM Access Key (%s) username via GetAccessKeyLastUsed: empty response", d.Id())
 				}
 
-				d.Set("user", output.UserName)
+				if err := d.Set("user", output.UserName); err != nil {
+					return nil, fmt.Errorf("error setting user: %w", err)
+				}
 
 				return []*schema.ResourceData{d}, nil
 			},
@@ -125,7 +127,9 @@ func resourceAccessKeyDiff(ctx context.Context, d *schema.ResourceDiff, meta int
 		}
 
 		if now.After(rotationTimestamp) {
-			d.SetNewComputed("expiration_date")
+			if err := d.SetNewComputed("expiration_date"); err != nil {
+				return fmt.Errorf("error setting expiration_date as new computed: %w", err)
+			}
 		}
 	}
 	return nil
@@ -169,15 +173,21 @@ func resourceAccessKeyCreate(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 
-		d.Set("key_fingerprint", fingerprint)
-		d.Set("encrypted_secret", encrypted)
+		if err := d.Set("key_fingerprint", fingerprint); err != nil {
+			return fmt.Errorf("error setting key_fingerprint: %w", err)
+		}
+		if err := d.Set("encrypted_secret", encrypted); err != nil {
+			return fmt.Errorf("error setting encrypted_secret: %w", err)
+		}
 
 		_, encrypted, err = EncryptValue(encryptionKey, sesSMTPPasswordV4, "SES SMTP password")
 		if err != nil {
 			return err
 		}
 
-		d.Set("encrypted_ses_smtp_password_v4", encrypted)
+		if err := d.Set("encrypted_ses_smtp_password_v4", encrypted); err != nil {
+			return fmt.Errorf("error setting encrypted_ses_smtp_password_v4: %w", err)
+		}
 	} else {
 		if err := d.Set("secret", createResp.AccessKey.SecretAccessKey); err != nil {
 			return err
@@ -246,15 +256,27 @@ func resourceAccessKeyReadResult(d *schema.ResourceData, key *iam.AccessKeyMetad
 		createDate := key.CreateDate
 		expirationDate := createDate.Add(time.Duration(d.Get("max_age").(int)) * time.Second)
 
-		d.Set("create_date", aws.TimeValue(createDate).Format(time.RFC3339))
-		d.Set("expiration_date", expirationDate.Format(time.RFC3339))
+		if err := d.Set("create_date", aws.TimeValue(createDate).Format(time.RFC3339)); err != nil {
+			return fmt.Errorf("error setting create_date: %w", err)
+		}
+		if err := d.Set("expiration_date", expirationDate.Format(time.RFC3339)); err != nil {
+			return fmt.Errorf("error setting expiration_date: %w", err)
+		}
 	} else {
-		d.Set("create_date", nil)
-		d.Set("expiration_date", nil)
+		if err := d.Set("create_date", nil); err != nil {
+			return fmt.Errorf("error setting create_date: %w", err)
+		}
+		if err := d.Set("expiration_date", nil); err != nil {
+			return fmt.Errorf("error setting expiration_date: %w", err)
+		}
 	}
 
-	d.Set("status", key.Status)
-	d.Set("user", key.UserName)
+	if err := d.Set("status", key.Status); err != nil {
+		return fmt.Errorf("error setting status: %w", err)
+	}
+	if err := d.Set("user", key.UserName); err != nil {
+		return fmt.Errorf("error setting user: %w", err)
+	}
 
 	return nil
 }

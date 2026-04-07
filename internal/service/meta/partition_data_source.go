@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/cloudposse/terraform-provider-awsutils/internal/conns"
@@ -37,12 +38,18 @@ func dataSourcePartitionRead(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(meta.(*conns.AWSClient).Partition)
 
 	log.Printf("[DEBUG] Setting AWS Partition to %s.", client.Partition)
-	d.Set("partition", meta.(*conns.AWSClient).Partition)
+	if err := d.Set("partition", meta.(*conns.AWSClient).Partition); err != nil {
+		return fmt.Errorf("error setting partition: %w", err)
+	}
 
 	log.Printf("[DEBUG] Setting AWS URL Suffix to %s.", client.DNSSuffix)
-	d.Set("dns_suffix", meta.(*conns.AWSClient).DNSSuffix)
+	if err := d.Set("dns_suffix", meta.(*conns.AWSClient).DNSSuffix); err != nil {
+		return fmt.Errorf("error setting dns_suffix: %w", err)
+	}
 
-	d.Set("reverse_dns_prefix", meta.(*conns.AWSClient).ReverseDNSPrefix)
+	if err := d.Set("reverse_dns_prefix", meta.(*conns.AWSClient).ReverseDNSPrefix); err != nil {
+		return fmt.Errorf("error setting reverse_dns_prefix: %w", err)
+	}
 	log.Printf("[DEBUG] Setting service prefix to %s.", meta.(*conns.AWSClient).ReverseDNSPrefix)
 
 	return nil

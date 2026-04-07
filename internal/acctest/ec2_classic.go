@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	// EC2-Classic region testing environment variable name
+	// EC2-Classic region testing environment variable name.
 	ec2ClassicRegionEnvVar = "AWS_EC2_CLASSIC_REGION"
 )
 
@@ -28,10 +28,10 @@ const (
 // PreCheckEC2Classic(t) must be called before using this provider instance.
 var ProviderEC2Classic *schema.Provider
 
-// testAccProviderEc2ClassicConfigure ensures the provider is only configured once
+// testAccProviderEc2ClassicConfigure ensures the provider is only configured once.
 var testAccProviderEc2ClassicConfigure sync.Once
 
-// PreCheckEC2Classic verifies AWS credentials and that EC2-Classic is supported
+// PreCheckEC2Classic verifies AWS credentials and that EC2-Classic is supported.
 func PreCheckEC2Classic(t *testing.T) {
 	// Since we are outside the scope of the Terraform configuration we must
 	// call Configure() to properly initialize the provider configuration.
@@ -70,7 +70,7 @@ func ConfigEC2ClassicRegionProvider() string {
 	return ConfigRegionalProvider(EC2ClassicRegion())
 }
 
-// EC2ClassicRegion returns the EC2-Classic region for testing
+// EC2ClassicRegion returns the EC2-Classic region for testing.
 func EC2ClassicRegion() string {
 	v := os.Getenv(ec2ClassicRegionEnvVar)
 
@@ -85,7 +85,7 @@ func EC2ClassicRegion() string {
 	return Region()
 }
 
-// CheckResourceAttrRegionalARNEC2Classic ensures the Terraform state exactly matches a formatted ARN with EC2-Classic region
+// CheckResourceAttrRegionalARNEC2Classic ensures the Terraform state exactly matches a formatted ARN with EC2-Classic region.
 func CheckResourceAttrRegionalARNEC2Classic(resourceName, attributeName, arnService, arnResource string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		attributeValue := arn.ARN{

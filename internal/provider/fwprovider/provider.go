@@ -292,7 +292,7 @@ func (p *fwprovider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnost
 // Configure is called at the beginning of the provider lifecycle, when
 // Terraform sends to the provider the values the user specified in the
 // provider configuration block.
-func (p *fwprovider) Configure(ctx context.Context, request provider.ConfigureRequest, response *provider.ConfigureResponse) {
+func (p *fwprovider) Configure(ctx context.Context, request provider.ConfigureRequest, response *provider.ConfigureResponse) { //nolint:gocritic // hugeParam: signature required by provider.Provider interface
 	// Provider's parsed configuration (its instance state) is available through the primary provider's Meta() method.
 }
 

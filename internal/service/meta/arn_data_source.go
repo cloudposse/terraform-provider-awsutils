@@ -46,15 +46,25 @@ func dataSourceARNRead(d *schema.ResourceData, meta interface{}) error {
 	v := d.Get("arn").(string)
 	arn, err := arn.Parse(v)
 	if err != nil {
-		return fmt.Errorf("Error parsing '%s': %w", v, err)
+		return fmt.Errorf("error parsing '%s': %w", v, err)
 	}
 
 	d.SetId(arn.String())
-	d.Set("partition", arn.Partition)
-	d.Set("service", arn.Service)
-	d.Set("region", arn.Region)
-	d.Set("account", arn.AccountID)
-	d.Set("resource", arn.Resource)
+	if err := d.Set("partition", arn.Partition); err != nil {
+		return fmt.Errorf("error setting partition: %w", err)
+	}
+	if err := d.Set("service", arn.Service); err != nil {
+		return fmt.Errorf("error setting service: %w", err)
+	}
+	if err := d.Set("region", arn.Region); err != nil {
+		return fmt.Errorf("error setting region: %w", err)
+	}
+	if err := d.Set("account", arn.AccountID); err != nil {
+		return fmt.Errorf("error setting account: %w", err)
+	}
+	if err := d.Set("resource", arn.Resource); err != nil {
+		return fmt.Errorf("error setting resource: %w", err)
+	}
 
 	return nil
 }

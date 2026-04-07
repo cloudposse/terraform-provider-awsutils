@@ -16,9 +16,21 @@ package names
 import (
 	_ "embed"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
+)
+
+const errFmtSentinelWithDetail = "%w: %s"
+
+var (
+	errServiceAliasNotFound      = errors.New("unable to find service for service alias")
+	errNoServiceData             = errors.New("no service data found")
+	errUnsupportedSDKGoVersion   = errors.New("unsupported AWS SDK Go version")
+	errSDKGoV1PackageNotFound    = errors.New("getting AWS SDK Go v1 package: not found")
+	errSDKGoV2PackageNotFound    = errors.New("getting AWS SDK Go v2 package: not found")
+	errSDKGoV1ClientTypeNotFound = errors.New("getting AWS SDK Go v1 client type name: not found")
 )
 
 // This "should" be defined by the AWS Go SDK v2, but currently isn't.
@@ -43,7 +55,7 @@ type ServiceDatum struct {
 	ProviderNameUpper  string
 }
 
-// serviceData key is the AWS provider service package
+// serviceData key is the AWS provider service package.
 var serviceData map[string]*ServiceDatum
 
 func init() {
@@ -120,7 +132,7 @@ func ProviderPackageForAlias(serviceAlias string) (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("unable to find service for service alias %s", serviceAlias)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errServiceAliasNotFound, serviceAlias)
 }
 
 func ProviderPackages() []string {
@@ -150,7 +162,7 @@ func ProviderNameUpper(service string) (string, error) {
 		return v.ProviderNameUpper, nil
 	}
 
-	return "", fmt.Errorf("no service data found for %s", service)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errNoServiceData, service)
 }
 
 func DeprecatedEnvVar(service string) string {
@@ -182,7 +194,7 @@ func FullHumanFriendly(service string) (string, error) {
 		return FullHumanFriendly(s)
 	}
 
-	return "", fmt.Errorf("no service data found for %s", service)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errNoServiceData, service)
 }
 
 func AWSGoPackage(providerPackage string, version int) (string, error) {
@@ -192,7 +204,7 @@ func AWSGoPackage(providerPackage string, version int) (string, error) {
 	case 2:
 		return AWSGoV2Package(providerPackage)
 	default:
-		return "", fmt.Errorf("unsupported AWS SDK Go version: %d", version)
+		return "", fmt.Errorf("%w: %d", errUnsupportedSDKGoVersion, version)
 	}
 }
 
@@ -201,7 +213,7 @@ func AWSGoV1Package(providerPackage string) (string, error) {
 		return v.GoV1Package, nil
 	}
 
-	return "", fmt.Errorf("getting AWS SDK Go v1 package, %s not found", providerPackage)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errSDKGoV1PackageNotFound, providerPackage)
 }
 
 func AWSGoV2Package(providerPackage string) (string, error) {
@@ -209,7 +221,7 @@ func AWSGoV2Package(providerPackage string) (string, error) {
 		return v.GoV2Package, nil
 	}
 
-	return "", fmt.Errorf("getting AWS SDK Go v2 package, %s not found", providerPackage)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errSDKGoV2PackageNotFound, providerPackage)
 }
 
 func AWSGoClientTypeName(providerPackage string, version int) (string, error) {
@@ -219,7 +231,7 @@ func AWSGoClientTypeName(providerPackage string, version int) (string, error) {
 	case 2:
 		return "Client", nil
 	default:
-		return "", fmt.Errorf("unsupported AWS SDK Go version: %d", version)
+		return "", fmt.Errorf("%w: %d", errUnsupportedSDKGoVersion, version)
 	}
 }
 
@@ -228,5 +240,5 @@ func AWSGoV1ClientTypeName(providerPackage string) (string, error) {
 		return v.GoV1ClientTypeName, nil
 	}
 
-	return "", fmt.Errorf("getting AWS SDK Go v1 client type name, %s not found", providerPackage)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errSDKGoV1ClientTypeNotFound, providerPackage)
 }

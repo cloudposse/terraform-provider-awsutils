@@ -81,7 +81,9 @@ type Config struct {
 	UseFIPSEndpoint                bool
 }
 
-// Client configures and returns a fully initialized AWSClient
+// Client configures and returns a fully initialized AWSClient.
+//
+//nolint:gocognit,revive,cyclop,funlen // wires up dozens of AWS service clients with their respective retry handlers and middleware; function length and complexity intentional
 func (c *Config) Client(ctx context.Context) (interface{}, diag.Diagnostics) {
 	awsbaseConfig := awsbase.Config{
 		AccessKey:                     c.AccessKey,
@@ -503,8 +505,7 @@ func (c *Config) Client(ctx context.Context) (interface{}, diag.Diagnostics) {
 
 	// Reference: https://github.com/hashicorp/terraform-provider-aws/issues/17996
 	client.SecurityHubConn.Handlers.Retry.PushBack(func(r *request.Request) {
-		switch r.Operation.Name {
-		case "EnableOrganizationAdminAccount":
+		if r.Operation.Name == "EnableOrganizationAdminAccount" {
 			if tfawserr.ErrCodeEquals(r.Error, securityhub.ErrCodeResourceConflictException) {
 				r.Retryable = aws.Bool(true)
 			}

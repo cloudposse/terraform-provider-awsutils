@@ -2,6 +2,7 @@ package ec2
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -11,6 +12,11 @@ import (
 	"github.com/cloudposse/terraform-provider-awsutils/internal/verify"
 	"github.com/hashicorp/aws-sdk-go-base/v2/awsv1shim/v2/tfawserr"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+)
+
+var (
+	errNotFound                = errors.New("not found")
+	errUnsupportedVPCAttribute = errors.New("unsupported VPC attribute")
 )
 
 func FindAvailabilityZones(conn *ec2.EC2, input *ec2.DescribeAvailabilityZonesInput) ([]*ec2.AvailabilityZone, error) {
@@ -799,7 +805,7 @@ func FindImageLaunchPermissionsByID(ctx context.Context, conn *ec2.EC2, id strin
 	return output.LaunchPermissions, nil
 }
 
-func FindImageLaunchPermission(ctx context.Context, conn *ec2.EC2, imageID, accountID, group, organizationARN, organizationalUnitARN string) (*ec2.LaunchPermission, error) {
+func FindImageLaunchPermission(ctx context.Context, conn *ec2.EC2, imageID, accountID, group, organizationARN, organizationalUnitARN string) (*ec2.LaunchPermission, error) { //nolint:revive // argument-limit: function signature mirrors AWS SDK shape
 	output, err := FindImageLaunchPermissionsByID(ctx, conn, imageID)
 	if err != nil {
 		return nil, err
@@ -1406,7 +1412,7 @@ func FindNetworkInterfaceSecurityGroup(conn *ec2.EC2, networkInterfaceID string,
 	}
 
 	return nil, &resource.NotFoundError{
-		LastError: fmt.Errorf("Network Interface (%s) Security Group (%s) not found", networkInterfaceID, securityGroupID),
+		LastError: fmt.Errorf("network interface (%s) security group (%s): %w", networkInterfaceID, securityGroupID, errNotFound),
 	}
 }
 
@@ -1639,7 +1645,7 @@ func FindRouteByIPv4Destination(conn *ec2.EC2, routeTableID, destinationCidr str
 	}
 
 	return nil, &resource.NotFoundError{
-		LastError: fmt.Errorf("Route in Route Table (%s) with IPv4 destination (%s) not found", routeTableID, destinationCidr),
+		LastError: fmt.Errorf("route in route table (%s) with IPv4 destination (%s): %w", routeTableID, destinationCidr, errNotFound),
 	}
 }
 
@@ -1658,7 +1664,7 @@ func FindRouteByIPv6Destination(conn *ec2.EC2, routeTableID, destinationIpv6Cidr
 	}
 
 	return nil, &resource.NotFoundError{
-		LastError: fmt.Errorf("Route in Route Table (%s) with IPv6 destination (%s) not found", routeTableID, destinationIpv6Cidr),
+		LastError: fmt.Errorf("route in route table (%s) with IPv6 destination (%s): %w", routeTableID, destinationIpv6Cidr, errNotFound),
 	}
 }
 
@@ -1677,7 +1683,7 @@ func FindRouteByPrefixListIDDestination(conn *ec2.EC2, routeTableID, prefixListI
 	}
 
 	return nil, &resource.NotFoundError{
-		LastError: fmt.Errorf("Route in Route Table (%s) with Prefix List ID destination (%s) not found", routeTableID, prefixListID),
+		LastError: fmt.Errorf("route in route table (%s) with prefix list ID destination (%s): %w", routeTableID, prefixListID, errNotFound),
 	}
 }
 
@@ -2144,7 +2150,7 @@ func FindVPCAttribute(conn *ec2.EC2, vpcID string, attribute string) (bool, erro
 	case ec2.VpcAttributeNameEnableDnsSupport:
 		v = output.EnableDnsSupport
 	default:
-		return false, fmt.Errorf("unsupported VPC attribute: %s", attribute)
+		return false, fmt.Errorf("%w: %s", errUnsupportedVPCAttribute, attribute)
 	}
 
 	if v == nil {
@@ -2307,7 +2313,7 @@ func FindVPCDHCPOptionsAssociation(conn *ec2.EC2, vpcID string, dhcpOptionsID st
 
 	if aws.StringValue(vpc.DhcpOptionsId) != dhcpOptionsID {
 		return &resource.NotFoundError{
-			LastError: fmt.Errorf("EC2 VPC (%s) DHCP Options Set (%s) Association not found", vpcID, dhcpOptionsID),
+			LastError: fmt.Errorf("EC2 VPC (%s) DHCP options set (%s) association: %w", vpcID, dhcpOptionsID, errNotFound),
 		}
 	}
 
@@ -2609,7 +2615,7 @@ func FindVPCEndpointServicePermissionExists(conn *ec2.EC2, serviceID, principalA
 	}
 
 	return &resource.NotFoundError{
-		LastError: fmt.Errorf("VPC Endpoint Service (%s) Principal (%s) not found", serviceID, principalARN),
+		LastError: fmt.Errorf("VPC endpoint service (%s) principal (%s): %w", serviceID, principalARN, errNotFound),
 	}
 }
 
@@ -2627,7 +2633,7 @@ func FindVPCEndpointRouteTableAssociationExists(conn *ec2.EC2, vpcEndpointID str
 	}
 
 	return &resource.NotFoundError{
-		LastError: fmt.Errorf("VPC Endpoint (%s) Route Table (%s) Association not found", vpcEndpointID, routeTableID),
+		LastError: fmt.Errorf("VPC endpoint (%s) route table (%s) association: %w", vpcEndpointID, routeTableID, errNotFound),
 	}
 }
 
@@ -2645,7 +2651,7 @@ func FindVPCEndpointSecurityGroupAssociationExists(conn *ec2.EC2, vpcEndpointID,
 	}
 
 	return &resource.NotFoundError{
-		LastError: fmt.Errorf("VPC Endpoint (%s) Security Group (%s) Association not found", vpcEndpointID, securityGroupID),
+		LastError: fmt.Errorf("VPC endpoint (%s) security group (%s) association: %w", vpcEndpointID, securityGroupID, errNotFound),
 	}
 }
 
@@ -2663,7 +2669,7 @@ func FindVPCEndpointSubnetAssociationExists(conn *ec2.EC2, vpcEndpointID string,
 	}
 
 	return &resource.NotFoundError{
-		LastError: fmt.Errorf("VPC Endpoint (%s) Subnet (%s) Association not found", vpcEndpointID, subnetID),
+		LastError: fmt.Errorf("VPC endpoint (%s) subnet (%s) association: %w", vpcEndpointID, subnetID, errNotFound),
 	}
 }
 
@@ -2761,7 +2767,7 @@ func FindVPNGatewayRoutePropagationExists(conn *ec2.EC2, routeTableID, gatewayID
 	}
 
 	return &resource.NotFoundError{
-		LastError: fmt.Errorf("Route Table (%s) VPN Gateway (%s) route propagation not found", routeTableID, gatewayID),
+		LastError: fmt.Errorf("route table (%s) VPN gateway (%s) route propagation: %w", routeTableID, gatewayID, errNotFound),
 	}
 }
 
@@ -2963,7 +2969,7 @@ func FindVPNConnectionRouteByVPNConnectionIDAndCIDR(conn *ec2.EC2, vpnConnection
 	}
 
 	return nil, &resource.NotFoundError{
-		LastError: fmt.Errorf("EC2 VPN Connection (%s) Route (%s) not found", vpnConnectionID, cidrBlock),
+		LastError: fmt.Errorf("EC2 VPN connection (%s) route (%s): %w", vpnConnectionID, cidrBlock, errNotFound),
 	}
 }
 

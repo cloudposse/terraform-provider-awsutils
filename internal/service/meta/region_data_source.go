@@ -1,12 +1,19 @@
 package meta
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/conns"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+var (
+	errMultipleRegionsMatched    = errors.New("multiple regions matched; use additional constraints to reduce matches to a single region")
+	errRegionNotFoundForEndpoint = errors.New("region not found for endpoint")
+	errRegionNotFoundForName     = errors.New("region not found for name")
 )
 
 func DataSourceRegion() *schema.Resource {
@@ -55,7 +62,7 @@ func dataSourceRegionRead(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 		if region != nil && region.ID() != matchingRegion.ID() {
-			return fmt.Errorf("multiple regions matched; use additional constraints to reduce matches to a single region")
+			return fmt.Errorf("%w: %q and %q", errMultipleRegionsMatched, region.ID(), matchingRegion.ID())
 		}
 		region = matchingRegion
 	}
@@ -71,15 +78,21 @@ func dataSourceRegionRead(d *schema.ResourceData, meta interface{}) error {
 
 	d.SetId(region.ID())
 
-	regionEndpointEc2, err := region.ResolveEndpoint(endpoints.Ec2ServiceID)
+	regionEndpointEc2, err := region.ResolveEndpoint(endpoints.Ec2ServiceID) //nolint:staticcheck // SA1019: legacy SDK constant retained for compatibility
 	if err != nil {
 		return err
 	}
-	d.Set("endpoint", strings.TrimPrefix(regionEndpointEc2.URL, "https://"))
+	if err := d.Set("endpoint", strings.TrimPrefix(regionEndpointEc2.URL, "https://")); err != nil {
+		return fmt.Errorf("error setting endpoint: %w", err)
+	}
 
-	d.Set("name", region.ID())
+	if err := d.Set("name", region.ID()); err != nil {
+		return fmt.Errorf("error setting name: %w", err)
+	}
 
-	d.Set("description", region.Description())
+	if err := d.Set("description", region.Description()); err != nil {
+		return fmt.Errorf("error setting description: %w", err)
+	}
 
 	return nil
 }
@@ -87,7 +100,7 @@ func dataSourceRegionRead(d *schema.ResourceData, meta interface{}) error {
 func FindRegionByEndpoint(endpoint string) (*endpoints.Region, error) {
 	for _, partition := range endpoints.DefaultPartitions() {
 		for _, region := range partition.Regions() {
-			regionEndpointEc2, err := region.ResolveEndpoint(endpoints.Ec2ServiceID)
+			regionEndpointEc2, err := region.ResolveEndpoint(endpoints.Ec2ServiceID) //nolint:staticcheck // SA1019: legacy SDK constant retained for compatibility
 			if err != nil {
 				return nil, err
 			}
@@ -96,7 +109,7 @@ func FindRegionByEndpoint(endpoint string) (*endpoints.Region, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("region not found for endpoint %q", endpoint)
+	return nil, fmt.Errorf("%w: %q", errRegionNotFoundForEndpoint, endpoint)
 }
 
 func FindRegionByName(name string) (*endpoints.Region, error) {
@@ -107,5 +120,5 @@ func FindRegionByName(name string) (*endpoints.Region, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("region not found for name %q", name)
+	return nil, fmt.Errorf("%w: %q", errRegionNotFoundForName, name)
 }

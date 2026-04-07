@@ -2,6 +2,7 @@ package organizations
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -18,6 +19,8 @@ import (
 
 const policyTypeStatusDisabled = "DISABLED"
 
+var errNoRootsFound = errors.New("no roots found")
+
 func ResourceOrganization() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOrganizationCreate,
@@ -25,7 +28,7 @@ func ResourceOrganization() *schema.Resource {
 		Update: resourceOrganizationUpdate,
 		Delete: resourceOrganizationDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		CustomizeDiff: customdiff.Sequence(
@@ -177,7 +180,7 @@ func resourceOrganizationCreate(d *schema.ResourceData, meta interface{}) error 
 
 	resp, err := conn.CreateOrganization(createOpts)
 	if err != nil {
-		return fmt.Errorf("Error creating organization: %s", err)
+		return fmt.Errorf("error creating organization: %w", err)
 	}
 
 	org := resp.Organization
@@ -193,7 +196,7 @@ func resourceOrganizationCreate(d *schema.ResourceData, meta interface{}) error 
 		log.Printf("[DEBUG] Enabling AWS Service Access in Organization: %s", input)
 		_, err := conn.EnableAWSServiceAccess(input)
 		if err != nil {
-			return fmt.Errorf("error enabling AWS Service Access (%s) in Organization: %s", principal, err)
+			return fmt.Errorf("error enabling AWS Service Access (%s) in Organization: %w", principal, err)
 		}
 	}
 
@@ -202,7 +205,7 @@ func resourceOrganizationCreate(d *schema.ResourceData, meta interface{}) error 
 	if len(enabledPolicyTypes) > 0 {
 		defaultRoot, err := getOrganizationDefaultRoot(conn)
 		if err != nil {
-			return fmt.Errorf("error getting AWS Organization (%s) default root: %s", d.Id(), err)
+			return fmt.Errorf("error getting AWS Organization (%s) default root: %w", d.Id(), err)
 		}
 
 		for _, v := range enabledPolicyTypes {
@@ -213,11 +216,11 @@ func resourceOrganizationCreate(d *schema.ResourceData, meta interface{}) error 
 			}
 
 			if _, err := conn.EnablePolicyType(input); err != nil {
-				return fmt.Errorf("error enabling policy type (%s) in Organization (%s): %s", enabledPolicyType, d.Id(), err)
+				return fmt.Errorf("error enabling policy type (%s) in Organization (%s): %w", enabledPolicyType, d.Id(), err)
 			}
 
 			if err := waitForOrganizationDefaultRootPolicyTypeEnable(conn, enabledPolicyType); err != nil {
-				return fmt.Errorf("error waiting for policy type (%s) enabling in Organization (%s): %s", enabledPolicyType, d.Id(), err)
+				return fmt.Errorf("error waiting for policy type (%s) enabling in Organization (%s): %w", enabledPolicyType, d.Id(), err)
 			}
 		}
 	}
@@ -238,7 +241,7 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("error describing Organization: %s", err)
+		return fmt.Errorf("error describing Organization: %w", err)
 	}
 
 	log.Printf("[INFO] Listing Accounts for Organization: %s", d.Id())
@@ -256,7 +259,7 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 		return !lastPage
 	})
 	if err != nil {
-		return fmt.Errorf("error listing AWS Organization (%s) accounts: %s", d.Id(), err)
+		return fmt.Errorf("error listing AWS Organization (%s) accounts: %w", d.Id(), err)
 	}
 
 	log.Printf("[INFO] Listing Roots for Organization: %s", d.Id())
@@ -266,25 +269,35 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 		return !lastPage
 	})
 	if err != nil {
-		return fmt.Errorf("error listing AWS Organization (%s) roots: %s", d.Id(), err)
+		return fmt.Errorf("error listing AWS Organization (%s) roots: %w", d.Id(), err)
 	}
 
 	if err := d.Set("accounts", flattenAccounts(accounts)); err != nil {
-		return fmt.Errorf("error setting accounts: %s", err)
+		return fmt.Errorf("error setting accounts: %w", err)
 	}
 
-	d.Set("arn", org.Organization.Arn)
-	d.Set("feature_set", org.Organization.FeatureSet)
-	d.Set("master_account_arn", org.Organization.MasterAccountArn)
-	d.Set("master_account_email", org.Organization.MasterAccountEmail)
-	d.Set("master_account_id", org.Organization.MasterAccountId)
+	if err := d.Set("arn", org.Organization.Arn); err != nil {
+		return fmt.Errorf("error setting arn: %w", err)
+	}
+	if err := d.Set("feature_set", org.Organization.FeatureSet); err != nil {
+		return fmt.Errorf("error setting feature_set: %w", err)
+	}
+	if err := d.Set("master_account_arn", org.Organization.MasterAccountArn); err != nil {
+		return fmt.Errorf("error setting master_account_arn: %w", err)
+	}
+	if err := d.Set("master_account_email", org.Organization.MasterAccountEmail); err != nil {
+		return fmt.Errorf("error setting master_account_email: %w", err)
+	}
+	if err := d.Set("master_account_id", org.Organization.MasterAccountId); err != nil {
+		return fmt.Errorf("error setting master_account_id: %w", err)
+	}
 
 	if err := d.Set("non_master_accounts", flattenAccounts(nonMasterAccounts)); err != nil {
-		return fmt.Errorf("error setting non_master_accounts: %s", err)
+		return fmt.Errorf("error setting non_master_accounts: %w", err)
 	}
 
 	if err := d.Set("roots", FlattenRoots(roots)); err != nil {
-		return fmt.Errorf("error setting roots: %s", err)
+		return fmt.Errorf("error setting roots: %w", err)
 	}
 
 	awsServiceAccessPrincipals := make([]string, 0)
@@ -298,12 +311,12 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 			return !lastPage
 		})
 		if err != nil {
-			return fmt.Errorf("error listing AWS Service Access for Organization (%s): %s", d.Id(), err)
+			return fmt.Errorf("error listing AWS Service Access for Organization (%s): %w", d.Id(), err)
 		}
 	}
 
 	if err := d.Set("aws_service_access_principals", awsServiceAccessPrincipals); err != nil {
-		return fmt.Errorf("error setting aws_service_access_principals: %s", err)
+		return fmt.Errorf("error setting aws_service_access_principals: %w", err)
 	}
 
 	enabledPolicyTypes := make([]string, 0)
@@ -315,7 +328,7 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := d.Set("enabled_policy_types", enabledPolicyTypes); err != nil {
-		return fmt.Errorf("error setting enabled_policy_types: %s", err)
+		return fmt.Errorf("error setting enabled_policy_types: %w", err)
 	}
 
 	return nil
@@ -338,7 +351,7 @@ func resourceOrganizationUpdate(d *schema.ResourceData, meta interface{}) error 
 			log.Printf("[DEBUG] Disabling AWS Service Access in Organization: %s", input)
 			_, err := conn.DisableAWSServiceAccess(input)
 			if err != nil {
-				return fmt.Errorf("error disabling AWS Service Access (%s) in Organization: %s", principal, err)
+				return fmt.Errorf("error disabling AWS Service Access (%s) in Organization: %w", principal, err)
 			}
 		}
 
@@ -351,7 +364,7 @@ func resourceOrganizationUpdate(d *schema.ResourceData, meta interface{}) error 
 			log.Printf("[DEBUG] Enabling AWS Service Access in Organization: %s", input)
 			_, err := conn.EnableAWSServiceAccess(input)
 			if err != nil {
-				return fmt.Errorf("error enabling AWS Service Access (%s) in Organization: %s", principal, err)
+				return fmt.Errorf("error enabling AWS Service Access (%s) in Organization: %w", principal, err)
 			}
 		}
 	}
@@ -371,11 +384,11 @@ func resourceOrganizationUpdate(d *schema.ResourceData, meta interface{}) error 
 
 			log.Printf("[DEBUG] Disabling Policy Type in Organization: %s", input)
 			if _, err := conn.DisablePolicyType(input); err != nil {
-				return fmt.Errorf("error disabling policy type (%s) in Organization (%s) Root (%s): %s", policyType, d.Id(), defaultRootID, err)
+				return fmt.Errorf("error disabling policy type (%s) in Organization (%s) Root (%s): %w", policyType, d.Id(), defaultRootID, err)
 			}
 
 			if err := waitForOrganizationDefaultRootPolicyTypeDisable(conn, policyType); err != nil {
-				return fmt.Errorf("error waiting for policy type (%s) disabling in Organization (%s) Root (%s): %s", policyType, d.Id(), defaultRootID, err)
+				return fmt.Errorf("error waiting for policy type (%s) disabling in Organization (%s) Root (%s): %w", policyType, d.Id(), defaultRootID, err)
 			}
 		}
 
@@ -388,11 +401,11 @@ func resourceOrganizationUpdate(d *schema.ResourceData, meta interface{}) error 
 
 			log.Printf("[DEBUG] Enabling Policy Type in Organization: %s", input)
 			if _, err := conn.EnablePolicyType(input); err != nil {
-				return fmt.Errorf("error enabling policy type (%s) in Organization (%s) Root (%s): %s", policyType, d.Id(), defaultRootID, err)
+				return fmt.Errorf("error enabling policy type (%s) in Organization (%s) Root (%s): %w", policyType, d.Id(), defaultRootID, err)
 			}
 
 			if err := waitForOrganizationDefaultRootPolicyTypeEnable(conn, policyType); err != nil {
-				return fmt.Errorf("error waiting for policy type (%s) enabling in Organization (%s) Root (%s): %s", policyType, d.Id(), defaultRootID, err)
+				return fmt.Errorf("error waiting for policy type (%s) enabling in Organization (%s) Root (%s): %w", policyType, d.Id(), defaultRootID, err)
 			}
 		}
 	}
@@ -413,7 +426,7 @@ func resourceOrganizationDelete(d *schema.ResourceData, meta interface{}) error 
 
 	_, err := conn.DeleteOrganization(&organizations.DeleteOrganizationInput{})
 	if err != nil {
-		return fmt.Errorf("Error deleting Organization: %s", err)
+		return fmt.Errorf("error deleting Organization: %w", err)
 	}
 
 	return nil
@@ -479,7 +492,7 @@ func getOrganizationDefaultRoot(conn *organizations.Organizations) (*organizatio
 	}
 
 	if len(roots) == 0 {
-		return nil, fmt.Errorf("no roots found")
+		return nil, errNoRootsFound
 	}
 
 	return roots[0], nil
@@ -489,7 +502,7 @@ func getOrganizationDefaultRootPolicyTypeRefreshFunc(conn *organizations.Organiz
 	return func() (interface{}, string, error) {
 		defaultRoot, err := getOrganizationDefaultRoot(conn)
 		if err != nil {
-			return nil, "", fmt.Errorf("error getting default root: %s", err)
+			return nil, "", fmt.Errorf("error getting default root: %w", err)
 		}
 
 		for _, pt := range defaultRoot.PolicyTypes {
@@ -513,7 +526,7 @@ func waitForOrganizationDefaultRootPolicyTypeDisable(conn *organizations.Organiz
 		Timeout: 5 * time.Minute,
 	}
 
-	_, err := stateConf.WaitForState()
+	_, err := stateConf.WaitForStateContext(context.Background())
 
 	return err
 }
@@ -529,7 +542,7 @@ func waitForOrganizationDefaultRootPolicyTypeEnable(conn *organizations.Organiza
 		Timeout: 5 * time.Minute,
 	}
 
-	_, err := stateConf.WaitForState()
+	_, err := stateConf.WaitForStateContext(context.Background())
 
 	return err
 }

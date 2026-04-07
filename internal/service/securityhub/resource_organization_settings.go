@@ -1,6 +1,7 @@
 package securityhub
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -9,6 +10,11 @@ import (
 	"github.com/cloudposse/terraform-provider-awsutils/internal/flex"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+var (
+	errDesignatingMembers = errors.New("error designating security hub administrator account members")
+	errRemovingMembers    = errors.New("error removing security hub administrator account members")
 )
 
 func ResourceSecurityHubOrganizationSettings() *schema.Resource {
@@ -69,10 +75,12 @@ func resourceAwsSecurityHubOrganizationSettingsRead(d *schema.ResourceData, meta
 
 	enabled, err := IsSecurityHubOrganizationSettingsAutoEnabled(conn)
 	if err != nil {
-		return fmt.Errorf("error reading security hub organization settings: %s", err)
+		return fmt.Errorf("error reading security hub organization settings: %w", err)
 	}
 
-	d.Set("auto_enable_new_accounts", enabled)
+	if err := d.Set("auto_enable_new_accounts", enabled); err != nil {
+		return fmt.Errorf("error setting auto_enable_new_accounts: %w", err)
+	}
 
 	return nil
 }
@@ -84,7 +92,7 @@ func resourceAwsSecurityHubOrganizationSettingsUpdate(d *schema.ResourceData, me
 		autoEnable := new.(bool)
 
 		if err := updateSecurityHubOrganizationSettings(conn, autoEnable); err != nil {
-			return fmt.Errorf("error updating security hub organization settings: %s", err)
+			return fmt.Errorf("error updating security hub organization settings: %w", err)
 		}
 	}
 
@@ -97,14 +105,14 @@ func resourceAwsSecurityHubOrganizationSettingsUpdate(d *schema.ResourceData, me
 		membersToAdd := flex.Diff(newExpanded, oldExpanded)
 		if len(membersToAdd) > 0 {
 			if err := addSecurityHubOrganizationMembers(conn, membersToAdd); err != nil {
-				return fmt.Errorf("error setting security hub organization members: %s", err)
+				return fmt.Errorf("error setting security hub organization members: %w", err)
 			}
 		}
 
 		membersToRemove := flex.Diff(oldExpanded, newExpanded)
 		if len(membersToRemove) > 0 {
 			if err := removeSecurityHubOrganizationMembers(conn, membersToRemove); err != nil {
-				return fmt.Errorf("error removing security hub organization members: %s", err)
+				return fmt.Errorf("error removing security hub organization members: %w", err)
 			}
 		}
 	}
@@ -120,7 +128,7 @@ func updateSecurityHubOrganizationSettings(conn *securityhub.SecurityHub, autoEn
 		AutoEnable: aws.Bool(autoEnable),
 	}
 	if _, err := conn.UpdateOrganizationConfiguration(updateOrgSettingsInput); err != nil {
-		return fmt.Errorf("error updating security hub administrator account settings: %s", err)
+		return fmt.Errorf("error updating security hub administrator account settings: %w", err)
 	}
 	return nil
 }
@@ -151,9 +159,9 @@ func addSecurityHubOrganizationMembers(conn *securityhub.SecurityHub, memberAcco
 
 		if result, err := conn.CreateMembers(createMembersInput); err != nil || len(result.UnprocessedAccounts) > 0 {
 			if err != nil {
-				return fmt.Errorf("error designating security hub administrator account members: %s", err)
+				return fmt.Errorf("error designating security hub administrator account members: %w", err)
 			}
-			return fmt.Errorf("error designating security hub administrator account members: %s", result.UnprocessedAccounts)
+			return fmt.Errorf("%w: %v", errDesignatingMembers, result.UnprocessedAccounts)
 		}
 	}
 	return nil
@@ -171,16 +179,14 @@ func removeSecurityHubOrganizationMembers(conn *securityhub.SecurityHub, memberA
 		}
 
 		if _, err := conn.DisassociateMembers(disassociateMembersInput); err != nil {
-			if err != nil {
-				return fmt.Errorf("error disassociating security hub administrator account members: %s", err)
-			}
+			return fmt.Errorf("error disassociating security hub administrator account members: %w", err)
 		}
 
 		if result, err := conn.DeleteMembers(deleteMembersInput); err != nil || len(result.UnprocessedAccounts) > 0 {
 			if err != nil {
-				return fmt.Errorf("error removing security hub administrator account members: %s", err)
+				return fmt.Errorf("error removing security hub administrator account members: %w", err)
 			}
-			return fmt.Errorf("error removing security hub administrator account members: %s", result.UnprocessedAccounts)
+			return fmt.Errorf("%w: %v", errRemovingMembers, result.UnprocessedAccounts)
 		}
 	}
 	return nil

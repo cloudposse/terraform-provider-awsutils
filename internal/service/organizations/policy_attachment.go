@@ -1,6 +1,8 @@
 package organizations
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -15,13 +17,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+var errInvalidPolicyAttachmentID = errors.New("expected ID in format of TARGETID:POLICYID")
+
 func ResourcePolicyAttachment() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePolicyAttachmentCreate,
 		Read:   resourcePolicyAttachmentRead,
 		Delete: resourcePolicyAttachmentDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -52,7 +56,7 @@ func resourcePolicyAttachmentCreate(d *schema.ResourceData, meta interface{}) er
 
 	log.Printf("[DEBUG] Creating Organizations Policy Attachment: %s", input)
 
-	err := resource.Retry(4*time.Minute, func() *resource.RetryError {
+	err := resource.RetryContext(context.Background(), 4*time.Minute, func() *resource.RetryError {
 		_, err := conn.AttachPolicy(input)
 		if err != nil {
 			if tfawserr.ErrCodeEquals(err, organizations.ErrCodeFinalizingOrganizationException) {
@@ -70,7 +74,7 @@ func resourcePolicyAttachmentCreate(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if err != nil {
-		return fmt.Errorf("error creating Organizations Policy Attachment: %s", err)
+		return fmt.Errorf("error creating Organizations Policy Attachment: %w", err)
 	}
 
 	d.SetId(fmt.Sprintf("%s:%s", targetID, policyID))
@@ -117,8 +121,12 @@ func resourcePolicyAttachmentRead(d *schema.ResourceData, meta interface{}) erro
 		return nil
 	}
 
-	d.Set("policy_id", policyID)
-	d.Set("target_id", targetID)
+	if err := d.Set("policy_id", policyID); err != nil {
+		return fmt.Errorf("error setting policy_id: %w", err)
+	}
+	if err := d.Set("target_id", targetID); err != nil {
+		return fmt.Errorf("error setting target_id: %w", err)
+	}
 	return nil
 }
 
@@ -152,7 +160,7 @@ func resourcePolicyAttachmentDelete(d *schema.ResourceData, meta interface{}) er
 func DecodePolicyAttachmentID(id string) (string, string, error) {
 	idParts := strings.Split(id, ":")
 	if len(idParts) != 2 {
-		return "", "", fmt.Errorf("expected ID in format of TARGETID:POLICYID, received: %s", id)
+		return "", "", fmt.Errorf("%w, received: %s", errInvalidPolicyAttachmentID, id)
 	}
 	return idParts[0], idParts[1], nil
 }

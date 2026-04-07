@@ -1,12 +1,15 @@
 package create
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
+var errUnsupportedAttributeType = errors.New("attribute is of unsupported type")
 
 // AttributeMap represents a map of Terraform resource attribute name to AWS API attribute name.
 // Useful for SQS Queue or SNS Topic attribute handling.
@@ -63,14 +66,14 @@ func (m AttributeMap) ApiAttributesToResourceData(apiAttributes map[string]strin
 			case schema.TypeString:
 				tfAttributeValue = v
 			default:
-				return fmt.Errorf("attribute %s is of unsupported type: %d", tfAttributeName, t)
+				return fmt.Errorf("%w: %s (type %d)", errUnsupportedAttributeType, tfAttributeName, t)
 			}
 
 			if err := d.Set(tfAttributeName, tfAttributeValue); err != nil {
 				return fmt.Errorf("error setting %s: %w", tfAttributeName, err)
 			}
-		} else {
-			d.Set(tfAttributeName, nil)
+		} else if err := d.Set(tfAttributeName, nil); err != nil {
+			return fmt.Errorf("error setting %s: %w", tfAttributeName, err)
 		}
 	}
 
@@ -98,7 +101,7 @@ func (m AttributeMap) ResourceDataToApiAttributesCreate(d *schema.ResourceData) 
 		case schema.TypeString:
 			apiAttributeValue = v.(string)
 		default:
-			return nil, fmt.Errorf("attribute %s is of unsupported type: %d", tfAttributeName, t)
+			return nil, fmt.Errorf("%w: %s (type %d)", errUnsupportedAttributeType, tfAttributeName, t)
 		}
 
 		if apiAttributeValue != "" {
@@ -128,7 +131,7 @@ func (m AttributeMap) ResourceDataToApiAttributesUpdate(d *schema.ResourceData) 
 			case schema.TypeString:
 				apiAttributeValue = v.(string)
 			default:
-				return nil, fmt.Errorf("attribute %s is of unsupported type: %d", tfAttributeName, t)
+				return nil, fmt.Errorf("%w: %s (type %d)", errUnsupportedAttributeType, tfAttributeName, t)
 			}
 
 			apiAttributes[attributeInfo.apiAttributeName] = apiAttributeValue

@@ -1,7 +1,7 @@
 package conns
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,6 +11,8 @@ import (
 	awsbase "github.com/hashicorp/aws-sdk-go-base/v2"
 	awsbasev1 "github.com/hashicorp/aws-sdk-go-base/v2/awsv1shim/v2"
 )
+
+var errNoEC2PlatformsDetected = errors.New("no EC2 platforms detected")
 
 func NewSessionForRegion(cfg *aws.Config, region, terraformVersion string) (*session.Session, error) {
 	session, err := session.NewSession(cfg)
@@ -66,7 +68,7 @@ func GetSupportedEC2Platforms(conn *ec2.EC2) ([]string, error) {
 	}
 
 	if len(platforms) == 0 {
-		return nil, fmt.Errorf("no EC2 platforms detected")
+		return nil, errNoEC2PlatformsDetected
 	}
 
 	return platforms, nil

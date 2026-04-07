@@ -1,6 +1,7 @@
 package verify
 
 import (
+	"context"
 	"time"
 
 	"github.com/cloudposse/terraform-provider-awsutils/internal/tfresource"
@@ -10,7 +11,7 @@ import (
 
 func RetryOnAWSCode(code string, f func() (interface{}, error)) (interface{}, error) {
 	var resp interface{}
-	err := resource.Retry(2*time.Minute, func() *resource.RetryError {
+	err := resource.RetryContext(context.Background(), 2*time.Minute, func() *resource.RetryError {
 		var err error
 		resp, err = f()
 		if err != nil {

@@ -2,6 +2,7 @@ package organizations
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -15,6 +16,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
+
+var errInvalidDelegatedAdminID = errors.New("expected ID in the form of account_id/service_principal")
 
 func ResourceDelegatedAdministrator() *schema.Resource {
 	return &schema.Resource{
@@ -119,15 +122,33 @@ func resourceDelegatedAdministratorRead(ctx context.Context, d *schema.ResourceD
 		return nil
 	}
 
-	d.Set("arn", delegatedAccount.Arn)
-	d.Set("delegation_enabled_date", aws.TimeValue(delegatedAccount.DelegationEnabledDate).Format(time.RFC3339))
-	d.Set("email", delegatedAccount.Email)
-	d.Set("joined_method", delegatedAccount.JoinedMethod)
-	d.Set("joined_timestamp", aws.TimeValue(delegatedAccount.JoinedTimestamp).Format(time.RFC3339))
-	d.Set("name", delegatedAccount.Name)
-	d.Set("status", delegatedAccount.Status)
-	d.Set("account_id", accountID)
-	d.Set("service_principal", servicePrincipal)
+	if err := d.Set("arn", delegatedAccount.Arn); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting arn: %w", err))
+	}
+	if err := d.Set("delegation_enabled_date", aws.TimeValue(delegatedAccount.DelegationEnabledDate).Format(time.RFC3339)); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting delegation_enabled_date: %w", err))
+	}
+	if err := d.Set("email", delegatedAccount.Email); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting email: %w", err))
+	}
+	if err := d.Set("joined_method", delegatedAccount.JoinedMethod); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting joined_method: %w", err))
+	}
+	if err := d.Set("joined_timestamp", aws.TimeValue(delegatedAccount.JoinedTimestamp).Format(time.RFC3339)); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting joined_timestamp: %w", err))
+	}
+	if err := d.Set("name", delegatedAccount.Name); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting name: %w", err))
+	}
+	if err := d.Set("status", delegatedAccount.Status); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting status: %w", err))
+	}
+	if err := d.Set("account_id", accountID); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting account_id: %w", err))
+	}
+	if err := d.Set("service_principal", servicePrincipal); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting service_principal: %w", err))
+	}
 
 	return nil
 }
@@ -154,7 +175,7 @@ func resourceDelegatedAdministratorDelete(ctx context.Context, d *schema.Resourc
 func DecodeOrganizationDelegatedAdministratorID(id string) (string, string, error) {
 	idParts := strings.Split(id, "/")
 	if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-		return "", "", fmt.Errorf("expected ID in the form of account_id/service_principal, given: %q", id)
+		return "", "", fmt.Errorf("%w, given: %q", errInvalidDelegatedAdminID, id)
 	}
 	return idParts[0], idParts[1], nil
 }

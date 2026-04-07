@@ -49,7 +49,7 @@ func (tags KeyValueTags) IgnoreAWS() KeyValueTags {
 	return result
 }
 
-// GetTags is convenience method that returns the DefaultConfig's Tags, if any
+// GetTags is convenience method that returns the DefaultConfig's Tags, if any.
 func (dc *DefaultConfig) GetTags() KeyValueTags {
 	if dc == nil {
 		return nil
@@ -71,7 +71,7 @@ func (dc *DefaultConfig) MergeTags(tags KeyValueTags) KeyValueTags {
 
 // TagsEqual returns true if the given configuration's Tags
 // are equal to those passed in as an argument;
-// otherwise returns false
+// otherwise returns false.
 func (dc *DefaultConfig) TagsEqual(tags KeyValueTags) bool {
 	if dc == nil || dc.Tags == nil {
 		return tags == nil
@@ -457,11 +457,11 @@ func (tags KeyValueTags) Hash() int {
 
 	for k, v := range tags {
 		if v == nil || v.Value == nil {
-			hash = hash ^ create.StringHashcode(k)
+			hash ^= create.StringHashcode(k)
 			continue
 		}
 
-		hash = hash ^ create.StringHashcode(fmt.Sprintf("%s-%s", k, *v.Value))
+		hash ^= create.StringHashcode(fmt.Sprintf("%s-%s", k, *v.Value))
 	}
 
 	return hash

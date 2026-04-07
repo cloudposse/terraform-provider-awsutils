@@ -1,11 +1,14 @@
 package nullable
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
+var errExpectedString = errors.New("expected type to be string")
 
 const (
 	TypeNullableBool = schema.TypeString
@@ -38,7 +41,7 @@ func NewBool(v bool) Bool {
 func ValidateTypeStringNullableBool(v interface{}, k string) (ws []string, es []error) {
 	value, ok := v.(string)
 	if !ok {
-		es = append(es, fmt.Errorf("expected type of %s to be string", k))
+		es = append(es, fmt.Errorf("%w: %s", errExpectedString, k))
 		return ws, es
 	}
 

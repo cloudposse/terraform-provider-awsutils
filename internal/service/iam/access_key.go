@@ -5,7 +5,9 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"fmt"
+	"log"
 	"math"
 	"time"
 
@@ -16,6 +18,11 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+)
+
+var (
+	errEmptyGetAccessKeyLastUsedResponse = errors.New("error fetching IAM Access Key username via GetAccessKeyLastUsed: empty response")
+	errMissingSecretAccessKey            = errors.New("CreateAccessKey response did not contain a Secret Access Key as expected")
 )
 
 func ResourceExpiringAccessKey() *schema.Resource {
@@ -45,10 +52,12 @@ func ResourceExpiringAccessKey() *schema.Resource {
 				}
 
 				if output == nil || output.UserName == nil {
-					return nil, fmt.Errorf("error fetching IAM Access Key (%s) username via GetAccessKeyLastUsed: empty response", d.Id())
+					return nil, fmt.Errorf("%w: %s", errEmptyGetAccessKeyLastUsedResponse, d.Id())
 				}
 
-				d.Set("user", output.UserName)
+				if err := d.Set("user", output.UserName); err != nil {
+					return nil, fmt.Errorf("error setting user: %w", err)
+				}
 
 				return []*schema.ResourceData{d}, nil
 			},
@@ -121,11 +130,13 @@ func resourceAccessKeyDiff(ctx context.Context, d *schema.ResourceDiff, meta int
 		now := time.Now().UTC()
 		rotationTimestamp, err := time.Parse(time.RFC3339, v.(string))
 		if err != nil {
-			return fmt.Errorf("error parsing expiration_date (%s): %s", v.(string), err)
+			return fmt.Errorf("error parsing expiration_date (%s): %w", v.(string), err)
 		}
 
 		if now.After(rotationTimestamp) {
-			d.SetNewComputed("expiration_date")
+			if err := d.SetNewComputed("expiration_date"); err != nil {
+				return fmt.Errorf("error setting expiration_date as new computed: %w", err)
+			}
 		}
 	}
 	return nil
@@ -141,50 +152,72 @@ func resourceAccessKeyCreate(d *schema.ResourceData, meta interface{}) error {
 	createResp, err := conn.CreateAccessKey(request)
 	if err != nil {
 		return fmt.Errorf(
-			"Error creating access key for user %s: %s",
+			"error creating access key for user %s: %w",
 			*request.UserName,
 			err,
 		)
 	}
 
+	if createResp.AccessKey == nil || createResp.AccessKey.SecretAccessKey == nil {
+		return errMissingSecretAccessKey
+	}
+
 	d.SetId(aws.StringValue(createResp.AccessKey.AccessKeyId))
 
-	if createResp.AccessKey == nil || createResp.AccessKey.SecretAccessKey == nil {
-		return fmt.Errorf("CreateAccessKey response did not contain a Secret Access Key as expected")
+	// cleanupOnError attempts a best-effort delete of the just-created access
+	// key when a post-create step fails. The original error is always returned;
+	// any deletion error is logged but swallowed so the caller still sees the
+	// actionable failure.
+	cleanupOnError := func(origErr error) error {
+		_, delErr := conn.DeleteAccessKey(&iam.DeleteAccessKeyInput{
+			AccessKeyId: createResp.AccessKey.AccessKeyId,
+			UserName:    request.UserName,
+		})
+		if delErr != nil {
+			log.Printf("[WARN] failed to clean up IAM access key %s after post-create error: %s",
+				aws.StringValue(createResp.AccessKey.AccessKeyId), delErr)
+		}
+		return origErr
 	}
 
 	sesSMTPPasswordV4, err := SessmTPPasswordFromSecretKeySigV4(createResp.AccessKey.SecretAccessKey, meta.(*conns.AWSClient).Region)
 	if err != nil {
-		return fmt.Errorf("error getting SES SigV4 SMTP Password from Secret Access Key: %s", err)
+		return cleanupOnError(fmt.Errorf("error getting SES SigV4 SMTP Password from Secret Access Key: %w", err))
 	}
 
 	if v, ok := d.GetOk("pgp_key"); ok {
 		pgpKey := v.(string)
 		encryptionKey, err := RetrieveGPGKey(pgpKey)
 		if err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 		fingerprint, encrypted, err := EncryptValue(encryptionKey, *createResp.AccessKey.SecretAccessKey, "IAM Access Key Secret")
 		if err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 
-		d.Set("key_fingerprint", fingerprint)
-		d.Set("encrypted_secret", encrypted)
+		if err := d.Set("key_fingerprint", fingerprint); err != nil {
+			return cleanupOnError(fmt.Errorf("error setting key_fingerprint: %w", err))
+		}
+		if err := d.Set("encrypted_secret", encrypted); err != nil {
+			return cleanupOnError(fmt.Errorf("error setting encrypted_secret: %w", err))
+		}
 
 		_, encrypted, err = EncryptValue(encryptionKey, sesSMTPPasswordV4, "SES SMTP password")
 		if err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 
-		d.Set("encrypted_ses_smtp_password_v4", encrypted)
+		if err := d.Set("encrypted_ses_smtp_password_v4", encrypted); err != nil {
+			return cleanupOnError(fmt.Errorf("error setting encrypted_ses_smtp_password_v4: %w", err))
+		}
 	} else {
 		if err := d.Set("secret", createResp.AccessKey.SecretAccessKey); err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 
 		if err := d.Set("ses_smtp_password_v4", sesSMTPPasswordV4); err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 	}
 
@@ -225,7 +258,7 @@ func resourceAccessKeyRead(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return fmt.Errorf("Error reading IAM access key: %s", err)
+		return fmt.Errorf("error reading IAM access key: %w", err)
 	}
 
 	for _, key := range getResp.AccessKeyMetadata {
@@ -246,15 +279,27 @@ func resourceAccessKeyReadResult(d *schema.ResourceData, key *iam.AccessKeyMetad
 		createDate := key.CreateDate
 		expirationDate := createDate.Add(time.Duration(d.Get("max_age").(int)) * time.Second)
 
-		d.Set("create_date", aws.TimeValue(createDate).Format(time.RFC3339))
-		d.Set("expiration_date", expirationDate.Format(time.RFC3339))
+		if err := d.Set("create_date", aws.TimeValue(createDate).Format(time.RFC3339)); err != nil {
+			return fmt.Errorf("error setting create_date: %w", err)
+		}
+		if err := d.Set("expiration_date", expirationDate.Format(time.RFC3339)); err != nil {
+			return fmt.Errorf("error setting expiration_date: %w", err)
+		}
 	} else {
-		d.Set("create_date", nil)
-		d.Set("expiration_date", nil)
+		if err := d.Set("create_date", nil); err != nil {
+			return fmt.Errorf("error setting create_date: %w", err)
+		}
+		if err := d.Set("expiration_date", nil); err != nil {
+			return fmt.Errorf("error setting expiration_date: %w", err)
+		}
 	}
 
-	d.Set("status", key.Status)
-	d.Set("user", key.UserName)
+	if err := d.Set("status", key.Status); err != nil {
+		return fmt.Errorf("error setting status: %w", err)
+	}
+	if err := d.Set("user", key.UserName); err != nil {
+		return fmt.Errorf("error setting user: %w", err)
+	}
 
 	return nil
 }
@@ -280,7 +325,7 @@ func resourceAccessKeyDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if _, err := conn.DeleteAccessKey(request); err != nil {
-		return fmt.Errorf("Error deleting access key %s: %s", d.Id(), err)
+		return fmt.Errorf("error deleting access key %s: %w", d.Id(), err)
 	}
 	return nil
 }
@@ -293,7 +338,7 @@ func resourceAccessKeyStatusUpdate(conn *iam.IAM, d *schema.ResourceData) error 
 	}
 
 	if _, err := conn.UpdateAccessKey(request); err != nil {
-		return fmt.Errorf("Error updating access key %s: %s", d.Id(), err)
+		return fmt.Errorf("error updating access key %s: %w", d.Id(), err)
 	}
 	return nil
 }

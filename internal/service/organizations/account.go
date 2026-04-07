@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -19,6 +20,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+var errAccountCreateFailed = errors.New("account create failed")
+
 func ResourceAccount() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceAccountCreate,
@@ -26,7 +29,7 @@ func ResourceAccount() *schema.Resource {
 		Update: resourceAccountUpdate,
 		Delete: resourceAccountDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -137,7 +140,9 @@ func resourceAccountCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(aws.StringValue(output.AccountId))
-	d.Set("govcloud_id", output.GovCloudAccountId)
+	if err := d.Set("govcloud_id", output.GovCloudAccountId); err != nil {
+		return fmt.Errorf("error setting govcloud_id: %w", err)
+	}
 
 	if v, ok := d.GetOk("parent_id"); ok {
 		oldParentAccountID, err := findParentAccountID(conn, d.Id())
@@ -184,13 +189,27 @@ func resourceAccountRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("error reading AWS Organizations Account (%s) parent: %w", d.Id(), err)
 	}
 
-	d.Set("arn", account.Arn)
-	d.Set("email", account.Email)
-	d.Set("joined_method", account.JoinedMethod)
-	d.Set("joined_timestamp", aws.TimeValue(account.JoinedTimestamp).Format(time.RFC3339))
-	d.Set("name", account.Name)
-	d.Set("parent_id", parentAccountID)
-	d.Set("status", account.Status)
+	if err := d.Set("arn", account.Arn); err != nil {
+		return fmt.Errorf("error setting arn: %w", err)
+	}
+	if err := d.Set("email", account.Email); err != nil {
+		return fmt.Errorf("error setting email: %w", err)
+	}
+	if err := d.Set("joined_method", account.JoinedMethod); err != nil {
+		return fmt.Errorf("error setting joined_method: %w", err)
+	}
+	if err := d.Set("joined_timestamp", aws.TimeValue(account.JoinedTimestamp).Format(time.RFC3339)); err != nil {
+		return fmt.Errorf("error setting joined_timestamp: %w", err)
+	}
+	if err := d.Set("name", account.Name); err != nil {
+		return fmt.Errorf("error setting name: %w", err)
+	}
+	if err := d.Set("parent_id", parentAccountID); err != nil {
+		return fmt.Errorf("error setting parent_id: %w", err)
+	}
+	if err := d.Set("status", account.Status); err != nil {
+		return fmt.Errorf("error setting status: %w", err)
+	}
 
 	tags, err := ListTags(conn, d.Id())
 	if err != nil {
@@ -274,7 +293,7 @@ func resourceAccountDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func createAccount(conn *organizations.Organizations, name, email string, iamUserAccessToBilling, roleName *string, tags []*organizations.Tag, govCloud bool) (*organizations.CreateAccountStatus, error) {
+func createAccount(conn *organizations.Organizations, name, email string, iamUserAccessToBilling, roleName *string, tags []*organizations.Tag, govCloud bool) (*organizations.CreateAccountStatus, error) { //nolint:revive // argument-limit: thin wrapper around AWS SDK CreateAccount inputs
 	if govCloud {
 		input := &organizations.CreateGovCloudAccountInput{
 			AccountName: aws.String(name),
@@ -416,11 +435,11 @@ func waitAccountCreated(conn *organizations.Organizations, id string) (*organiza
 		Timeout:      5 * time.Minute,
 	}
 
-	outputRaw, err := stateConf.WaitForState()
+	outputRaw, err := stateConf.WaitForStateContext(context.Background())
 
 	if output, ok := outputRaw.(*organizations.CreateAccountStatus); ok {
 		if state := aws.StringValue(output.State); state == organizations.CreateAccountStateFailed {
-			tfresource.SetLastError(err, errors.New(aws.StringValue(output.FailureReason)))
+			tfresource.SetLastError(err, fmt.Errorf("%w: %s", errAccountCreateFailed, aws.StringValue(output.FailureReason)))
 		}
 
 		return output, err
@@ -454,7 +473,7 @@ func waitAccountDeleted(conn *organizations.Organizations, id string) (*organiza
 		Timeout:      5 * time.Minute,
 	}
 
-	outputRaw, err := stateConf.WaitForState()
+	outputRaw, err := stateConf.WaitForStateContext(context.Background())
 
 	if output, ok := outputRaw.(*organizations.Account); ok {
 		return output, err

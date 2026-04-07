@@ -2,17 +2,22 @@ package jsonutil
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 )
 
-// Decodes/Unmarshals the given io.Reader pointing to a JSON, into a desired object
+var (
+	errReaderNil = errors.New("'io.Reader' being decoded is nil")
+	errOutNil    = errors.New("output parameter 'out' is nil")
+)
+
+// Decodes/Unmarshals the given io.Reader pointing to a JSON, into a desired object.
 func DecodeJSONFromReader(r io.Reader, out interface{}) error {
 	if r == nil {
-		return fmt.Errorf("'io.Reader' being decoded is nil")
+		return errReaderNil
 	}
 	if out == nil {
-		return fmt.Errorf("output parameter 'out' is nil")
+		return errOutNil
 	}
 
 	dec := json.NewDecoder(r)

@@ -1,10 +1,16 @@
 package nullable
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+var (
+	errIntAtLeast = errors.New("value below minimum")
+	errIntBetween = errors.New("value out of range")
 )
 
 const (
@@ -34,7 +40,7 @@ func (i Int) Value() (int64, bool, error) {
 func ValidateTypeStringNullableInt(v interface{}, k string) (ws []string, es []error) {
 	value, ok := v.(string)
 	if !ok {
-		es = append(es, fmt.Errorf("expected type of %s to be string", k))
+		es = append(es, fmt.Errorf("%w: %s", errExpectedString, k))
 		return ws, es
 	}
 
@@ -51,11 +57,11 @@ func ValidateTypeStringNullableInt(v interface{}, k string) (ws []string, es []e
 
 // ValidateTypeStringNullableIntAtLeast provides custom error messaging for TypeString ints
 // Some arguments require an int value or unspecified, empty field.
-func ValidateTypeStringNullableIntAtLeast(min int) schema.SchemaValidateFunc {
+func ValidateTypeStringNullableIntAtLeast(min int) schema.SchemaValidateFunc { //nolint:staticcheck // SA1019: experimental helper preserves legacy validate signature
 	return func(i interface{}, k string) (ws []string, es []error) {
 		value, ok := i.(string)
 		if !ok {
-			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			es = append(es, fmt.Errorf("%w: %s", errExpectedString, k))
 			return ws, es
 		}
 
@@ -70,7 +76,7 @@ func ValidateTypeStringNullableIntAtLeast(min int) schema.SchemaValidateFunc {
 		}
 
 		if v < int64(min) {
-			es = append(es, fmt.Errorf("expected %s to be at least (%d), got %d", k, min, v))
+			es = append(es, fmt.Errorf("%w: %s expected at least (%d), got %d", errIntAtLeast, k, min, v))
 		}
 
 		return ws, es
@@ -79,11 +85,11 @@ func ValidateTypeStringNullableIntAtLeast(min int) schema.SchemaValidateFunc {
 
 // ValidateTypeStringNullableIntBetween provides custom error messaging for TypeString ints
 // Some arguments require an int value or unspecified, empty field.
-func ValidateTypeStringNullableIntBetween(min int, max int) schema.SchemaValidateFunc {
+func ValidateTypeStringNullableIntBetween(min int, max int) schema.SchemaValidateFunc { //nolint:staticcheck // SA1019: experimental helper preserves legacy validate signature
 	return func(i interface{}, k string) (ws []string, es []error) {
 		value, ok := i.(string)
 		if !ok {
-			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			es = append(es, fmt.Errorf("%w: %s", errExpectedString, k))
 			return ws, es
 		}
 
@@ -98,7 +104,7 @@ func ValidateTypeStringNullableIntBetween(min int, max int) schema.SchemaValidat
 		}
 
 		if v < int64(min) || v > int64(max) {
-			es = append(es, fmt.Errorf("expected %s to be at between (%d) and (%d), got %d", k, min, max, v))
+			es = append(es, fmt.Errorf("%w: %s expected between (%d) and (%d), got %d", errIntBetween, k, min, max, v))
 		}
 
 		return ws, es

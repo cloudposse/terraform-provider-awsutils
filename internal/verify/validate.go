@@ -1,6 +1,7 @@
 package verify
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"regexp"
@@ -19,6 +20,14 @@ var (
 	regionRegexp    = regexp.MustCompile(`^[a-z]{2}(-[a-z]+)+-\d$`)
 )
 
+const (
+	launchTemplateIDMaxLen     = 255
+	launchTemplatePrefixMaxLen = 99
+	launchTemplateNameMaxLen   = 125
+)
+
+var errValidation = errors.New("validation error")
+
 func ValidARN(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
 
@@ -28,26 +37,26 @@ func ValidARN(v interface{}, k string) (ws []string, errors []error) {
 
 	parsedARN, err := arn.Parse(value)
 	if err != nil {
-		errors = append(errors, fmt.Errorf("%q (%s) is an invalid ARN: %s", k, value, err))
+		errors = append(errors, fmt.Errorf("%w: %q (%s) is an invalid ARN: %w", errValidation, k, value, err))
 		return ws, errors
 	}
 
 	if parsedARN.Partition == "" {
-		errors = append(errors, fmt.Errorf("%q (%s) is an invalid ARN: missing partition value", k, value))
+		errors = append(errors, fmt.Errorf("%w: %q (%s) is an invalid ARN: missing partition value", errValidation, k, value))
 	} else if !partitionRegexp.MatchString(parsedARN.Partition) {
-		errors = append(errors, fmt.Errorf("%q (%s) is an invalid ARN: invalid partition value (expecting to match regular expression: %s)", k, value, partitionRegexp))
+		errors = append(errors, fmt.Errorf("%w: %q (%s) is an invalid ARN: invalid partition value (expecting to match regular expression: %s)", errValidation, k, value, partitionRegexp))
 	}
 
 	if parsedARN.Region != "" && !regionRegexp.MatchString(parsedARN.Region) {
-		errors = append(errors, fmt.Errorf("%q (%s) is an invalid ARN: invalid region value (expecting to match regular expression: %s)", k, value, regionRegexp))
+		errors = append(errors, fmt.Errorf("%w: %q (%s) is an invalid ARN: invalid region value (expecting to match regular expression: %s)", errValidation, k, value, regionRegexp))
 	}
 
 	if parsedARN.AccountID != "" && !accountIDRegexp.MatchString(parsedARN.AccountID) {
-		errors = append(errors, fmt.Errorf("%q (%s) is an invalid ARN: invalid account ID value (expecting to match regular expression: %s)", k, value, accountIDRegexp))
+		errors = append(errors, fmt.Errorf("%w: %q (%s) is an invalid ARN: invalid account ID value (expecting to match regular expression: %s)", errValidation, k, value, accountIDRegexp))
 	}
 
 	if parsedARN.Resource == "" {
-		errors = append(errors, fmt.Errorf("%q (%s) is an invalid ARN: missing resource value", k, value))
+		errors = append(errors, fmt.Errorf("%w: %q (%s) is an invalid ARN: missing resource value", errValidation, k, value))
 	}
 
 	return ws, errors
@@ -60,8 +69,8 @@ func ValidAccountID(v interface{}, k string) (ws []string, errors []error) {
 	pattern := `^\d{12}$`
 	if !regexp.MustCompile(pattern).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
-			"%q doesn't look like AWS Account ID (exactly 12 digits): %q",
-			k, value))
+			"%w: %q doesn't look like AWS Account ID (exactly 12 digits): %q",
+			errValidation, k, value))
 	}
 
 	return ws, errors
@@ -69,22 +78,22 @@ func ValidAccountID(v interface{}, k string) (ws []string, errors []error) {
 
 // validateCIDRBlock validates that the specified CIDR block is valid:
 // - The CIDR block parses to an IP address and network
-// - The CIDR block is the CIDR block for the network
+// - The CIDR block is the CIDR block for the network.
 func validateCIDRBlock(cidr string) error {
 	_, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
-		return fmt.Errorf("%q is not a valid CIDR block: %w", cidr, err)
+		return fmt.Errorf("%w: %q is not a valid CIDR block: %w", errValidation, cidr, err)
 	}
 
 	if !CIDRBlocksEqual(cidr, ipnet.String()) {
-		return fmt.Errorf("%q is not a valid CIDR block; did you mean %q?", cidr, ipnet)
+		return fmt.Errorf("%w: %q is not a valid CIDR block; did you mean %q?", errValidation, cidr, ipnet)
 	}
 
 	return nil
 }
 
 // ValidCIDRNetworkAddress ensures that the string value is a valid CIDR that
-// represents a network address - it adds an error otherwise
+// represents a network address - it adds an error otherwise.
 func ValidCIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := validateCIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
@@ -98,15 +107,15 @@ func ValidIAMPolicyJSON(v interface{}, k string) (ws []string, errors []error) {
 	// IAM Policy documents need to be valid JSON, and pass legacy parsing
 	value := v.(string)
 	if len(value) < 1 {
-		errors = append(errors, fmt.Errorf("%q contains an invalid JSON policy", k))
+		errors = append(errors, fmt.Errorf("%w: %q contains an invalid JSON policy", errValidation, k))
 		return ws, errors
 	}
 	if value[:1] != "{" {
-		errors = append(errors, fmt.Errorf("%q contains an invalid JSON policy", k))
+		errors = append(errors, fmt.Errorf("%w: %q contains an invalid JSON policy", errValidation, k))
 		return ws, errors
 	}
 	if _, err := structure.NormalizeJsonString(v); err != nil {
-		errors = append(errors, fmt.Errorf("%q contains an invalid JSON: %s", k, err))
+		errors = append(errors, fmt.Errorf("%w: %q contains an invalid JSON: %w", errValidation, k, err))
 	}
 	return ws, errors
 }
@@ -114,20 +123,20 @@ func ValidIAMPolicyJSON(v interface{}, k string) (ws []string, errors []error) {
 // ValidateIPv4CIDRBlock validates that the specified CIDR block is valid:
 // - The CIDR block parses to an IP address and network
 // - The IP address is an IPv4 address
-// - The CIDR block is the CIDR block for the network
+// - The CIDR block is the CIDR block for the network.
 func ValidateIPv4CIDRBlock(cidr string) error {
 	ip, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
-		return fmt.Errorf("%q is not a valid CIDR block: %w", cidr, err)
+		return fmt.Errorf("%w: %q is not a valid CIDR block: %w", errValidation, cidr, err)
 	}
 
 	ipv4 := ip.To4()
 	if ipv4 == nil {
-		return fmt.Errorf("%q is not a valid IPv4 CIDR block", cidr)
+		return fmt.Errorf("%w: %q is not a valid IPv4 CIDR block", errValidation, cidr)
 	}
 
 	if !CIDRBlocksEqual(cidr, ipnet.String()) {
-		return fmt.Errorf("%q is not a valid IPv4 CIDR block; did you mean %q?", cidr, ipnet)
+		return fmt.Errorf("%w: %q is not a valid IPv4 CIDR block; did you mean %q?", errValidation, cidr, ipnet)
 	}
 
 	return nil
@@ -136,27 +145,27 @@ func ValidateIPv4CIDRBlock(cidr string) error {
 // ValidateIPv6CIDRBlock validates that the specified CIDR block is valid:
 // - The CIDR block parses to an IP address and network
 // - The IP address is an IPv6 address
-// - The CIDR block is the CIDR block for the network
+// - The CIDR block is the CIDR block for the network.
 func ValidateIPv6CIDRBlock(cidr string) error {
 	ip, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
-		return fmt.Errorf("%q is not a valid CIDR block: %w", cidr, err)
+		return fmt.Errorf("%w: %q is not a valid CIDR block: %w", errValidation, cidr, err)
 	}
 
 	ipv4 := ip.To4()
 	if ipv4 != nil {
-		return fmt.Errorf("%q is not a valid IPv6 CIDR block", cidr)
+		return fmt.Errorf("%w: %q is not a valid IPv6 CIDR block", errValidation, cidr)
 	}
 
 	if !CIDRBlocksEqual(cidr, ipnet.String()) {
-		return fmt.Errorf("%q is not a valid IPv6 CIDR block; did you mean %q?", cidr, ipnet)
+		return fmt.Errorf("%w: %q is not a valid IPv6 CIDR block; did you mean %q?", errValidation, cidr, ipnet)
 	}
 
 	return nil
 }
 
 // ValidIPv4CIDRNetworkAddress ensures that the string value is a valid IPv4 CIDR that
-// represents a network address - it adds an error otherwise
+// represents a network address - it adds an error otherwise.
 func ValidIPv4CIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := ValidateIPv4CIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
@@ -167,7 +176,7 @@ func ValidIPv4CIDRNetworkAddress(v interface{}, k string) (ws []string, errors [
 }
 
 // ValidIPv6CIDRNetworkAddress ensures that the string value is a valid IPv6 CIDR that
-// represents a network address - it adds an error otherwise
+// represents a network address - it adds an error otherwise.
 func ValidIPv6CIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := ValidateIPv6CIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
@@ -179,27 +188,29 @@ func ValidIPv6CIDRNetworkAddress(v interface{}, k string) (ws []string, errors [
 
 func ValidLaunchTemplateID(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if len(value) < 1 {
-		errors = append(errors, fmt.Errorf("%q cannot be shorter than 1 character", k))
-	} else if len(value) > 255 {
-		errors = append(errors, fmt.Errorf("%q cannot be longer than 255 characters", k))
-	} else if !regexp.MustCompile(`^lt\-[a-z0-9]+$`).MatchString(value) {
+	switch {
+	case len(value) < 1:
+		errors = append(errors, fmt.Errorf("%w: %q cannot be shorter than 1 character", errValidation, k))
+	case len(value) > launchTemplateIDMaxLen:
+		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than %d characters", errValidation, k, launchTemplateIDMaxLen))
+	case !regexp.MustCompile(`^lt\-[a-z0-9]+$`).MatchString(value):
 		errors = append(errors, fmt.Errorf(
-			"%q must begin with 'lt-' and be comprised of only alphanumeric characters: %v", k, value))
+			"%w: %q must begin with 'lt-' and be comprised of only alphanumeric characters: %v", errValidation, k, value))
 	}
 	return ws, errors
 }
 
 func ValidLaunchTemplateName(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if len(value) < 3 {
-		errors = append(errors, fmt.Errorf("%q cannot be less than 3 characters", k))
-	} else if strings.HasSuffix(k, "prefix") && len(value) > 99 {
-		errors = append(errors, fmt.Errorf("%q cannot be longer than 99 characters, name is limited to 125", k))
-	} else if !strings.HasSuffix(k, "prefix") && len(value) > 125 {
-		errors = append(errors, fmt.Errorf("%q cannot be longer than 125 characters", k))
-	} else if !regexp.MustCompile(`^[0-9a-zA-Z()./_\-]+$`).MatchString(value) {
-		errors = append(errors, fmt.Errorf("%q can only alphanumeric characters and ()./_- symbols", k))
+	switch {
+	case len(value) < 3:
+		errors = append(errors, fmt.Errorf("%w: %q cannot be less than 3 characters", errValidation, k))
+	case strings.HasSuffix(k, "prefix") && len(value) > launchTemplatePrefixMaxLen:
+		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than %d characters, name is limited to %d", errValidation, k, launchTemplatePrefixMaxLen, launchTemplateNameMaxLen))
+	case !strings.HasSuffix(k, "prefix") && len(value) > launchTemplateNameMaxLen:
+		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than %d characters", errValidation, k, launchTemplateNameMaxLen))
+	case !regexp.MustCompile(`^[0-9a-zA-Z()./_\-]+$`).MatchString(value):
+		errors = append(errors, fmt.Errorf("%w: %q can only alphanumeric characters and ()./_- symbols", errValidation, k))
 	}
 	return ws, errors
 }
@@ -212,7 +223,7 @@ func ValidOnceADayWindowFormat(v interface{}, k string) (ws []string, errors []e
 	value := v.(string)
 	if !regexp.MustCompile(validTimeFormatConsolidated).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
-			"%q must satisfy the format of \"hh24:mi-hh24:mi\".", k))
+			"%w: %q must satisfy the format of \"hh24:mi-hh24:mi\"", errValidation, k))
 	}
 	return ws, errors
 }
@@ -225,7 +236,7 @@ func ValidOnceAWeekWindowFormat(v interface{}, k string) (ws []string, errors []
 	value := strings.ToLower(v.(string))
 	if !regexp.MustCompile(validTimeFormatConsolidated).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
-			"%q must satisfy the format of \"ddd:hh24:mi-ddd:hh24:mi\".", k))
+			"%w: %q must satisfy the format of \"ddd:hh24:mi-ddd:hh24:mi\"", errValidation, k))
 	}
 	return ws, errors
 }
@@ -233,12 +244,10 @@ func ValidOnceAWeekWindowFormat(v interface{}, k string) (ws []string, errors []
 func ValidStringIsJSONOrYAML(v interface{}, k string) (ws []string, errors []error) {
 	if looksLikeJsonString(v) {
 		if _, err := structure.NormalizeJsonString(v); err != nil {
-			errors = append(errors, fmt.Errorf("%q contains an invalid JSON: %s", k, err))
+			errors = append(errors, fmt.Errorf("%w: %q contains an invalid JSON: %w", errValidation, k, err))
 		}
-	} else {
-		if _, err := checkYAMLString(v); err != nil {
-			errors = append(errors, fmt.Errorf("%q contains an invalid YAML: %s", k, err))
-		}
+	} else if _, err := checkYAMLString(v); err != nil {
+		errors = append(errors, fmt.Errorf("%w: %q contains an invalid YAML: %w", errValidation, k, err))
 	}
 	return ws, errors
 }
@@ -247,11 +256,11 @@ func ValidStringIsJSONOrYAML(v interface{}, k string) (ws []string, errors []err
 // Some arguments require three values: true, false, and "" (unspecified).
 // This ValidateFunc returns a custom message since the message with
 // validation.StringInSlice([]string{"", "false", "true"}, false) is confusing:
-// to be one of [ false true], got 1
+// to be one of [ false true], got 1.
 func ValidTypeStringNullableBoolean(v interface{}, k string) (ws []string, es []error) {
 	value, ok := v.(string)
 	if !ok {
-		es = append(es, fmt.Errorf("expected type of %s to be string", k))
+		es = append(es, fmt.Errorf("%w: expected type of %s to be string", errValidation, k))
 		return ws, es
 	}
 
@@ -261,7 +270,7 @@ func ValidTypeStringNullableBoolean(v interface{}, k string) (ws []string, es []
 		}
 	}
 
-	es = append(es, fmt.Errorf("expected %s to be one of [\"\", false, true], got %s", k, value))
+	es = append(es, fmt.Errorf("%w: expected %s to be one of [\"\", false, true], got %s", errValidation, k, value))
 	return ws, es
 }
 
@@ -270,7 +279,7 @@ func ValidTypeStringNullableBoolean(v interface{}, k string) (ws []string, es []
 func ValidTypeStringNullableFloat(v interface{}, k string) (ws []string, es []error) {
 	value, ok := v.(string)
 	if !ok {
-		es = append(es, fmt.Errorf("expected type of %s to be string", k))
+		es = append(es, fmt.Errorf("%w: expected type of %s to be string", errValidation, k))
 		return ws, es
 	}
 
@@ -279,7 +288,7 @@ func ValidTypeStringNullableFloat(v interface{}, k string) (ws []string, es []er
 	}
 
 	if _, err := strconv.ParseFloat(value, 64); err != nil {
-		es = append(es, fmt.Errorf("%s: cannot parse '%s' as float: %s", k, value, err))
+		es = append(es, fmt.Errorf("%w: %s: cannot parse '%s' as float: %w", errValidation, k, value, err))
 	}
 
 	return ws, es
@@ -292,7 +301,7 @@ func ValidUTCTimestamp(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
 	_, err := time.Parse(time.RFC3339, value)
 	if err != nil {
-		errors = append(errors, fmt.Errorf("%q must be in RFC3339 time format %q. Example: %s", k, time.RFC3339, err))
+		errors = append(errors, fmt.Errorf("%w: %q must be in RFC3339 time format %q. Example: %w", errValidation, k, time.RFC3339, err))
 	}
 	return ws, errors
 }

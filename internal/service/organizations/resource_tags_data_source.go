@@ -51,8 +51,8 @@ func dataSourceResourceTagsRead(d *schema.ResourceData, meta interface{}) error 
 		if err := d.Set("tags", KeyValueTags(tags).Map()); err != nil {
 			return fmt.Errorf("error setting tags: %w", err)
 		}
-	} else {
-		d.Set("tags", nil)
+	} else if err := d.Set("tags", nil); err != nil {
+		return fmt.Errorf("error setting tags: %w", err)
 	}
 
 	return nil

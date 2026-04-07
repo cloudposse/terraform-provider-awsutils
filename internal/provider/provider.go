@@ -26,6 +26,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+const (
+	assumeRoleDurationMinSeconds = 900
+	assumeRoleDurationMaxSeconds = 43200
+	externalIDMaxLength          = 1224
+	webIdentityTokenMaxLength    = 20000
+)
+
 // New returns a new, initialized Terraform Plugin SDK v2-style provider instance.
 // The provider instance is fully configured once the `ConfigureContextFunc` has been called.
 func New(_ context.Context) (*schema.Provider, error) {
@@ -380,7 +387,7 @@ func assumeRoleSchema() *schema.Schema {
 					Optional:      true,
 					Deprecated:    "Use assume_role.duration instead",
 					Description:   "The duration, in seconds, of the role session.",
-					ValidateFunc:  validation.IntBetween(900, 43200),
+					ValidateFunc:  validation.IntBetween(assumeRoleDurationMinSeconds, assumeRoleDurationMaxSeconds),
 					ConflictsWith: []string{"assume_role.0.duration"},
 				},
 				"external_id": {
@@ -388,7 +395,7 @@ func assumeRoleSchema() *schema.Schema {
 					Optional:    true,
 					Description: "A unique identifier that might be required when you assume a role in another account.",
 					ValidateFunc: validation.All(
-						validation.StringLenBetween(2, 1224),
+						validation.StringLenBetween(2, externalIDMaxLength),
 						validation.StringMatch(regexp.MustCompile(`[\w+=,.@:\/\-]*`), ""),
 					),
 				},
@@ -479,7 +486,7 @@ func assumeRoleWithWebIdentitySchema() *schema.Schema {
 				"web_identity_token": {
 					Type:         schema.TypeString,
 					Optional:     true,
-					ValidateFunc: validation.StringLenBetween(4, 20000),
+					ValidateFunc: validation.StringLenBetween(4, webIdentityTokenMaxLength),
 					ExactlyOneOf: []string{"assume_role_with_web_identity.0.web_identity_token", "assume_role_with_web_identity.0.web_identity_token_file"},
 				},
 				"web_identity_token_file": {

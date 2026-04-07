@@ -1,6 +1,8 @@
 package organizations
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"regexp"
@@ -18,6 +20,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+var (
+	errOUEmptyResponse       = errors.New("empty response")
+	errOUNotFoundAfterCreate = errors.New("not found after creation")
+)
+
 func ResourceOrganizationalUnit() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOrganizationalUnitCreate,
@@ -25,7 +32,7 @@ func ResourceOrganizationalUnit() *schema.Resource {
 		Update: resourceOrganizationalUnitUpdate,
 		Delete: resourceOrganizationalUnitDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -90,7 +97,7 @@ func resourceOrganizationalUnitCreate(d *schema.ResourceData, meta interface{}) 
 
 	var err error
 	var resp *organizations.CreateOrganizationalUnitOutput
-	err = resource.Retry(4*time.Minute, func() *resource.RetryError {
+	err = resource.RetryContext(context.Background(), 4*time.Minute, func() *resource.RetryError {
 		resp, err = conn.CreateOrganizationalUnit(createOpts)
 
 		if tfawserr.ErrCodeEquals(err, organizations.ErrCodeFinalizingOrganizationException) {
@@ -138,13 +145,13 @@ func resourceOrganizationalUnitRead(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if resp == nil {
-		return fmt.Errorf("error reading Organizations Organizational Unit (%s): empty response", d.Id())
+		return fmt.Errorf("error reading Organizations Organizational Unit (%s): %w", d.Id(), errOUEmptyResponse)
 	}
 
 	ou := resp.OrganizationalUnit
 	if ou == nil {
 		if d.IsNewResource() {
-			return fmt.Errorf("error reading Organizations Organizational Unit (%s): not found after creation", d.Id())
+			return fmt.Errorf("error reading Organizations Organizational Unit (%s): %w", d.Id(), errOUNotFoundAfterCreate)
 		}
 
 		log.Printf("[WARN] Organizations Organizational Unit (%s) does not exist, removing from state", d.Id())
@@ -175,9 +182,15 @@ func resourceOrganizationalUnitRead(d *schema.ResourceData, meta interface{}) er
 		return fmt.Errorf("error setting accounts: %w", err)
 	}
 
-	d.Set("arn", ou.Arn)
-	d.Set("name", ou.Name)
-	d.Set("parent_id", parentId)
+	if err := d.Set("arn", ou.Arn); err != nil {
+		return fmt.Errorf("error setting arn: %w", err)
+	}
+	if err := d.Set("name", ou.Name); err != nil {
+		return fmt.Errorf("error setting name: %w", err)
+	}
+	if err := d.Set("parent_id", parentId); err != nil {
+		return fmt.Errorf("error setting parent_id: %w", err)
+	}
 
 	tags, err := ListTags(conn, d.Id())
 	if err != nil {

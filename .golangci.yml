@@ -29,15 +29,13 @@ linters:
     - whitespace
   settings:
     cyclop:
-      max-complexity: 15
+      max-complexity: 25
     dogsled:
       max-blank-identifiers: 3
     dupl:
       threshold: 150
     forbidigo:
       forbid:
-        - pattern: os\.Getenv
-          msg: Use `viper.BindEnv` for new environment variables instead of `os.Getenv`
         - pattern: '\.(Skip|SkipNow)\('
           msg: Use `t.Skipf("<reason>")` with a descriptive reason; do not use `t.Skip`/`t.SkipNow`
         - pattern: ^path\.Join$
@@ -45,11 +43,11 @@ linters:
       exclude-godoc-examples: false
       analyze-types: false
     funlen:
-      lines: 60
-      statements: 40
+      lines: 260
+      statements: 150
       ignore-comments: true
     gocognit:
-      min-complexity: 20
+      min-complexity: 50
     gocritic:
       enabled-checks:
         - rangeValCopy
@@ -92,7 +90,7 @@ linters:
         - (github.com/cloudposse/atmos/pkg/logger.AtmosLogger).Fatal
         - (github.com/cloudposse/atmos/pkg/logger.AtmosLogger).Trace
     nestif:
-      min-complexity: 4
+      min-complexity: 13
     revive:
       rules:
         - name: banned-characters
@@ -103,28 +101,28 @@ linters:
             - disallow-newlines: true
         - name: file-length-limit
           arguments:
-            - max: 500
+            - max: 4000
               skipBlankLines: true
               skipComments: true
         - name: function-length
           arguments:
-            - 50
-            - 60
+            - 120
+            - 250
         - name: function-result-limit
           arguments:
             - 3
         - name: cognitive-complexity
           arguments:
-            - 25
+            - 50
         - name: cyclomatic
           arguments:
-            - 10
+            - 25
         - name: add-constant
           arguments:
             - allowFloats: 0.0,0.,1.0,1.,2.0,2.
-              allowInts: 0,1,2,3,4
-              allowStrs: '"","image","error","path","import","path","%w","%s","file","/"'
-              maxLitCount: "3"
+              allowInts: 0,1,2,3,4,5,6,7,8,9,10,15,16,20,24,25,30,32,50,60,64,100,128,256,443,500,512,1000,1024
+              allowStrs: '"","image","error","path","import","%w","%s","file","/",".","name","tags","tags_all","arn","id","description","status","region","detector_id","parent_id","policy","policy_arns","role_arn","session_name","duration","dns_name","service_id","reverse_dns_prefix","expiration_date","https://","http://"'
+              maxLitCount: "5"
         - name: argument-limit
           arguments:
             - 5

@@ -46,7 +46,7 @@ func dataSourceRegionsRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] Reading regions for request: %s", request)
 	response, err := connection.DescribeRegions(request)
 	if err != nil {
-		return fmt.Errorf("Error fetching Regions: %w", err)
+		return fmt.Errorf("error fetching Regions: %w", err)
 	}
 
 	names := []string{}

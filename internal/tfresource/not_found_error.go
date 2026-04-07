@@ -79,14 +79,19 @@ func (e *TooManyResultsError) As(target interface{}) bool {
 	return true
 }
 
+var (
+	errMultipleResourcesMatched = errors.New("multiple resources matched; use additional constraints to reduce matches to a single resource")
+	errNoMatchingResource       = errors.New("no matching resource found")
+)
+
 // SingularDataSourceFindError returns a standard error message for a singular data source's non-nil resource find error.
 func SingularDataSourceFindError(resourceType string, err error) error {
 	if NotFound(err) {
 		if errors.Is(err, &TooManyResultsError{}) {
-			return fmt.Errorf("multiple %[1]ss matched; use additional constraints to reduce matches to a single %[1]s", resourceType)
+			return fmt.Errorf("%w: %s", errMultipleResourcesMatched, resourceType)
 		}
 
-		return fmt.Errorf("no matching %[1]s found", resourceType)
+		return fmt.Errorf("%w: %s", errNoMatchingResource, resourceType)
 	}
 
 	return fmt.Errorf("error reading %s: %w", resourceType, err)

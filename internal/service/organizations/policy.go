@@ -2,6 +2,7 @@ package organizations
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -18,6 +19,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
+
+var errAWSManagedPolicyImport = errors.New("AWS-managed Organizations policy cannot be imported. Use the policy ID directly in your configuration")
 
 func ResourcePolicy() *schema.Resource {
 	return &schema.Resource{
@@ -82,7 +85,7 @@ func resourcePolicyCreate(ctx context.Context, d *schema.ResourceData, meta inte
 
 	var err error
 	var resp *organizations.CreatePolicyOutput
-	err = resource.Retry(4*time.Minute, func() *resource.RetryError {
+	err = resource.RetryContext(ctx, 4*time.Minute, func() *resource.RetryError {
 		resp, err = conn.CreatePolicy(input)
 		if err != nil {
 			if tfawserr.ErrCodeEquals(err, organizations.ErrCodeFinalizingOrganizationException) {
@@ -134,11 +137,21 @@ func resourcePolicyRead(ctx context.Context, d *schema.ResourceData, meta interf
 		return nil
 	}
 
-	d.Set("arn", resp.Policy.PolicySummary.Arn)
-	d.Set("content", resp.Policy.Content)
-	d.Set("description", resp.Policy.PolicySummary.Description)
-	d.Set("name", resp.Policy.PolicySummary.Name)
-	d.Set("type", resp.Policy.PolicySummary.Type)
+	if err := d.Set("arn", resp.Policy.PolicySummary.Arn); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting arn: %w", err))
+	}
+	if err := d.Set("content", resp.Policy.Content); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting content: %w", err))
+	}
+	if err := d.Set("description", resp.Policy.PolicySummary.Description); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting description: %w", err))
+	}
+	if err := d.Set("name", resp.Policy.PolicySummary.Name); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting name: %w", err))
+	}
+	if err := d.Set("type", resp.Policy.PolicySummary.Type); err != nil {
+		return diag.FromErr(fmt.Errorf("error setting type: %w", err))
+	}
 
 	if aws.BoolValue(resp.Policy.PolicySummary.AwsManaged) {
 		return diag.Diagnostics{
@@ -234,7 +247,7 @@ func resourcePolicyImport(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	if aws.BoolValue(resp.Policy.PolicySummary.AwsManaged) {
-		return nil, fmt.Errorf("AWS-managed Organizations policy (%s) cannot be imported. Use the policy ID directly in your configuration.", d.Id())
+		return nil, fmt.Errorf("%w: %s", errAWSManagedPolicyImport, d.Id())
 	}
 
 	return []*schema.ResourceData{d}, nil

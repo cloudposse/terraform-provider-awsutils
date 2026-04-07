@@ -9,7 +9,7 @@ import (
 
 type testCase struct {
 	val         interface{}
-	f           schema.SchemaValidateFunc
+	f           schema.SchemaValidateFunc //nolint:staticcheck // SA1019: experimental test helper preserves legacy validate signature
 	expectedErr *regexp.Regexp
 }
 

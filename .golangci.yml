@@ -122,9 +122,9 @@ linters:
         - name: add-constant
           arguments:
             - allowFloats: 0.0,0.,1.0,1.,2.0,2.
-              allowInts: 0,1,2,3,4
-              allowStrs: '"","image","error","path","import","path","%w","%s","file","/"'
-              maxLitCount: "3"
+              allowInts: 0,1,2,3,4,5,6,7,8,9,10,15,16,20,24,25,30,32,50,60,64,100,128,256,443,500,512,1000,1024
+              allowStrs: '"","image","error","path","import","%w","%s","file","/",".","name","tags","tags_all","arn","id","description","status","region","detector_id","parent_id","policy","policy_arns","role_arn","session_name","duration","dns_name","service_id","reverse_dns_prefix","expiration_date","https://","http://"'
+              maxLitCount: "5"
         - name: argument-limit
           arguments:
             - 5

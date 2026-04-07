@@ -85,7 +85,7 @@ func resourcePolicyCreate(ctx context.Context, d *schema.ResourceData, meta inte
 
 	var err error
 	var resp *organizations.CreatePolicyOutput
-	err = resource.Retry(4*time.Minute, func() *resource.RetryError {
+	err = resource.RetryContext(ctx, 4*time.Minute, func() *resource.RetryError {
 		resp, err = conn.CreatePolicy(input)
 		if err != nil {
 			if tfawserr.ErrCodeEquals(err, organizations.ErrCodeFinalizingOrganizationException) {

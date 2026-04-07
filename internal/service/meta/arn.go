@@ -3,6 +3,7 @@ package meta
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
@@ -12,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
+
+var errCannotApplyAttributePathStep = errors.New("cannot apply AttributePathStep")
 
 type arnType uint8
 
@@ -53,7 +56,7 @@ func (t arnType) Equal(o attr.Type) bool {
 // ApplyTerraform5AttributePathStep applies the given AttributePathStep to the
 // type.
 func (t arnType) ApplyTerraform5AttributePathStep(step tftypes.AttributePathStep) (interface{}, error) {
-	return nil, fmt.Errorf("cannot apply AttributePathStep %T to %s", step, t.String())
+	return nil, fmt.Errorf("%w %T to %s", errCannotApplyAttributePathStep, step, t.String())
 }
 
 // String returns a human-friendly description of the ARNType.

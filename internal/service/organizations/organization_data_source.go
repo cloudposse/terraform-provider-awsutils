@@ -147,7 +147,7 @@ func dataSourceOrganizationRead(d *schema.ResourceData, meta interface{}) error 
 
 	org, err := conn.DescribeOrganization(&organizations.DescribeOrganizationInput{})
 	if err != nil {
-		return fmt.Errorf("Error describing organization: %w", err)
+		return fmt.Errorf("error describing organization: %w", err)
 	}
 
 	d.SetId(aws.StringValue(org.Organization.Id))

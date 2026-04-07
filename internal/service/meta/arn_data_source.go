@@ -46,7 +46,7 @@ func dataSourceARNRead(d *schema.ResourceData, meta interface{}) error {
 	v := d.Get("arn").(string)
 	arn, err := arn.Parse(v)
 	if err != nil {
-		return fmt.Errorf("Error parsing '%s': %w", v, err)
+		return fmt.Errorf("error parsing '%s': %w", v, err)
 	}
 
 	d.SetId(arn.String())

@@ -1,6 +1,7 @@
 package securityhub
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -9,6 +10,11 @@ import (
 	"github.com/cloudposse/terraform-provider-awsutils/internal/flex"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+var (
+	errDesignatingMembers = errors.New("error designating security hub administrator account members")
+	errRemovingMembers    = errors.New("error removing security hub administrator account members")
 )
 
 func ResourceSecurityHubOrganizationSettings() *schema.Resource {
@@ -155,7 +161,7 @@ func addSecurityHubOrganizationMembers(conn *securityhub.SecurityHub, memberAcco
 			if err != nil {
 				return fmt.Errorf("error designating security hub administrator account members: %w", err)
 			}
-			return fmt.Errorf("error designating security hub administrator account members: %s", result.UnprocessedAccounts)
+			return fmt.Errorf("%w: %v", errDesignatingMembers, result.UnprocessedAccounts)
 		}
 	}
 	return nil
@@ -182,7 +188,7 @@ func removeSecurityHubOrganizationMembers(conn *securityhub.SecurityHub, memberA
 			if err != nil {
 				return fmt.Errorf("error removing security hub administrator account members: %w", err)
 			}
-			return fmt.Errorf("error removing security hub administrator account members: %s", result.UnprocessedAccounts)
+			return fmt.Errorf("%w: %v", errRemovingMembers, result.UnprocessedAccounts)
 		}
 	}
 	return nil

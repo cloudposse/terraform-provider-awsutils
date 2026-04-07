@@ -87,7 +87,7 @@ func TestProviderConfig(t *testing.T) {
 	}
 
 	rd := schema.TestResourceDataRaw(t, ds.Schema, map[string]interface{}{})
-	d := ds.Read(rd, meta)
+	d := ds.Read(rd, meta) //nolint:staticcheck // SA1019: test directly invokes deprecated Read for legacy data source
 	if d != nil {
 		t.Fatalf("Failed to read caller identity: %v", d)
 	}

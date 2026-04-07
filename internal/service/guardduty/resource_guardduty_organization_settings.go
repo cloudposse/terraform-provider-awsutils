@@ -1,6 +1,7 @@
 package guardduty
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -10,6 +11,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+)
+
+var (
+	errGDDesignatingMembers = errors.New("error designating guardduty administrator account members")
+	errGDRemovingMembers    = errors.New("error removing guardduty administrator account members")
 )
 
 func ResourceAwsUtilsGuardDutyOrganizationSettings() *schema.Resource {
@@ -140,7 +146,7 @@ func addGuardDutyOrganizationMembers(conn *guardduty.GuardDuty, detectorID strin
 			if err != nil {
 				return fmt.Errorf("error designating guardduty administrator account members: %w", err)
 			}
-			return fmt.Errorf("error designating guardduty administrator account members: %s", result.UnprocessedAccounts)
+			return fmt.Errorf("%w: %v", errGDDesignatingMembers, result.UnprocessedAccounts)
 		}
 	}
 	return nil
@@ -169,7 +175,7 @@ func removeGuardDutyOrganizationMembers(conn *guardduty.GuardDuty, detectorID st
 			if err != nil {
 				return fmt.Errorf("error removing guardduty administrator account members: %w", err)
 			}
-			return fmt.Errorf("error removing guardduty administrator account members: %s", result.UnprocessedAccounts)
+			return fmt.Errorf("%w: %v", errGDRemovingMembers, result.UnprocessedAccounts)
 		}
 	}
 	return nil

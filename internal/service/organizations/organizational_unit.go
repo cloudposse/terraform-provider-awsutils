@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -31,7 +32,7 @@ func ResourceOrganizationalUnit() *schema.Resource {
 		Update: resourceOrganizationalUnitUpdate,
 		Delete: resourceOrganizationalUnitDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -96,7 +97,7 @@ func resourceOrganizationalUnitCreate(d *schema.ResourceData, meta interface{}) 
 
 	var err error
 	var resp *organizations.CreateOrganizationalUnitOutput
-	err = resource.Retry(4*time.Minute, func() *resource.RetryError {
+	err = resource.RetryContext(context.Background(), 4*time.Minute, func() *resource.RetryError {
 		resp, err = conn.CreateOrganizationalUnit(createOpts)
 
 		if tfawserr.ErrCodeEquals(err, organizations.ErrCodeFinalizingOrganizationException) {

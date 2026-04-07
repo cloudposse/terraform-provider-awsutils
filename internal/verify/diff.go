@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 
@@ -13,6 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	awspolicy "github.com/jen20/awspolicyequivalence"
 )
+
+var errTagsIdenticalToDefault = errors.New(`"tags" are identical to those in the "default_tags" configuration block of the provider: please de-duplicate and try again`)
 
 // SetTagsDiff sets the new plan difference with the result of
 // merging resource tags on to those defined at the provider-level;
@@ -27,7 +30,7 @@ func SetTagsDiff(_ context.Context, diff *schema.ResourceDiff, meta interface{})
 	resourceTags := tftags.New(diff.Get("tags").(map[string]interface{}))
 
 	if defaultTagsConfig.TagsEqual(resourceTags) {
-		return fmt.Errorf(`"tags" are identical to those in the "default_tags" configuration block of the provider: please de-duplicate and try again`)
+		return errTagsIdenticalToDefault
 	}
 
 	allTags := defaultTagsConfig.MergeTags(resourceTags).IgnoreConfig(ignoreTagsConfig)

@@ -3,6 +3,7 @@ package fwprovider
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -12,6 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
+
+var errCannotApplyAttributePathStep = errors.New("cannot apply AttributePathStep")
 
 type durationType uint8
 
@@ -53,7 +56,7 @@ func (d durationType) Equal(o attr.Type) bool {
 // ApplyTerraform5AttributePathStep applies the given AttributePathStep to the
 // type.
 func (d durationType) ApplyTerraform5AttributePathStep(step tftypes.AttributePathStep) (interface{}, error) {
-	return nil, fmt.Errorf("cannot apply AttributePathStep %T to %s", step, d.String())
+	return nil, fmt.Errorf("%w %T to %s", errCannotApplyAttributePathStep, step, d.String())
 }
 
 // String returns a human-friendly description of the DurationType.

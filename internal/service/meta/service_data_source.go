@@ -1,12 +1,19 @@
 package meta
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/cloudposse/terraform-provider-awsutils/internal/conns"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+var (
+	errReverseServiceDNSNameTooShort = errors.New("reverse service DNS names must have at least 4 parts")
+	errServiceDNSNameTooShort        = errors.New("service DNS names must have at least 4 parts")
+	errNoServiceID                   = errors.New("service ID not provided directly or through a DNS name")
 )
 
 func DataSourceService() *schema.Resource {
@@ -62,7 +69,7 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 	if v, ok := d.GetOk("reverse_dns_name"); ok {
 		serviceParts := strings.Split(v.(string), ".")
 		if len(serviceParts) < 4 {
-			return fmt.Errorf("reverse service DNS names must have at least 4 parts (%s has %d)", v.(string), len(serviceParts))
+			return fmt.Errorf("%w (%s has %d)", errReverseServiceDNSNameTooShort, v.(string), len(serviceParts))
 		}
 
 		if err := d.Set("service_id", serviceParts[len(serviceParts)-1]); err != nil {
@@ -79,7 +86,7 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 	if v, ok := d.GetOk("dns_name"); ok {
 		serviceParts := InvertStringSlice(strings.Split(v.(string), "."))
 		if len(serviceParts) < 4 {
-			return fmt.Errorf("service DNS names must have at least 4 parts (%s has %d)", v.(string), len(serviceParts))
+			return fmt.Errorf("%w (%s has %d)", errServiceDNSNameTooShort, v.(string), len(serviceParts))
 		}
 
 		if err := d.Set("service_id", serviceParts[len(serviceParts)-1]); err != nil {
@@ -100,7 +107,7 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if _, ok := d.GetOk("service_id"); !ok {
-		return fmt.Errorf("service ID not provided directly or through a DNS name")
+		return errNoServiceID
 	}
 
 	if _, ok := d.GetOk("reverse_dns_prefix"); !ok {

@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -10,12 +11,14 @@ const (
 	resourceIDSeparator = `,`
 )
 
+var errInvalidResourceIdentifier = errors.New("invalid resource identifier")
+
 // GetResourceID parses a given resource identifier for tag identifier and tag key.
 func GetResourceID(resourceID string) (string, string, error) {
 	parts := strings.SplitN(resourceID, resourceIDSeparator, 2)
 
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		return "", "", fmt.Errorf("invalid resource identifier (%[1]s), expected ID%[2]sKEY", resourceID, resourceIDSeparator)
+		return "", "", fmt.Errorf("%w (%[2]s), expected ID%[3]sKEY", errInvalidResourceIdentifier, resourceID, resourceIDSeparator)
 	}
 
 	return parts[0], parts[1], nil

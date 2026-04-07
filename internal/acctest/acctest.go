@@ -986,7 +986,7 @@ func DeleteResource(resource *schema.Resource, d *schema.ResourceData, meta inte
 		return nil
 	}
 
-	return resource.Delete(d, meta)
+	return resource.Delete(d, meta) //nolint:staticcheck // SA1019: deprecated test helper, kept for backwards compatibility
 }
 
 func CheckResourceDisappears(provo *schema.Provider, resource *schema.Resource, resourceName string) resource.TestCheckFunc {

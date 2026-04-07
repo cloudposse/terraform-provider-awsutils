@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -28,7 +29,7 @@ func ResourceAccount() *schema.Resource {
 		Update: resourceAccountUpdate,
 		Delete: resourceAccountDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -434,7 +435,7 @@ func waitAccountCreated(conn *organizations.Organizations, id string) (*organiza
 		Timeout:      5 * time.Minute,
 	}
 
-	outputRaw, err := stateConf.WaitForState()
+	outputRaw, err := stateConf.WaitForStateContext(context.Background())
 
 	if output, ok := outputRaw.(*organizations.CreateAccountStatus); ok {
 		if state := aws.StringValue(output.State); state == organizations.CreateAccountStateFailed {
@@ -472,7 +473,7 @@ func waitAccountDeleted(conn *organizations.Organizations, id string) (*organiza
 		Timeout:      5 * time.Minute,
 	}
 
-	outputRaw, err := stateConf.WaitForState()
+	outputRaw, err := stateConf.WaitForStateContext(context.Background())
 
 	if output, ok := outputRaw.(*organizations.Account); ok {
 		return output, err

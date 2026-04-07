@@ -57,7 +57,7 @@ func ValidateTypeStringNullableInt(v interface{}, k string) (ws []string, es []e
 
 // ValidateTypeStringNullableIntAtLeast provides custom error messaging for TypeString ints
 // Some arguments require an int value or unspecified, empty field.
-func ValidateTypeStringNullableIntAtLeast(min int) schema.SchemaValidateFunc {
+func ValidateTypeStringNullableIntAtLeast(min int) schema.SchemaValidateFunc { //nolint:staticcheck // SA1019: experimental helper preserves legacy validate signature
 	return func(i interface{}, k string) (ws []string, es []error) {
 		value, ok := i.(string)
 		if !ok {
@@ -85,7 +85,7 @@ func ValidateTypeStringNullableIntAtLeast(min int) schema.SchemaValidateFunc {
 
 // ValidateTypeStringNullableIntBetween provides custom error messaging for TypeString ints
 // Some arguments require an int value or unspecified, empty field.
-func ValidateTypeStringNullableIntBetween(min int, max int) schema.SchemaValidateFunc {
+func ValidateTypeStringNullableIntBetween(min int, max int) schema.SchemaValidateFunc { //nolint:staticcheck // SA1019: experimental helper preserves legacy validate signature
 	return func(i interface{}, k string) (ws []string, es []error) {
 		value, ok := i.(string)
 		if !ok {

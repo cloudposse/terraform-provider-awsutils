@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -24,7 +25,7 @@ func ResourcePolicyAttachment() *schema.Resource {
 		Read:   resourcePolicyAttachmentRead,
 		Delete: resourcePolicyAttachmentDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -55,7 +56,7 @@ func resourcePolicyAttachmentCreate(d *schema.ResourceData, meta interface{}) er
 
 	log.Printf("[DEBUG] Creating Organizations Policy Attachment: %s", input)
 
-	err := resource.Retry(4*time.Minute, func() *resource.RetryError {
+	err := resource.RetryContext(context.Background(), 4*time.Minute, func() *resource.RetryError {
 		_, err := conn.AttachPolicy(input)
 		if err != nil {
 			if tfawserr.ErrCodeEquals(err, organizations.ErrCodeFinalizingOrganizationException) {

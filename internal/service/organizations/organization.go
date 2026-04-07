@@ -28,7 +28,7 @@ func ResourceOrganization() *schema.Resource {
 		Update: resourceOrganizationUpdate,
 		Delete: resourceOrganizationDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		CustomizeDiff: customdiff.Sequence(
@@ -180,7 +180,7 @@ func resourceOrganizationCreate(d *schema.ResourceData, meta interface{}) error 
 
 	resp, err := conn.CreateOrganization(createOpts)
 	if err != nil {
-		return fmt.Errorf("Error creating organization: %w", err)
+		return fmt.Errorf("error creating organization: %w", err)
 	}
 
 	org := resp.Organization
@@ -426,7 +426,7 @@ func resourceOrganizationDelete(d *schema.ResourceData, meta interface{}) error 
 
 	_, err := conn.DeleteOrganization(&organizations.DeleteOrganizationInput{})
 	if err != nil {
-		return fmt.Errorf("Error deleting Organization: %w", err)
+		return fmt.Errorf("error deleting Organization: %w", err)
 	}
 
 	return nil
@@ -526,7 +526,7 @@ func waitForOrganizationDefaultRootPolicyTypeDisable(conn *organizations.Organiz
 		Timeout: 5 * time.Minute,
 	}
 
-	_, err := stateConf.WaitForState()
+	_, err := stateConf.WaitForStateContext(context.Background())
 
 	return err
 }
@@ -542,7 +542,7 @@ func waitForOrganizationDefaultRootPolicyTypeEnable(conn *organizations.Organiza
 		Timeout: 5 * time.Minute,
 	}
 
-	_, err := stateConf.WaitForState()
+	_, err := stateConf.WaitForStateContext(context.Background())
 
 	return err
 }

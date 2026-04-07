@@ -22,7 +22,7 @@ type Retryable func(error) (bool, error)
 func RetryWhenContext(ctx context.Context, timeout time.Duration, f func() (interface{}, error), retryable Retryable) (interface{}, error) {
 	var output interface{}
 
-	err := resource.Retry(timeout, func() *resource.RetryError { // nosemgrep:ci.helper-schema-resource-Retry-without-TimeoutError-check
+	err := resource.RetryContext(ctx, timeout, func() *resource.RetryError { // nosemgrep:ci.helper-schema-resource-Retry-without-TimeoutError-check
 		var err error
 		var retry bool
 
@@ -185,9 +185,9 @@ func RetryConfigContext(ctx context.Context, delay time.Duration, delayRand time
 	if delayRand.Milliseconds() > 0 {
 		// Hitting the API at exactly the same time on each iteration of the retry is more likely to
 		// cause Throttling problems. We introduce randomness in order to help AWS be happier.
-		rand.Seed(time.Now().UTC().UnixNano())
+		r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 
-		c.Delay = time.Duration(rand.Int63n(delayRand.Milliseconds())) * time.Millisecond
+		c.Delay = time.Duration(r.Int63n(delayRand.Milliseconds())) * time.Millisecond
 	}
 
 	if minTimeout.Milliseconds() > 0 {

@@ -70,7 +70,7 @@ func resourcePolicyAttachmentCreate(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if err != nil {
-		return fmt.Errorf("error creating Organizations Policy Attachment: %s", err)
+		return fmt.Errorf("error creating Organizations Policy Attachment: %w", err)
 	}
 
 	d.SetId(fmt.Sprintf("%s:%s", targetID, policyID))

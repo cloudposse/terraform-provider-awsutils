@@ -83,14 +83,14 @@ func resourceAwsGuardDutyOrganizationSettingsUpdate(d *schema.ResourceData, meta
 		membersToAdd := flex.Diff(newExpanded, oldExpanded)
 		if len(membersToAdd) > 0 {
 			if err := addGuardDutyOrganizationMembers(conn, detectorID, membersToAdd); err != nil {
-				return fmt.Errorf("error setting guardduty organization members: %s", err)
+				return fmt.Errorf("error setting guardduty organization members: %w", err)
 			}
 		}
 
 		membersToRemove := flex.Diff(oldExpanded, newExpanded)
 		if len(membersToRemove) > 0 {
 			if err := removeGuardDutyOrganizationMembers(conn, detectorID, membersToRemove); err != nil {
-				return fmt.Errorf("error removing guardduty organization members: %s", err)
+				return fmt.Errorf("error removing guardduty organization members: %w", err)
 			}
 		}
 	}
@@ -103,7 +103,7 @@ func resourceAwsGuardDutyOrganizationSettingsDelete(d *schema.ResourceData, meta
 	membersToRemove := getMemberAccounts(d)
 
 	if err := removeGuardDutyOrganizationMembers(conn, detectorID, membersToRemove); err != nil {
-		return fmt.Errorf("error removing guardduty organization members: %s", err)
+		return fmt.Errorf("error removing guardduty organization members: %w", err)
 	}
 	return nil
 }
@@ -138,7 +138,7 @@ func addGuardDutyOrganizationMembers(conn *guardduty.GuardDuty, detectorID strin
 
 		if result, err := conn.CreateMembers(createMembersInput); err != nil || len(result.UnprocessedAccounts) > 0 {
 			if err != nil {
-				return fmt.Errorf("error designating guardduty administrator account members: %s", err)
+				return fmt.Errorf("error designating guardduty administrator account members: %w", err)
 			}
 			return fmt.Errorf("error designating guardduty administrator account members: %s", result.UnprocessedAccounts)
 		}
@@ -161,13 +161,13 @@ func removeGuardDutyOrganizationMembers(conn *guardduty.GuardDuty, detectorID st
 
 		if _, err := conn.DisassociateMembers(disassociateMembersInput); err != nil {
 			if err != nil {
-				return fmt.Errorf("error disassociating guardduty administrator account members: %s", err)
+				return fmt.Errorf("error disassociating guardduty administrator account members: %w", err)
 			}
 		}
 
 		if result, err := conn.DeleteMembers(deleteMembersInput); err != nil || len(result.UnprocessedAccounts) > 0 {
 			if err != nil {
-				return fmt.Errorf("error removing guardduty administrator account members: %s", err)
+				return fmt.Errorf("error removing guardduty administrator account members: %w", err)
 			}
 			return fmt.Errorf("error removing guardduty administrator account members: %s", result.UnprocessedAccounts)
 		}

@@ -177,7 +177,7 @@ func resourceOrganizationCreate(d *schema.ResourceData, meta interface{}) error 
 
 	resp, err := conn.CreateOrganization(createOpts)
 	if err != nil {
-		return fmt.Errorf("Error creating organization: %s", err)
+		return fmt.Errorf("Error creating organization: %w", err)
 	}
 
 	org := resp.Organization
@@ -238,7 +238,7 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("error describing Organization: %s", err)
+		return fmt.Errorf("error describing Organization: %w", err)
 	}
 
 	log.Printf("[INFO] Listing Accounts for Organization: %s", d.Id())
@@ -270,7 +270,7 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := d.Set("accounts", flattenAccounts(accounts)); err != nil {
-		return fmt.Errorf("error setting accounts: %s", err)
+		return fmt.Errorf("error setting accounts: %w", err)
 	}
 
 	if err := d.Set("arn", org.Organization.Arn); err != nil {
@@ -290,11 +290,11 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := d.Set("non_master_accounts", flattenAccounts(nonMasterAccounts)); err != nil {
-		return fmt.Errorf("error setting non_master_accounts: %s", err)
+		return fmt.Errorf("error setting non_master_accounts: %w", err)
 	}
 
 	if err := d.Set("roots", FlattenRoots(roots)); err != nil {
-		return fmt.Errorf("error setting roots: %s", err)
+		return fmt.Errorf("error setting roots: %w", err)
 	}
 
 	awsServiceAccessPrincipals := make([]string, 0)
@@ -313,7 +313,7 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := d.Set("aws_service_access_principals", awsServiceAccessPrincipals); err != nil {
-		return fmt.Errorf("error setting aws_service_access_principals: %s", err)
+		return fmt.Errorf("error setting aws_service_access_principals: %w", err)
 	}
 
 	enabledPolicyTypes := make([]string, 0)
@@ -325,7 +325,7 @@ func resourceOrganizationRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := d.Set("enabled_policy_types", enabledPolicyTypes); err != nil {
-		return fmt.Errorf("error setting enabled_policy_types: %s", err)
+		return fmt.Errorf("error setting enabled_policy_types: %w", err)
 	}
 
 	return nil
@@ -423,7 +423,7 @@ func resourceOrganizationDelete(d *schema.ResourceData, meta interface{}) error 
 
 	_, err := conn.DeleteOrganization(&organizations.DeleteOrganizationInput{})
 	if err != nil {
-		return fmt.Errorf("Error deleting Organization: %s", err)
+		return fmt.Errorf("Error deleting Organization: %w", err)
 	}
 
 	return nil
@@ -499,7 +499,7 @@ func getOrganizationDefaultRootPolicyTypeRefreshFunc(conn *organizations.Organiz
 	return func() (interface{}, string, error) {
 		defaultRoot, err := getOrganizationDefaultRoot(conn)
 		if err != nil {
-			return nil, "", fmt.Errorf("error getting default root: %s", err)
+			return nil, "", fmt.Errorf("error getting default root: %w", err)
 		}
 
 		for _, pt := range defaultRoot.PolicyTypes {

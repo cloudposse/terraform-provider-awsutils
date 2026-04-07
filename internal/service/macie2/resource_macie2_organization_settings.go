@@ -50,7 +50,7 @@ func getMemberAccounts(d *schema.ResourceData) []string {
 func getMemberAccountsFromAws(conn *macie2.Macie2) ([]string, error) {
 	memberAccounts, err := conn.ListMembers(&macie2.ListMembersInput{})
 	if err != nil {
-		return nil, fmt.Errorf("error reading macie2 organization members: %s", err)
+		return nil, fmt.Errorf("error reading macie2 organization members: %w", err)
 	}
 
 	var memberAccountIDs []string
@@ -100,14 +100,14 @@ func resourceAwsMacie2OrganizationSettingsUpdate(d *schema.ResourceData, meta in
 	membersToAdd := flex.Diff(desiredMemberAccounts, currentMemberAccounts)
 	if len(membersToAdd) > 0 {
 		if err := addMacie2OrganizationMembers(conn, membersToAdd); err != nil {
-			return fmt.Errorf("error setting macie2 organization members: %s", err)
+			return fmt.Errorf("error setting macie2 organization members: %w", err)
 		}
 	}
 
 	membersToRemove := flex.Diff(currentMemberAccounts, desiredMemberAccounts)
 	if len(membersToRemove) > 0 {
 		if err := removeMacie2OrganizationMembers(conn, membersToRemove); err != nil {
-			return fmt.Errorf("error removing macie2 organization members: %s", err)
+			return fmt.Errorf("error removing macie2 organization members: %w", err)
 		}
 	}
 	return nil
@@ -118,7 +118,7 @@ func resourceAwsMacie2OrganizationSettingsDelete(d *schema.ResourceData, meta in
 	membersToRemove := getMemberAccounts(d)
 
 	if err := removeMacie2OrganizationMembers(conn, membersToRemove); err != nil {
-		return fmt.Errorf("error removing macie2 organization members: %s", err)
+		return fmt.Errorf("error removing macie2 organization members: %w", err)
 	}
 	return nil
 }
@@ -152,7 +152,7 @@ func addMacie2OrganizationMembers(conn *macie2.Macie2, memberAccounts []string) 
 			}
 
 			if _, err := conn.CreateMember(createMemberInput); err != nil {
-				return fmt.Errorf("error designating macie2 administrator account members: %s", err)
+				return fmt.Errorf("error designating macie2 administrator account members: %w", err)
 			}
 		}
 	}
@@ -173,7 +173,7 @@ func removeMacie2OrganizationMembers(conn *macie2.Macie2, memberAccounts []strin
 
 			if _, err := conn.DisassociateMember(disassociateMemberInput); err != nil {
 				if err != nil {
-					return fmt.Errorf("error disassociating macie2 administrator account member: %s", err)
+					return fmt.Errorf("error disassociating macie2 administrator account member: %w", err)
 				}
 			}
 
@@ -182,7 +182,7 @@ func removeMacie2OrganizationMembers(conn *macie2.Macie2, memberAccounts []strin
 				if strings.Contains(err.Error(), "specified account is not associated with your account") {
 					log.Printf("[WARN] The specified member account (%s) isn't associated with the delegated administrator account", *disassociateMemberInput.Id)
 				} else {
-					return fmt.Errorf("error removing macie2 administrator account members: %s", err)
+					return fmt.Errorf("error removing macie2 administrator account members: %w", err)
 				}
 			}
 		}

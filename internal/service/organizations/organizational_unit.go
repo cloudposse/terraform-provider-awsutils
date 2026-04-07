@@ -21,8 +21,8 @@ import (
 )
 
 var (
-	errOUEmptyResponse        = errors.New("empty response")
-	errOUNotFoundAfterCreate  = errors.New("not found after creation")
+	errOUEmptyResponse       = errors.New("empty response")
+	errOUNotFoundAfterCreate = errors.New("not found after creation")
 )
 
 func ResourceOrganizationalUnit() *schema.Resource {

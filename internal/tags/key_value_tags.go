@@ -457,11 +457,11 @@ func (tags KeyValueTags) Hash() int {
 
 	for k, v := range tags {
 		if v == nil || v.Value == nil {
-			hash = hash ^ create.StringHashcode(k)
+			hash ^= create.StringHashcode(k)
 			continue
 		}
 
-		hash = hash ^ create.StringHashcode(fmt.Sprintf("%s-%s", k, *v.Value))
+		hash ^= create.StringHashcode(fmt.Sprintf("%s-%s", k, *v.Value))
 	}
 
 	return hash

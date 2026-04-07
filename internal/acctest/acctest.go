@@ -60,27 +60,30 @@ const (
 )
 
 var (
-	errCompileARNRegexp     = errors.New("unable to compile ARN regexp")
-	errResourceNotFound     = errors.New("not found")
-	errNoPrimaryInstance    = errors.New("no primary instance")
-	errAttributeNotFound    = errors.New("attribute not found")
-	errAttributeMismatch    = errors.New("attribute mismatch")
-	errResourceIDMissing    = errors.New("resource ID missing")
-	errDeletingResource     = errors.New("error deleting resource")
-	errACMPCAActivate       = errors.New("attempting to activate ACM PCA Certificate Authority")
-	errNoCertAuthorityID    = errors.New("no ACM PCA Certificate Authority ID is set")
-	errEmptyCertAuthority   = errors.New("empty ACM PCA Certificate Authority")
-	errNoVPCID              = errors.New("no VPC ID is set")
-	errAccountIDIDNotSet    = errors.New("account Id resource ID not set")
-	errIncorrectAccountID   = errors.New("incorrect Account ID")
-	errExpectedNotNil       = errors.New("expected to not be nil")
-	errAttributeNotGreater  = errors.New("attribute is not greater")
+	errCompileARNRegexp    = errors.New("unable to compile ARN regexp")
+	errResourceNotFound    = errors.New("not found")
+	errNoPrimaryInstance   = errors.New("no primary instance")
+	errAttributeNotFound   = errors.New("attribute not found")
+	errAttributeMismatch   = errors.New("attribute mismatch")
+	errResourceIDMissing   = errors.New("resource ID missing")
+	errDeletingResource    = errors.New("error deleting resource")
+	errACMPCAActivate      = errors.New("attempting to activate ACM PCA Certificate Authority")
+	errNoCertAuthorityID   = errors.New("no ACM PCA Certificate Authority ID is set")
+	errEmptyCertAuthority  = errors.New("empty ACM PCA Certificate Authority")
+	errNoVPCID             = errors.New("no VPC ID is set")
+	errAccountIDIDNotSet   = errors.New("account Id resource ID not set")
+	errIncorrectAccountID  = errors.New("incorrect Account ID")
+	errExpectedNotNil      = errors.New("expected to not be nil")
+	errAttributeNotGreater = errors.New("attribute is not greater")
 )
 
 const (
 	RFC3339RegexPattern = `^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[Tt]([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]+)?([Zz]|([+-]([01][0-9]|2[0-3]):[0-5][0-9]))$`
 	regionRegexp        = `[a-z]{2}(-[a-z]+)+-\d`
 	accountIDRegexp     = `(aws|aws-managed|\d{12})`
+
+	errFmtAttributeWithDetail = "%w (%s): %w"
+	errFmtSentinelWithDetail  = "%w: %s"
 )
 
 // Skip implements a wrapper for (*testing.T).Skip() to prevent unused linting reports
@@ -345,7 +348,7 @@ func MatchResourceAttrRegionalARN(resourceName, attributeName, arnService string
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
 		if err != nil {
-			return fmt.Errorf("%w (%s): %w", errCompileARNRegexp, arnRegexp, err)
+			return fmt.Errorf(errFmtAttributeWithDetail, errCompileARNRegexp, arnRegexp, err)
 		}
 
 		return resource.TestMatchResourceAttr(resourceName, attributeName, attributeMatch)(s)
@@ -364,7 +367,7 @@ func MatchResourceAttrRegionalARNNoAccount(resourceName, attributeName, arnServi
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
 		if err != nil {
-			return fmt.Errorf("%w (%s): %w", errCompileARNRegexp, arnRegexp, err)
+			return fmt.Errorf(errFmtAttributeWithDetail, errCompileARNRegexp, arnRegexp, err)
 		}
 
 		return resource.TestMatchResourceAttr(resourceName, attributeName, attributeMatch)(s)
@@ -384,7 +387,7 @@ func MatchResourceAttrRegionalARNAccountID(resourceName, attributeName, arnServi
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
 		if err != nil {
-			return fmt.Errorf("%w (%s): %w", errCompileARNRegexp, arnRegexp, err)
+			return fmt.Errorf(errFmtAttributeWithDetail, errCompileARNRegexp, arnRegexp, err)
 		}
 
 		return resource.TestMatchResourceAttr(resourceName, attributeName, attributeMatch)(s)
@@ -469,7 +472,7 @@ func MatchResourceAttrGlobalARN(resourceName, attributeName, arnService string, 
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
 		if err != nil {
-			return fmt.Errorf("%w (%s): %w", errCompileARNRegexp, arnRegexp, err)
+			return fmt.Errorf(errFmtAttributeWithDetail, errCompileARNRegexp, arnRegexp, err)
 		}
 
 		return resource.TestMatchResourceAttr(resourceName, attributeName, attributeMatch)(s)
@@ -489,7 +492,7 @@ func CheckResourceAttrRegionalARNIgnoreRegionAndAccount(resourceName, attributeN
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
 		if err != nil {
-			return fmt.Errorf("%w (%s): %w", errCompileARNRegexp, arnRegexp, err)
+			return fmt.Errorf(errFmtAttributeWithDetail, errCompileARNRegexp, arnRegexp, err)
 		}
 
 		return resource.TestMatchResourceAttr(resourceName, attributeName, attributeMatch)(s)
@@ -507,7 +510,7 @@ func MatchResourceAttrGlobalARNNoAccount(resourceName, attributeName, arnService
 
 		attributeMatch, err := regexp.Compile(arnRegexp)
 		if err != nil {
-			return fmt.Errorf("%w (%s): %w", errCompileARNRegexp, arnRegexp, err)
+			return fmt.Errorf(errFmtAttributeWithDetail, errCompileARNRegexp, arnRegexp, err)
 		}
 
 		return resource.TestMatchResourceAttr(resourceName, attributeName, attributeMatch)(s)
@@ -555,12 +558,12 @@ func CheckResourceAttrEquivalentJSON(resourceName, attributeName, expectedJSON s
 func PrimaryInstanceState(s *terraform.State, name string) (*terraform.InstanceState, error) {
 	rs, ok := s.RootModule().Resources[name]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", errResourceNotFound, name)
+		return nil, fmt.Errorf(errFmtSentinelWithDetail, errResourceNotFound, name)
 	}
 
 	is := rs.Primary
 	if is == nil {
-		return nil, fmt.Errorf("%w: %s", errNoPrimaryInstance, name)
+		return nil, fmt.Errorf(errFmtSentinelWithDetail, errNoPrimaryInstance, name)
 	}
 
 	return is, nil
@@ -979,7 +982,7 @@ func DeleteResource(resource *schema.Resource, d *schema.ResourceData, meta inte
 
 		for i := range diags {
 			if diags[i].Severity == diag.Error {
-				return fmt.Errorf("%w: %s", errDeletingResource, diags[i].Summary)
+				return fmt.Errorf(errFmtSentinelWithDetail, errDeletingResource, diags[i].Summary)
 			}
 		}
 
@@ -994,11 +997,11 @@ func CheckResourceDisappears(provo *schema.Provider, resource *schema.Resource, 
 		resourceState, ok := s.RootModule().Resources[resourceName]
 
 		if !ok {
-			return fmt.Errorf("%w: %s", errResourceNotFound, resourceName)
+			return fmt.Errorf(errFmtSentinelWithDetail, errResourceNotFound, resourceName)
 		}
 
 		if resourceState.Primary.ID == "" {
-			return fmt.Errorf("%w: %s", errResourceIDMissing, resourceName)
+			return fmt.Errorf(errFmtSentinelWithDetail, errResourceIDMissing, resourceName)
 		}
 
 		return DeleteResource(resource, resource.Data(resourceState.Primary), provo.Meta())
@@ -1369,7 +1372,7 @@ func CheckACMPCACertificateAuthorityActivateRootCA(certificateAuthority *acmpca.
 		conn := Provider.Meta().(*conns.AWSClient).ACMPCAConn
 
 		if v := aws.StringValue(certificateAuthority.Type); v != acmpca.CertificateAuthorityTypeRoot {
-			return fmt.Errorf("%w: %s", errACMPCAActivate, v)
+			return fmt.Errorf(errFmtSentinelWithDetail, errACMPCAActivate, v)
 		}
 
 		arn := aws.StringValue(certificateAuthority.Arn)
@@ -1430,7 +1433,7 @@ func CheckACMPCACertificateAuthorityActivateSubordinateCA(rootCertificateAuthori
 		conn := Provider.Meta().(*conns.AWSClient).ACMPCAConn
 
 		if v := aws.StringValue(certificateAuthority.Type); v != acmpca.CertificateAuthorityTypeSubordinate {
-			return fmt.Errorf("%w: %s", errACMPCAActivate, v)
+			return fmt.Errorf(errFmtSentinelWithDetail, errACMPCAActivate, v)
 		}
 
 		arn := aws.StringValue(certificateAuthority.Arn)
@@ -1506,7 +1509,7 @@ func CheckACMPCACertificateAuthorityExists(n string, certificateAuthority *acmpc
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 		if !ok {
-			return fmt.Errorf("%w: %s", errResourceNotFound, n)
+			return fmt.Errorf(errFmtSentinelWithDetail, errResourceNotFound, n)
 		}
 
 		if rs.Primary.ID == "" {
@@ -1893,7 +1896,7 @@ func CheckVPCExists(n string, v *ec2.Vpc) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 		if !ok {
-			return fmt.Errorf("%w: %s", errResourceNotFound, n)
+			return fmt.Errorf(errFmtSentinelWithDetail, errResourceNotFound, n)
 		}
 
 		if rs.Primary.ID == "" {
@@ -1945,7 +1948,7 @@ func CheckResourceAttrGreaterThanValue(n, key, value string) resource.TestCheckF
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 		if !ok {
-			return fmt.Errorf("%w: %s", errResourceNotFound, n)
+			return fmt.Errorf(errFmtSentinelWithDetail, errResourceNotFound, n)
 		}
 
 		if v, ok := rs.Primary.Attributes[key]; !ok || (v <= value) {

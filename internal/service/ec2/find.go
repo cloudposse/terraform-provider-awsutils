@@ -805,7 +805,7 @@ func FindImageLaunchPermissionsByID(ctx context.Context, conn *ec2.EC2, id strin
 	return output.LaunchPermissions, nil
 }
 
-func FindImageLaunchPermission(ctx context.Context, conn *ec2.EC2, imageID, accountID, group, organizationARN, organizationalUnitARN string) (*ec2.LaunchPermission, error) {
+func FindImageLaunchPermission(ctx context.Context, conn *ec2.EC2, imageID, accountID, group, organizationARN, organizationalUnitARN string) (*ec2.LaunchPermission, error) { //nolint:revive // argument-limit: function signature mirrors AWS SDK shape
 	output, err := FindImageLaunchPermissionsByID(ctx, conn, imageID)
 	if err != nil {
 		return nil, err

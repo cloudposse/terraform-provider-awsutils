@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	errMultipleRegionsMatched   = errors.New("multiple regions matched; use additional constraints to reduce matches to a single region")
+	errMultipleRegionsMatched    = errors.New("multiple regions matched; use additional constraints to reduce matches to a single region")
 	errRegionNotFoundForEndpoint = errors.New("region not found for endpoint")
 	errRegionNotFoundForName     = errors.New("region not found for name")
 )

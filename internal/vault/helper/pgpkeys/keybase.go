@@ -17,12 +17,12 @@ const (
 )
 
 var (
-	errNoHTTPClient            = errors.New("unable to create an http client")
-	errNonOKResponse           = errors.New("got non-OK response")
-	errPrimaryKeyParseFailed   = errors.New("primary key could not be parsed for user")
-	errPrimaryKeyNil           = errors.New("primary key was nil for user")
-	errKeybaseFetchFailed      = errors.New("unable to fetch keys for user(s) from keybase")
-	errPGPInputKeysMismatch    = errors.New("mismatch between number items to encrypt and number of PGP keys")
+	errNoHTTPClient          = errors.New("unable to create an http client")
+	errNonOKResponse         = errors.New("got non-OK response")
+	errPrimaryKeyParseFailed = errors.New("primary key could not be parsed for user")
+	errPrimaryKeyNil         = errors.New("primary key was nil for user")
+	errKeybaseFetchFailed    = errors.New("unable to fetch keys for user(s) from keybase")
+	errPGPInputKeysMismatch  = errors.New("mismatch between number items to encrypt and number of PGP keys")
 )
 
 // FetchKeybasePubkeys fetches public keys from Keybase given a set of

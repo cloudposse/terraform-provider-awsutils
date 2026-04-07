@@ -26,8 +26,8 @@ const (
 )
 
 var (
-	errProviderError              = errors.New("provider error")
-	errNotFoundRemovingFromState  = errors.New("not found, removing from state")
+	errProviderError             = errors.New("provider error")
+	errNotFoundRemovingFromState = errors.New("not found, removing from state")
 )
 
 // ProblemStandardMessage is a standardized message for reporting errors and warnings.
@@ -74,7 +74,7 @@ func DiagErrorSetting(service, resource, id, argument string, gotError error) di
 
 // AddWarning returns diag.Diagnostics with an additional diag.Diagnostic containing
 // a warning using a standardized problem message.
-func AddWarning(diags diag.Diagnostics, service, action, resource, id string, gotError error) diag.Diagnostics {
+func AddWarning(diags diag.Diagnostics, service, action, resource, id string, gotError error) diag.Diagnostics { //nolint:revive // argument-limit: signature matches DiagError for parity
 	return append(diags,
 		diag.Diagnostic{
 			Severity: diag.Warning,

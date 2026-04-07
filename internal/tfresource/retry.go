@@ -89,6 +89,10 @@ func RetryWhenAWSErrMessageContains(timeout time.Duration, f func() (interface{}
 	return RetryWhenAWSErrMessageContainsContext(context.Background(), timeout, f, code, message)
 }
 
+// retryStatePlaceholder is an arbitrary, non-nil value returned by the
+// state-change Refresh func to satisfy the resource SDK's interface{} contract.
+const retryStatePlaceholder = 42
+
 var errFoundResource = errors.New(`found resource`)
 
 // RetryUntilNotFoundContext retries the specified function until it returns a resource.NotFoundError.
@@ -147,7 +151,7 @@ func RetryWhenNewResourceNotFound(timeout time.Duration, f func() (interface{}, 
 // This is especially useful for AWS services that are prone to throttling, such as Route53, where
 // the default durations cause problems. To not use a StateChangeConf argument and revert to the
 // default, pass in a zero value (i.e., 0*time.Second).
-func RetryConfigContext(ctx context.Context, delay time.Duration, delayRand time.Duration, minTimeout time.Duration, pollInterval time.Duration, timeout time.Duration, f resource.RetryFunc) error {
+func RetryConfigContext(ctx context.Context, delay time.Duration, delayRand time.Duration, minTimeout time.Duration, pollInterval time.Duration, timeout time.Duration, f resource.RetryFunc) error { //nolint:revive // argument-limit: exposes the StateChangeConf knobs as discrete parameters
 	// These are used to pull the error out of the function; need a mutex to
 	// avoid a data race.
 	var resultErr error
@@ -165,13 +169,13 @@ func RetryConfigContext(ctx context.Context, delay time.Duration, delayRand time
 
 			if rerr == nil {
 				resultErr = nil
-				return 42, "success", nil
+				return retryStatePlaceholder, "success", nil
 			}
 
 			resultErr = rerr.Err
 
 			if rerr.Retryable {
-				return 42, "retryableerror", nil
+				return retryStatePlaceholder, "retryableerror", nil
 			}
 
 			return nil, "quit", rerr.Err
@@ -185,7 +189,7 @@ func RetryConfigContext(ctx context.Context, delay time.Duration, delayRand time
 	if delayRand.Milliseconds() > 0 {
 		// Hitting the API at exactly the same time on each iteration of the retry is more likely to
 		// cause Throttling problems. We introduce randomness in order to help AWS be happier.
-		r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
+		r := rand.New(rand.NewSource(time.Now().UTC().UnixNano())) //nolint:gosec // G404: jitter for retry backoff, not security-sensitive
 
 		c.Delay = time.Duration(r.Int63n(delayRand.Milliseconds())) * time.Millisecond
 	}

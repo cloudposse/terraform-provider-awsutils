@@ -293,7 +293,7 @@ func resourceAccountDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func createAccount(conn *organizations.Organizations, name, email string, iamUserAccessToBilling, roleName *string, tags []*organizations.Tag, govCloud bool) (*organizations.CreateAccountStatus, error) {
+func createAccount(conn *organizations.Organizations, name, email string, iamUserAccessToBilling, roleName *string, tags []*organizations.Tag, govCloud bool) (*organizations.CreateAccountStatus, error) { //nolint:revive // argument-limit: thin wrapper around AWS SDK CreateAccount inputs
 	if govCloud {
 		input := &organizations.CreateGovCloudAccountInput{
 			AccountName: aws.String(name),

@@ -20,6 +20,12 @@ var (
 	regionRegexp    = regexp.MustCompile(`^[a-z]{2}(-[a-z]+)+-\d$`)
 )
 
+const (
+	launchTemplateIDMaxLen     = 255
+	launchTemplatePrefixMaxLen = 99
+	launchTemplateNameMaxLen   = 125
+)
+
 var errValidation = errors.New("validation error")
 
 func ValidARN(v interface{}, k string) (ws []string, errors []error) {
@@ -182,11 +188,12 @@ func ValidIPv6CIDRNetworkAddress(v interface{}, k string) (ws []string, errors [
 
 func ValidLaunchTemplateID(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if len(value) < 1 {
+	switch {
+	case len(value) < 1:
 		errors = append(errors, fmt.Errorf("%w: %q cannot be shorter than 1 character", errValidation, k))
-	} else if len(value) > 255 {
+	case len(value) > launchTemplateIDMaxLen:
 		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than 255 characters", errValidation, k))
-	} else if !regexp.MustCompile(`^lt\-[a-z0-9]+$`).MatchString(value) {
+	case !regexp.MustCompile(`^lt\-[a-z0-9]+$`).MatchString(value):
 		errors = append(errors, fmt.Errorf(
 			"%w: %q must begin with 'lt-' and be comprised of only alphanumeric characters: %v", errValidation, k, value))
 	}
@@ -195,13 +202,14 @@ func ValidLaunchTemplateID(v interface{}, k string) (ws []string, errors []error
 
 func ValidLaunchTemplateName(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if len(value) < 3 {
+	switch {
+	case len(value) < 3:
 		errors = append(errors, fmt.Errorf("%w: %q cannot be less than 3 characters", errValidation, k))
-	} else if strings.HasSuffix(k, "prefix") && len(value) > 99 {
+	case strings.HasSuffix(k, "prefix") && len(value) > launchTemplatePrefixMaxLen:
 		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than 99 characters, name is limited to 125", errValidation, k))
-	} else if !strings.HasSuffix(k, "prefix") && len(value) > 125 {
+	case !strings.HasSuffix(k, "prefix") && len(value) > launchTemplateNameMaxLen:
 		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than 125 characters", errValidation, k))
-	} else if !regexp.MustCompile(`^[0-9a-zA-Z()./_\-]+$`).MatchString(value) {
+	case !regexp.MustCompile(`^[0-9a-zA-Z()./_\-]+$`).MatchString(value):
 		errors = append(errors, fmt.Errorf("%w: %q can only alphanumeric characters and ()./_- symbols", errValidation, k))
 	}
 	return ws, errors

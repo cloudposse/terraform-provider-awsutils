@@ -3,7 +3,7 @@ package acctest
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha1"
+	"crypto/sha1" //nolint:gosec // G505: SHA-1 required for X.509 SubjectKeyIdentifier per RFC 5280
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
@@ -144,7 +144,7 @@ func TLSRSAX509SelfSignedCACertificatePEM(keyPem string) string {
 		panic(err)
 	}
 
-	publicKeyBytesSha1 := sha1.Sum(publicKeyBytes)
+	publicKeyBytesSha1 := sha1.Sum(publicKeyBytes) //nolint:gosec // G401: SHA-1 required for X.509 SubjectKeyIdentifier per RFC 5280
 
 	serialNumber, err := rand.Int(rand.Reader, tlsX509CertificateSerialNumberLimit)
 	if err != nil {
@@ -201,7 +201,7 @@ func TLSRSAX509SelfSignedCACertificateForRolesAnywhereTrustAnchorPEM(keyPem stri
 		panic(err)
 	}
 
-	publicKeyBytesSha1 := sha1.Sum(publicKeyBytes)
+	publicKeyBytesSha1 := sha1.Sum(publicKeyBytes) //nolint:gosec // G401: SHA-1 required for X.509 SubjectKeyIdentifier per RFC 5280
 
 	serialNumber, err := rand.Int(rand.Reader, tlsX509CertificateSerialNumberLimit)
 	if err != nil {

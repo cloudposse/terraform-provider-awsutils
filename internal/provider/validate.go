@@ -9,6 +9,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+const (
+	assumeRoleDurationMinMinutes = 15
+	assumeRoleDurationMaxHours   = 12
+)
+
 var errInvalidAssumeRoleDuration = errors.New("duration must be between 15 minutes (15m) and 12 hours (12h), inclusive")
 
 // validAssumeRoleDuration validates a string can be parsed as a valid time.Duration
@@ -20,7 +25,7 @@ func validAssumeRoleDuration(v interface{}, k string) (ws []string, errs []error
 		return ws, errs
 	}
 
-	if duration.Minutes() < 15 || duration.Hours() > 12 {
+	if duration.Minutes() < assumeRoleDurationMinMinutes || duration.Hours() > assumeRoleDurationMaxHours {
 		errs = append(errs, fmt.Errorf("%w: %q", errInvalidAssumeRoleDuration, k))
 	}
 

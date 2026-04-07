@@ -116,11 +116,11 @@ type ARN struct {
 	Value   arn.ARN
 }
 
-func (a ARN) Type(_ context.Context) attr.Type {
+func (a ARN) Type(_ context.Context) attr.Type { //nolint:gocritic // hugeParam: receiver type required by attr.Value interface
 	return ARNType
 }
 
-func (a ARN) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
+func (a ARN) ToTerraformValue(ctx context.Context) (tftypes.Value, error) { //nolint:gocritic // hugeParam: receiver type required by attr.Value interface
 	t := ARNType.TerraformType(ctx)
 	if a.Null {
 		return tftypes.NewValue(t, nil), nil
@@ -132,7 +132,7 @@ func (a ARN) ToTerraformValue(ctx context.Context) (tftypes.Value, error) {
 }
 
 // Equal returns true if `other` is a *ARN and has the same value as `a`.
-func (a ARN) Equal(other attr.Value) bool {
+func (a ARN) Equal(other attr.Value) bool { //nolint:gocritic // hugeParam: receiver type required by attr.Value interface
 	o, ok := other.(ARN)
 	if !ok {
 		return false
@@ -147,12 +147,12 @@ func (a ARN) Equal(other attr.Value) bool {
 }
 
 // IsNull returns true if the Value is not set, or is explicitly set to null.
-func (a ARN) IsNull() bool {
+func (a ARN) IsNull() bool { //nolint:gocritic // hugeParam: receiver type required by attr.Value interface
 	return a.Null
 }
 
 // IsUnknown returns true if the Value is not yet known.
-func (a ARN) IsUnknown() bool {
+func (a ARN) IsUnknown() bool { //nolint:gocritic // hugeParam: receiver type required by attr.Value interface
 	return a.Unknown
 }
 

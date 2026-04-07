@@ -16,6 +16,8 @@ var (
 	errNoServiceID                   = errors.New("service ID not provided directly or through a DNS name")
 )
 
+const reverseDNSNameKey = "reverse_dns_name"
+
 func DataSourceService() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceServiceRead,
@@ -25,7 +27,7 @@ func DataSourceService() *schema.Resource {
 				Type:         schema.TypeString,
 				Computed:     true,
 				Optional:     true,
-				ExactlyOneOf: []string{"dns_name", "reverse_dns_name", "service_id"},
+				ExactlyOneOf: []string{"dns_name", reverseDNSNameKey, "service_id"},
 			},
 			"partition": {
 				Type:     schema.TypeString,
@@ -35,25 +37,25 @@ func DataSourceService() *schema.Resource {
 				Type:          schema.TypeString,
 				Computed:      true,
 				Optional:      true,
-				ConflictsWith: []string{"dns_name", "reverse_dns_name"},
+				ConflictsWith: []string{"dns_name", reverseDNSNameKey},
 			},
-			"reverse_dns_name": {
+			reverseDNSNameKey: {
 				Type:         schema.TypeString,
 				Computed:     true,
 				Optional:     true,
-				ExactlyOneOf: []string{"dns_name", "reverse_dns_name", "service_id"},
+				ExactlyOneOf: []string{"dns_name", reverseDNSNameKey, "service_id"},
 			},
 			"reverse_dns_prefix": {
 				Type:          schema.TypeString,
 				Computed:      true,
 				Optional:      true,
-				ConflictsWith: []string{"dns_name", "reverse_dns_name"},
+				ConflictsWith: []string{"dns_name", reverseDNSNameKey},
 			},
 			"service_id": {
 				Type:         schema.TypeString,
 				Computed:     true,
 				Optional:     true,
-				ExactlyOneOf: []string{"dns_name", "reverse_dns_name", "service_id"},
+				ExactlyOneOf: []string{"dns_name", reverseDNSNameKey, "service_id"},
 			},
 			"supported": {
 				Type:     schema.TypeBool,
@@ -66,7 +68,7 @@ func DataSourceService() *schema.Resource {
 func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*conns.AWSClient)
 
-	if v, ok := d.GetOk("reverse_dns_name"); ok {
+	if v, ok := d.GetOk(reverseDNSNameKey); ok {
 		serviceParts := strings.Split(v.(string), ".")
 		if len(serviceParts) < 4 {
 			return fmt.Errorf("%w (%s has %d)", errReverseServiceDNSNameTooShort, v.(string), len(serviceParts))
@@ -118,7 +120,7 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	reverseDNS := fmt.Sprintf("%s.%s.%s", d.Get("reverse_dns_prefix").(string), d.Get("region").(string), d.Get("service_id").(string))
-	if err := d.Set("reverse_dns_name", reverseDNS); err != nil {
+	if err := d.Set(reverseDNSNameKey, reverseDNS); err != nil {
 		return fmt.Errorf("error setting reverse_dns_name: %w", err)
 	}
 	if err := d.Set("dns_name", strings.ToLower(strings.Join(InvertStringSlice(strings.Split(reverseDNS, ".")), "."))); err != nil {

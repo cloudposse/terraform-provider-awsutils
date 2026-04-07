@@ -179,11 +179,10 @@ func removeMacie2OrganizationMembers(conn *macie2.Macie2, memberAccounts []strin
 
 			if _, err := conn.DeleteMember(deleteMemberInput); err != nil {
 				log.Printf("[WARN] Error deleting macie2 administrator account member: %s", err.Error())
-				if strings.Contains(err.Error(), "specified account is not associated with your account") {
-					log.Printf("[WARN] The specified member account (%s) isn't associated with the delegated administrator account", *disassociateMemberInput.Id)
-				} else {
+				if !strings.Contains(err.Error(), "specified account is not associated with your account") {
 					return fmt.Errorf("error removing macie2 administrator account members: %w", err)
 				}
+				log.Printf("[WARN] The specified member account (%s) isn't associated with the delegated administrator account", *disassociateMemberInput.Id)
 			}
 		}
 	}

@@ -22,6 +22,8 @@ import (
 	"strings"
 )
 
+const errFmtSentinelWithDetail = "%w: %s"
+
 var (
 	errServiceAliasNotFound      = errors.New("unable to find service for service alias")
 	errNoServiceData             = errors.New("no service data found")
@@ -130,7 +132,7 @@ func ProviderPackageForAlias(serviceAlias string) (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("%w: %s", errServiceAliasNotFound, serviceAlias)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errServiceAliasNotFound, serviceAlias)
 }
 
 func ProviderPackages() []string {
@@ -160,7 +162,7 @@ func ProviderNameUpper(service string) (string, error) {
 		return v.ProviderNameUpper, nil
 	}
 
-	return "", fmt.Errorf("%w: %s", errNoServiceData, service)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errNoServiceData, service)
 }
 
 func DeprecatedEnvVar(service string) string {
@@ -192,7 +194,7 @@ func FullHumanFriendly(service string) (string, error) {
 		return FullHumanFriendly(s)
 	}
 
-	return "", fmt.Errorf("%w: %s", errNoServiceData, service)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errNoServiceData, service)
 }
 
 func AWSGoPackage(providerPackage string, version int) (string, error) {
@@ -211,7 +213,7 @@ func AWSGoV1Package(providerPackage string) (string, error) {
 		return v.GoV1Package, nil
 	}
 
-	return "", fmt.Errorf("%w: %s", errSDKGoV1PackageNotFound, providerPackage)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errSDKGoV1PackageNotFound, providerPackage)
 }
 
 func AWSGoV2Package(providerPackage string) (string, error) {
@@ -219,7 +221,7 @@ func AWSGoV2Package(providerPackage string) (string, error) {
 		return v.GoV2Package, nil
 	}
 
-	return "", fmt.Errorf("%w: %s", errSDKGoV2PackageNotFound, providerPackage)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errSDKGoV2PackageNotFound, providerPackage)
 }
 
 func AWSGoClientTypeName(providerPackage string, version int) (string, error) {
@@ -238,5 +240,5 @@ func AWSGoV1ClientTypeName(providerPackage string) (string, error) {
 		return v.GoV1ClientTypeName, nil
 	}
 
-	return "", fmt.Errorf("%w: %s", errSDKGoV1ClientTypeNotFound, providerPackage)
+	return "", fmt.Errorf(errFmtSentinelWithDetail, errSDKGoV1ClientTypeNotFound, providerPackage)
 }

@@ -101,7 +101,7 @@ func RequireOneOfEnvVar(names []string, usageMessage string) (string, string, er
 		}
 	}
 
-	return "", "", fmt.Errorf("%w: of %v. Usage: %s", errEnvVarRequiredOneOf, names, usageMessage)
+	return "", "", fmt.Errorf("%w: %v. Usage: %s", errEnvVarRequiredOneOf, names, usageMessage)
 }
 
 // RequireEnvVar verifies that an environment variable is non-empty or returns an error.

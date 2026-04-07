@@ -17,7 +17,7 @@ import (
 // thoroughly tested in the init and rekey command unit tests.
 func EncryptShares(input [][]byte, pgpKeys []string) ([]string, [][]byte, error) {
 	if len(input) != len(pgpKeys) {
-		return nil, nil, errPGPInputKeysMismatch
+		return nil, nil, fmt.Errorf("%w: inputs=%d keys=%d", errPGPInputKeysMismatch, len(input), len(pgpKeys))
 	}
 	encryptedShares := make([][]byte, 0, len(pgpKeys))
 	entities, err := GetEntities(pgpKeys)

@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"time"
 
@@ -157,50 +158,66 @@ func resourceAccessKeyCreate(d *schema.ResourceData, meta interface{}) error {
 		)
 	}
 
-	d.SetId(aws.StringValue(createResp.AccessKey.AccessKeyId))
-
 	if createResp.AccessKey == nil || createResp.AccessKey.SecretAccessKey == nil {
 		return errMissingSecretAccessKey
 	}
 
+	d.SetId(aws.StringValue(createResp.AccessKey.AccessKeyId))
+
+	// cleanupOnError attempts a best-effort delete of the just-created access
+	// key when a post-create step fails. The original error is always returned;
+	// any deletion error is logged but swallowed so the caller still sees the
+	// actionable failure.
+	cleanupOnError := func(origErr error) error {
+		_, delErr := conn.DeleteAccessKey(&iam.DeleteAccessKeyInput{
+			AccessKeyId: createResp.AccessKey.AccessKeyId,
+			UserName:    request.UserName,
+		})
+		if delErr != nil {
+			log.Printf("[WARN] failed to clean up IAM access key %s after post-create error: %s",
+				aws.StringValue(createResp.AccessKey.AccessKeyId), delErr)
+		}
+		return origErr
+	}
+
 	sesSMTPPasswordV4, err := SessmTPPasswordFromSecretKeySigV4(createResp.AccessKey.SecretAccessKey, meta.(*conns.AWSClient).Region)
 	if err != nil {
-		return fmt.Errorf("error getting SES SigV4 SMTP Password from Secret Access Key: %w", err)
+		return cleanupOnError(fmt.Errorf("error getting SES SigV4 SMTP Password from Secret Access Key: %w", err))
 	}
 
 	if v, ok := d.GetOk("pgp_key"); ok {
 		pgpKey := v.(string)
 		encryptionKey, err := RetrieveGPGKey(pgpKey)
 		if err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 		fingerprint, encrypted, err := EncryptValue(encryptionKey, *createResp.AccessKey.SecretAccessKey, "IAM Access Key Secret")
 		if err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 
 		if err := d.Set("key_fingerprint", fingerprint); err != nil {
-			return fmt.Errorf("error setting key_fingerprint: %w", err)
+			return cleanupOnError(fmt.Errorf("error setting key_fingerprint: %w", err))
 		}
 		if err := d.Set("encrypted_secret", encrypted); err != nil {
-			return fmt.Errorf("error setting encrypted_secret: %w", err)
+			return cleanupOnError(fmt.Errorf("error setting encrypted_secret: %w", err))
 		}
 
 		_, encrypted, err = EncryptValue(encryptionKey, sesSMTPPasswordV4, "SES SMTP password")
 		if err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 
 		if err := d.Set("encrypted_ses_smtp_password_v4", encrypted); err != nil {
-			return fmt.Errorf("error setting encrypted_ses_smtp_password_v4: %w", err)
+			return cleanupOnError(fmt.Errorf("error setting encrypted_ses_smtp_password_v4: %w", err))
 		}
 	} else {
 		if err := d.Set("secret", createResp.AccessKey.SecretAccessKey); err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 
 		if err := d.Set("ses_smtp_password_v4", sesSMTPPasswordV4); err != nil {
-			return err
+			return cleanupOnError(err)
 		}
 	}
 

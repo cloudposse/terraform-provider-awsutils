@@ -172,9 +172,7 @@ func removeMacie2OrganizationMembers(conn *macie2.Macie2, memberAccounts []strin
 			}
 
 			if _, err := conn.DisassociateMember(disassociateMemberInput); err != nil {
-				if err != nil {
-					return fmt.Errorf("error disassociating macie2 administrator account member: %w", err)
-				}
+				return fmt.Errorf("error disassociating macie2 administrator account member: %w", err)
 			}
 
 			if _, err := conn.DeleteMember(deleteMemberInput); err != nil {

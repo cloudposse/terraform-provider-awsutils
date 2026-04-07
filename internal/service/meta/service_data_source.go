@@ -127,17 +127,26 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("error setting dns_name: %w", err)
 	}
 
-	if err := d.Set("supported", true); err != nil {
+	// Default supported to false; only flip to true once both the partition
+	// and service are confirmed. This prevents stale state when switching to
+	// an unknown region.
+	if err := d.Set("supported", false); err != nil {
 		return fmt.Errorf("error setting supported: %w", err)
 	}
 	if partition, ok := endpoints.PartitionForRegion(endpoints.DefaultPartitions(), d.Get("region").(string)); ok {
 		if err := d.Set("partition", partition.ID()); err != nil {
 			return fmt.Errorf("error setting partition: %w", err)
 		}
-		if _, ok := partition.Services()[d.Get("service_id").(string)]; !ok {
-			if err := d.Set("supported", false); err != nil {
+		if _, ok := partition.Services()[d.Get("service_id").(string)]; ok {
+			if err := d.Set("supported", true); err != nil {
 				return fmt.Errorf("error setting supported: %w", err)
 			}
+		}
+	} else {
+		// Region is unknown to the SDK; clear partition so state cannot
+		// retain a stale value from a prior read.
+		if err := d.Set("partition", ""); err != nil {
+			return fmt.Errorf("error setting partition: %w", err)
 		}
 	}
 

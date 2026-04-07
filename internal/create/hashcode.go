@@ -6,8 +6,8 @@ import (
 
 // StringHashcode hashes a string to a unique hashcode.
 //
-// Crc32 returns a uint32, but for our use we need
-// and non negative integer. Here we cast to an integer
+// crc32.ChecksumIEEE returns a uint32, but for our use we need
+// a non-negative integer. Here we cast to an integer
 // and invert it if the result is negative.
 func StringHashcode(s string) int {
 	v := int(crc32.ChecksumIEEE([]byte(s)))

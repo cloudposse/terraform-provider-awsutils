@@ -166,9 +166,7 @@ func removeGuardDutyOrganizationMembers(conn *guardduty.GuardDuty, detectorID st
 		}
 
 		if _, err := conn.DisassociateMembers(disassociateMembersInput); err != nil {
-			if err != nil {
-				return fmt.Errorf("error disassociating guardduty administrator account members: %w", err)
-			}
+			return fmt.Errorf("error disassociating guardduty administrator account members: %w", err)
 		}
 
 		if result, err := conn.DeleteMembers(deleteMembersInput); err != nil || len(result.UnprocessedAccounts) > 0 {

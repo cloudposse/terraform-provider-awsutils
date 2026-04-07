@@ -192,7 +192,7 @@ func ValidLaunchTemplateID(v interface{}, k string) (ws []string, errors []error
 	case len(value) < 1:
 		errors = append(errors, fmt.Errorf("%w: %q cannot be shorter than 1 character", errValidation, k))
 	case len(value) > launchTemplateIDMaxLen:
-		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than 255 characters", errValidation, k))
+		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than %d characters", errValidation, k, launchTemplateIDMaxLen))
 	case !regexp.MustCompile(`^lt\-[a-z0-9]+$`).MatchString(value):
 		errors = append(errors, fmt.Errorf(
 			"%w: %q must begin with 'lt-' and be comprised of only alphanumeric characters: %v", errValidation, k, value))
@@ -206,9 +206,9 @@ func ValidLaunchTemplateName(v interface{}, k string) (ws []string, errors []err
 	case len(value) < 3:
 		errors = append(errors, fmt.Errorf("%w: %q cannot be less than 3 characters", errValidation, k))
 	case strings.HasSuffix(k, "prefix") && len(value) > launchTemplatePrefixMaxLen:
-		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than 99 characters, name is limited to 125", errValidation, k))
+		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than %d characters, name is limited to %d", errValidation, k, launchTemplatePrefixMaxLen, launchTemplateNameMaxLen))
 	case !strings.HasSuffix(k, "prefix") && len(value) > launchTemplateNameMaxLen:
-		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than 125 characters", errValidation, k))
+		errors = append(errors, fmt.Errorf("%w: %q cannot be longer than %d characters", errValidation, k, launchTemplateNameMaxLen))
 	case !regexp.MustCompile(`^[0-9a-zA-Z()./_\-]+$`).MatchString(value):
 		errors = append(errors, fmt.Errorf("%w: %q can only alphanumeric characters and ()./_- symbols", errValidation, k))
 	}

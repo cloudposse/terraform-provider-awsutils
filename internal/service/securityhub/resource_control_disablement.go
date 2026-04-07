@@ -124,7 +124,7 @@ func resourceAwsSecurityHubControlDisablementDelete(d *schema.ResourceData, meta
 	}
 
 	if _, err := conn.UpdateStandardsControl(input); err != nil {
-		return fmt.Errorf("error updating security hub control %s: %w", controlArn, err)
+		return fmt.Errorf("error enabling security hub control %s: %w", controlArn, err)
 	}
 
 	return nil

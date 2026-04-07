@@ -96,9 +96,13 @@ func dataSourceCallerIdentityRead(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("error setting user_id: %w", err)
 	}
 
-	// If the caller identity is an assumed role, get the IAM role ARN and set it as the ARN.
-	if strings.HasPrefix(aws.StringValue(res.Arn), "arn:aws:sts") {
-		if err := d.Set("eks_role_arn", getIamRoleArnFromCallerRoleArn(aws.StringValue(res.Arn))); err != nil {
+	// If the caller identity is an assumed role, get the IAM role ARN and set
+	// it as the ARN. The check is partition-agnostic so it works across the
+	// standard AWS partition as well as GovCloud (aws-us-gov) and China
+	// (aws-cn).
+	arn := aws.StringValue(res.Arn)
+	if strings.Contains(arn, ":sts:") && strings.Contains(arn, ":assumed-role/") {
+		if err := d.Set("eks_role_arn", getIamRoleArnFromCallerRoleArn(arn)); err != nil {
 			return fmt.Errorf("error setting eks_role_arn: %w", err)
 		}
 	}

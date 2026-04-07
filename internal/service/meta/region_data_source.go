@@ -62,7 +62,7 @@ func dataSourceRegionRead(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 		if region != nil && region.ID() != matchingRegion.ID() {
-			return errMultipleRegionsMatched
+			return fmt.Errorf("%w: %q and %q", errMultipleRegionsMatched, region.ID(), matchingRegion.ID())
 		}
 		region = matchingRegion
 	}

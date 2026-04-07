@@ -179,9 +179,7 @@ func removeSecurityHubOrganizationMembers(conn *securityhub.SecurityHub, memberA
 		}
 
 		if _, err := conn.DisassociateMembers(disassociateMembersInput); err != nil {
-			if err != nil {
-				return fmt.Errorf("error disassociating security hub administrator account members: %w", err)
-			}
+			return fmt.Errorf("error disassociating security hub administrator account members: %w", err)
 		}
 
 		if result, err := conn.DeleteMembers(deleteMembersInput); err != nil || len(result.UnprocessedAccounts) > 0 {

@@ -111,7 +111,7 @@ func dataSourceServiceRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-// invertStringSlice returns inverted string slice without sorting slice like sort.Reverse()
+// invertStringSlice returns inverted string slice without sorting slice like sort.Reverse().
 func InvertStringSlice(slice []string) []string {
 	inverse := make([]string, 0)
 	for i := 0; i < len(slice); i++ {

@@ -10,7 +10,7 @@ import (
 
 // RetrieveGPGKey returns the PGP key specified as the pgpKey parameter, or queries
 // the public key from the keybase service if the parameter is a keybase username
-// prefixed with the phrase "keybase:"
+// prefixed with the phrase "keybase:".
 func RetrieveGPGKey(pgpKey string) (string, error) {
 	const keybasePrefix = "keybase:"
 

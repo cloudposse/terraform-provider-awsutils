@@ -43,7 +43,7 @@ type ServiceDatum struct {
 	ProviderNameUpper  string
 }
 
-// serviceData key is the AWS provider service package
+// serviceData key is the AWS provider service package.
 var serviceData map[string]*ServiceDatum
 
 func init() {

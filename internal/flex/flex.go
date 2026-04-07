@@ -29,7 +29,7 @@ func Diff(slice1 []string, slice2 []string) []string {
 }
 
 // Takes the result of flatmap.Expand for an array of strings
-// and returns a []*string
+// and returns a []*string.
 func ExpandStringList(configured []interface{}) []*string {
 	vs := make([]*string, 0, len(configured))
 	for _, v := range configured {
@@ -43,7 +43,7 @@ func ExpandStringList(configured []interface{}) []*string {
 
 // Takes list of pointers to strings. Expand to an array
 // of raw strings and returns a []interface{}
-// to keep compatibility w/ schema.NewSet
+// to keep compatibility w/ schema.NewSet.
 func FlattenStringList(list []*string) []interface{} {
 	vs := make([]interface{}, 0, len(list))
 	for _, v := range list {
@@ -52,7 +52,7 @@ func FlattenStringList(list []*string) []interface{} {
 	return vs
 }
 
-// Expands a map of string to interface to a map of string to *string
+// Expands a map of string to interface to a map of string to *string.
 func ExpandStringMap(m map[string]interface{}) map[string]*string {
 	stringMap := make(map[string]*string, len(m))
 	for k, v := range m {
@@ -61,7 +61,7 @@ func ExpandStringMap(m map[string]interface{}) map[string]*string {
 	return stringMap
 }
 
-// Takes a slice of pointers to string and returns a slice of strings
+// Takes a slice of pointers to string and returns a slice of strings.
 func ExpandStringSliceofPointers(input []*string) []string {
 	var output []string
 
@@ -71,7 +71,7 @@ func ExpandStringSliceofPointers(input []*string) []string {
 	return output
 }
 
-// Takes the result of schema.Set of strings and returns a []*string
+// Takes the result of schema.Set of strings and returns a []*string.
 func ExpandStringSet(configured *schema.Set) []*string {
 	return ExpandStringList(configured.List()) // nosemgrep: helper-schema-Set-extraneous-ExpandStringList-with-List
 }
@@ -80,7 +80,7 @@ func FlattenStringSet(list []*string) *schema.Set {
 	return schema.NewSet(schema.HashString, FlattenStringList(list)) // nosemgrep: helper-schema-Set-extraneous-NewSet-with-FlattenStringList
 }
 
-// Takes the result of schema.Set of strings and returns a []*int64
+// Takes the result of schema.Set of strings and returns a []*int64.
 func ExpandInt64Set(configured *schema.Set) []*int64 {
 	return ExpandInt64List(configured.List())
 }
@@ -90,7 +90,7 @@ func FlattenInt64Set(list []*int64) *schema.Set {
 }
 
 // Takes the result of flatmap.Expand for an array of int64
-// and returns a []*int64
+// and returns a []*int64.
 func ExpandInt64List(configured []interface{}) []*int64 {
 	vs := make([]*int64, 0, len(configured))
 	for _, v := range configured {
@@ -101,7 +101,7 @@ func ExpandInt64List(configured []interface{}) []*int64 {
 
 // Takes list of pointers to int64s. Expand to an array
 // of raw ints and returns a []interface{}
-// to keep compatibility w/ schema.NewSet
+// to keep compatibility w/ schema.NewSet.
 func FlattenInt64List(list []*int64) []interface{} {
 	vs := make([]interface{}, 0, len(list))
 	for _, v := range list {

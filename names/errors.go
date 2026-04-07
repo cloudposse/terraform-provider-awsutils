@@ -25,7 +25,7 @@ const (
 	ErrActionWaitingForUpdate     = "waiting for update"
 )
 
-// ProblemStandardMessage is a standardized message for reporting errors and warnings
+// ProblemStandardMessage is a standardized message for reporting errors and warnings.
 func ProblemStandardMessage(service, action, resource, id string, gotError error) string {
 	hf, err := FullHumanFriendly(service)
 	if err != nil {
@@ -39,13 +39,13 @@ func ProblemStandardMessage(service, action, resource, id string, gotError error
 	return fmt.Sprintf("%s %s %s (%s): %s", action, hf, resource, id, gotError)
 }
 
-// Error returns an errors.Error with a standardized error message
+// Error returns an errors.Error with a standardized error message.
 func Error(service, action, resource, id string, gotError error) error {
 	return errors.New(ProblemStandardMessage(service, action, resource, id, gotError))
 }
 
 // DiagError returns a 1-length diag.Diagnostics with a diag.Error-level diag.Diagnostic
-// with a standardized error message
+// with a standardized error message.
 func DiagError(service, action, resource, id string, gotError error) diag.Diagnostics {
 	return diag.Diagnostics{
 		diag.Diagnostic{
@@ -68,7 +68,7 @@ func DiagErrorSetting(service, resource, id, argument string, gotError error) di
 }
 
 // AddWarning returns diag.Diagnostics with an additional diag.Diagnostic containing
-// a warning using a standardized problem message
+// a warning using a standardized problem message.
 func AddWarning(diags diag.Diagnostics, service, action, resource, id string, gotError error) diag.Diagnostics {
 	return append(diags,
 		diag.Diagnostic{
@@ -79,7 +79,7 @@ func AddWarning(diags diag.Diagnostics, service, action, resource, id string, go
 }
 
 // AddWarningNotFoundRemoveState returns diag.Diagnostics with an additional diag.Diagnostic containing
-// a warning using a standardized problem message
+// a warning using a standardized problem message.
 func AddWarningNotFoundRemoveState(service, action, resource, id string) diag.Diagnostics {
 	return append(diag.Diagnostics{},
 		diag.Diagnostic{
@@ -89,7 +89,7 @@ func AddWarningNotFoundRemoveState(service, action, resource, id string) diag.Di
 	)
 }
 
-// WarnLog logs to the default logger a standardized problem message
+// WarnLog logs to the default logger a standardized problem message.
 func WarnLog(service, action, resource, id string, gotError error) {
 	log.Printf("[WARN] %s", ProblemStandardMessage(service, action, resource, id, gotError))
 }

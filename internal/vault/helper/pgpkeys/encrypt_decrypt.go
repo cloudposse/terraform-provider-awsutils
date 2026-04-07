@@ -14,7 +14,7 @@ import (
 // byte slice with the corresponding public key.
 //
 // Note: There is no corresponding test function; this functionality is
-// thoroughly tested in the init and rekey command unit tests
+// thoroughly tested in the init and rekey command unit tests.
 func EncryptShares(input [][]byte, pgpKeys []string) ([]string, [][]byte, error) {
 	if len(input) != len(pgpKeys) {
 		return nil, nil, fmt.Errorf("mismatch between number items to encrypt and number of PGP keys")
@@ -65,7 +65,7 @@ func GetFingerprints(pgpKeys []string, entities []*openpgp.Entity) ([]string, er
 }
 
 // GetEntities takes in a string array of base64-encoded PGP keys and returns
-// the openpgp Entities
+// the openpgp Entities.
 func GetEntities(pgpKeys []string) ([]*openpgp.Entity, error) {
 	ret := make([]*openpgp.Entity, 0, len(pgpKeys))
 	for _, keystring := range pgpKeys {

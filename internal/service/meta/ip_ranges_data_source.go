@@ -117,12 +117,10 @@ func dataSourceIPRangesRead(d *schema.ResourceData, meta interface{}) error {
 		set := d.Get(key).(*schema.Set)
 
 		for _, e := range set.List() {
-
 			s := e.(string)
 
 			set.Remove(s)
 			set.Add(strings.ToLower(s))
-
 		}
 
 		return set

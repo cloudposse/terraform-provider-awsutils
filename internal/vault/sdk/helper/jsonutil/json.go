@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-// Decodes/Unmarshals the given io.Reader pointing to a JSON, into a desired object
+// Decodes/Unmarshals the given io.Reader pointing to a JSON, into a desired object.
 func DecodeJSONFromReader(r io.Reader, out interface{}) error {
 	if r == nil {
 		return fmt.Errorf("'io.Reader' being decoded is nil")

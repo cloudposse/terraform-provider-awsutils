@@ -23,7 +23,7 @@ var tlsX509CertificateSerialNumberLimit = new(big.Int).Lsh(big.NewInt(1), 128) /
 
 // TLSRSAPrivateKeyPEM generates a RSA private key PEM string.
 // Wrap with TLSPEMEscapeNewlines() to allow simple fmt.Sprintf()
-// configurations such as: private_key_pem = "%[1]s"
+// configurations such as: private_key_pem = "%[1]s".
 func TLSRSAPrivateKeyPEM(bits int) string {
 	key, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
@@ -41,7 +41,7 @@ func TLSRSAPrivateKeyPEM(bits int) string {
 
 // TLSRSAPublicKeyPEM generates a RSA public key PEM string.
 // Wrap with TLSPEMEscapeNewlines() to allow simple fmt.Sprintf()
-// configurations such as: public_key_pem = "%[1]s"
+// configurations such as: public_key_pem = "%[1]s".
 func TLSRSAPublicKeyPEM(keyPem string) string {
 	keyBlock, _ := pem.Decode([]byte(keyPem))
 
@@ -67,7 +67,7 @@ func TLSRSAPublicKeyPEM(keyPem string) string {
 
 // TLSRSAX509LocallySignedCertificatePEM generates a local CA x509 certificate PEM string.
 // Wrap with TLSPEMEscapeNewlines() to allow simple fmt.Sprintf()
-// configurations such as: certificate_pem = "%[1]s"
+// configurations such as: certificate_pem = "%[1]s".
 func TLSRSAX509LocallySignedCertificatePEM(caKeyPem, caCertificatePem, keyPem, commonName string) string {
 	caCertificateBlock, _ := pem.Decode([]byte(caCertificatePem))
 
@@ -128,7 +128,7 @@ func TLSRSAX509LocallySignedCertificatePEM(caKeyPem, caCertificatePem, keyPem, c
 
 // TLSRSAX509SelfSignedCACertificatePEM generates a x509 CA certificate PEM string.
 // Wrap with TLSPEMEscapeNewlines() to allow simple fmt.Sprintf()
-// configurations such as: root_certificate_pem = "%[1]s"
+// configurations such as: root_certificate_pem = "%[1]s".
 func TLSRSAX509SelfSignedCACertificatePEM(keyPem string) string {
 	keyBlock, _ := pem.Decode([]byte(keyPem))
 
@@ -185,7 +185,7 @@ func TLSRSAX509SelfSignedCACertificatePEM(keyPem string) string {
 // The CA certificate is suitable for use as an IAM RolesAnywhere Trust Anchor.
 // See https://docs.aws.amazon.com/rolesanywhere/latest/userguide/trust-model.html#signature-verification.
 // Wrap with TLSPEMEscapeNewlines() to allow simple fmt.Sprintf()
-// configurations such as: root_certificate_pem = "%[1]s"
+// configurations such as: root_certificate_pem = "%[1]s".
 func TLSRSAX509SelfSignedCACertificateForRolesAnywhereTrustAnchorPEM(keyPem string) string {
 	keyBlock, _ := pem.Decode([]byte(keyPem))
 
@@ -241,7 +241,7 @@ func TLSRSAX509SelfSignedCACertificateForRolesAnywhereTrustAnchorPEM(keyPem stri
 
 // TLSRSAX509SelfSignedCertificatePEM generates a x509 certificate PEM string.
 // Wrap with TLSPEMEscapeNewlines() to allow simple fmt.Sprintf()
-// configurations such as: private_key_pem = "%[1]s"
+// configurations such as: private_key_pem = "%[1]s".
 func TLSRSAX509SelfSignedCertificatePEM(keyPem, commonName string) string {
 	keyBlock, _ := pem.Decode([]byte(keyPem))
 
@@ -287,7 +287,7 @@ func TLSRSAX509SelfSignedCertificatePEM(keyPem, commonName string) string {
 // TLSRSAX509CertificateRequestPEM generates a x509 certificate request PEM string
 // and a RSA private key PEM string.
 // Wrap with TLSPEMEscapeNewlines() to allow simple fmt.Sprintf()
-// configurations such as: certificate_signing_request_pem = "%[1]s" private_key_pem = "%[2]s"
+// configurations such as: certificate_signing_request_pem = "%[1]s" private_key_pem = "%[2]s".
 func TLSRSAX509CertificateRequestPEM(keyBits int, commonName string) (string, string) {
 	keyBytes, err := rsa.GenerateKey(rand.Reader, keyBits)
 	if err != nil {

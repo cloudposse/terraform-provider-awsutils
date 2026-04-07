@@ -69,7 +69,7 @@ func ValidAccountID(v interface{}, k string) (ws []string, errors []error) {
 
 // validateCIDRBlock validates that the specified CIDR block is valid:
 // - The CIDR block parses to an IP address and network
-// - The CIDR block is the CIDR block for the network
+// - The CIDR block is the CIDR block for the network.
 func validateCIDRBlock(cidr string) error {
 	_, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
@@ -84,7 +84,7 @@ func validateCIDRBlock(cidr string) error {
 }
 
 // ValidCIDRNetworkAddress ensures that the string value is a valid CIDR that
-// represents a network address - it adds an error otherwise
+// represents a network address - it adds an error otherwise.
 func ValidCIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := validateCIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
@@ -114,7 +114,7 @@ func ValidIAMPolicyJSON(v interface{}, k string) (ws []string, errors []error) {
 // ValidateIPv4CIDRBlock validates that the specified CIDR block is valid:
 // - The CIDR block parses to an IP address and network
 // - The IP address is an IPv4 address
-// - The CIDR block is the CIDR block for the network
+// - The CIDR block is the CIDR block for the network.
 func ValidateIPv4CIDRBlock(cidr string) error {
 	ip, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
@@ -136,7 +136,7 @@ func ValidateIPv4CIDRBlock(cidr string) error {
 // ValidateIPv6CIDRBlock validates that the specified CIDR block is valid:
 // - The CIDR block parses to an IP address and network
 // - The IP address is an IPv6 address
-// - The CIDR block is the CIDR block for the network
+// - The CIDR block is the CIDR block for the network.
 func ValidateIPv6CIDRBlock(cidr string) error {
 	ip, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
@@ -156,7 +156,7 @@ func ValidateIPv6CIDRBlock(cidr string) error {
 }
 
 // ValidIPv4CIDRNetworkAddress ensures that the string value is a valid IPv4 CIDR that
-// represents a network address - it adds an error otherwise
+// represents a network address - it adds an error otherwise.
 func ValidIPv4CIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := ValidateIPv4CIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
@@ -167,7 +167,7 @@ func ValidIPv4CIDRNetworkAddress(v interface{}, k string) (ws []string, errors [
 }
 
 // ValidIPv6CIDRNetworkAddress ensures that the string value is a valid IPv6 CIDR that
-// represents a network address - it adds an error otherwise
+// represents a network address - it adds an error otherwise.
 func ValidIPv6CIDRNetworkAddress(v interface{}, k string) (ws []string, errors []error) {
 	if err := ValidateIPv6CIDRBlock(v.(string)); err != nil {
 		errors = append(errors, err)
@@ -247,7 +247,7 @@ func ValidStringIsJSONOrYAML(v interface{}, k string) (ws []string, errors []err
 // Some arguments require three values: true, false, and "" (unspecified).
 // This ValidateFunc returns a custom message since the message with
 // validation.StringInSlice([]string{"", "false", "true"}, false) is confusing:
-// to be one of [ false true], got 1
+// to be one of [ false true], got 1.
 func ValidTypeStringNullableBoolean(v interface{}, k string) (ws []string, es []error) {
 	value, ok := v.(string)
 	if !ok {

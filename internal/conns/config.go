@@ -81,7 +81,7 @@ type Config struct {
 	UseFIPSEndpoint                bool
 }
 
-// Client configures and returns a fully initialized AWSClient
+// Client configures and returns a fully initialized AWSClient.
 func (c *Config) Client(ctx context.Context) (interface{}, diag.Diagnostics) {
 	awsbaseConfig := awsbase.Config{
 		AccessKey:                     c.AccessKey,

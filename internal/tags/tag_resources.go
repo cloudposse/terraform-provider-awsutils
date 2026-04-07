@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	// Separator used in resource identifiers
+	// Separator used in resource identifiers.
 	resourceIDSeparator = `,`
 )
 

@@ -37,22 +37,22 @@ import (
 )
 
 const (
-	// Provider name for single configuration testing
+	// Provider name for single configuration testing.
 	ProviderName = "aws"
 
-	// Provider name for alternate configuration testing
+	// Provider name for alternate configuration testing.
 	ProviderNameAlternate = "awsalternate"
 
-	// Provider name for alternate account and alternate region configuration testing
+	// Provider name for alternate account and alternate region configuration testing.
 	ProviderNameAlternateAccountAlternateRegion = "awsalternateaccountalternateregion"
 
-	// Provider name for alternate account and same region configuration testing
+	// Provider name for alternate account and same region configuration testing.
 	ProviderNameAlternateAccountSameRegion = "awsalternateaccountsameregion"
 
-	// Provider name for same account and alternate region configuration testing
+	// Provider name for same account and alternate region configuration testing.
 	ProviderNameSameAccountAlternateRegion = "awssameaccountalternateregion"
 
-	// Provider name for third configuration testing
+	// Provider name for third configuration testing.
 	ProviderNameThird = "awsthird"
 
 	ResourcePrefix = "tf-acc-test"
@@ -224,7 +224,7 @@ func PreCheck(t *testing.T) {
 	})
 }
 
-// providerAccountID returns the account ID of an AWS provider
+// providerAccountID returns the account ID of an AWS provider.
 func providerAccountID(provo *schema.Provider) string {
 	if provo == nil {
 		log.Print("[DEBUG] Unable to read account ID from test provider: empty provider")
@@ -247,14 +247,14 @@ func CheckDestroyNoop(_ *terraform.State) error {
 	return nil
 }
 
-// CheckResourceAttrAccountID ensures the Terraform state exactly matches the account ID
+// CheckResourceAttrAccountID ensures the Terraform state exactly matches the account ID.
 func CheckResourceAttrAccountID(resourceName, attributeName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		return resource.TestCheckResourceAttr(resourceName, attributeName, AccountID())(s)
 	}
 }
 
-// CheckResourceAttrRegionalARN ensures the Terraform state exactly matches a formatted ARN with region
+// CheckResourceAttrRegionalARN ensures the Terraform state exactly matches a formatted ARN with region.
 func CheckResourceAttrRegionalARN(resourceName, attributeName, arnService, arnResource string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		attributeValue := arn.ARN{
@@ -268,7 +268,7 @@ func CheckResourceAttrRegionalARN(resourceName, attributeName, arnService, arnRe
 	}
 }
 
-// CheckResourceAttrRegionalARNNoAccount ensures the Terraform state exactly matches a formatted ARN with region but without account ID
+// CheckResourceAttrRegionalARNNoAccount ensures the Terraform state exactly matches a formatted ARN with region but without account ID.
 func CheckResourceAttrRegionalARNNoAccount(resourceName, attributeName, arnService, arnResource string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		attributeValue := arn.ARN{
@@ -281,7 +281,7 @@ func CheckResourceAttrRegionalARNNoAccount(resourceName, attributeName, arnServi
 	}
 }
 
-// CheckResourceAttrRegionalARNAccountID ensures the Terraform state exactly matches a formatted ARN with region and specific account ID
+// CheckResourceAttrRegionalARNAccountID ensures the Terraform state exactly matches a formatted ARN with region and specific account ID.
 func CheckResourceAttrRegionalARNAccountID(resourceName, attributeName, arnService, accountID, arnResource string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		attributeValue := arn.ARN{
@@ -297,7 +297,7 @@ func CheckResourceAttrRegionalARNAccountID(resourceName, attributeName, arnServi
 
 // CheckResourceAttrRegionalHostnameService ensures the Terraform state exactly matches a service DNS hostname with region and partition DNS suffix
 //
-// For example: ec2.us-west-2.amazonaws.com
+// For example: ec2.us-west-2.amazonaws.com.
 func CheckResourceAttrRegionalHostnameService(resourceName, attributeName, serviceName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		hostname := fmt.Sprintf("%s.%s.%s", serviceName, Region(), PartitionDNSSuffix())
@@ -306,14 +306,14 @@ func CheckResourceAttrRegionalHostnameService(resourceName, attributeName, servi
 	}
 }
 
-// MatchResourceAttrAccountID ensures the Terraform state regexp matches an account ID
+// MatchResourceAttrAccountID ensures the Terraform state regexp matches an account ID.
 func MatchResourceAttrAccountID(resourceName, attributeName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		return resource.TestMatchResourceAttr(resourceName, attributeName, regexp.MustCompile(`^\d{12}$`))(s)
 	}
 }
 
-// MatchResourceAttrRegionalARN ensures the Terraform state regexp matches a formatted ARN with region
+// MatchResourceAttrRegionalARN ensures the Terraform state regexp matches a formatted ARN with region.
 func MatchResourceAttrRegionalARN(resourceName, attributeName, arnService string, arnResourceRegexp *regexp.Regexp) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		arnRegexp := arn.ARN{
@@ -333,7 +333,7 @@ func MatchResourceAttrRegionalARN(resourceName, attributeName, arnService string
 	}
 }
 
-// MatchResourceAttrRegionalARNNoAccount ensures the Terraform state regexp matches a formatted ARN with region but without account ID
+// MatchResourceAttrRegionalARNNoAccount ensures the Terraform state regexp matches a formatted ARN with region but without account ID.
 func MatchResourceAttrRegionalARNNoAccount(resourceName, attributeName, arnService string, arnResourceRegexp *regexp.Regexp) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		arnRegexp := arn.ARN{
@@ -352,7 +352,7 @@ func MatchResourceAttrRegionalARNNoAccount(resourceName, attributeName, arnServi
 	}
 }
 
-// MatchResourceAttrRegionalARNAccountID ensures the Terraform state regexp matches a formatted ARN with region and specific account ID
+// MatchResourceAttrRegionalARNAccountID ensures the Terraform state regexp matches a formatted ARN with region and specific account ID.
 func MatchResourceAttrRegionalARNAccountID(resourceName, attributeName, arnService, accountID string, arnResourceRegexp *regexp.Regexp) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		arnRegexp := arn.ARN{
@@ -372,7 +372,7 @@ func MatchResourceAttrRegionalARNAccountID(resourceName, attributeName, arnServi
 	}
 }
 
-// MatchResourceAttrRegionalHostname ensures the Terraform state regexp matches a formatted DNS hostname with region and partition DNS suffix
+// MatchResourceAttrRegionalHostname ensures the Terraform state regexp matches a formatted DNS hostname with region and partition DNS suffix.
 func MatchResourceAttrRegionalHostname(resourceName, attributeName, serviceName string, hostnamePrefixRegexp *regexp.Regexp) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		hostnameRegexpPattern := fmt.Sprintf("%s\\.%s\\.%s\\.%s$", hostnamePrefixRegexp.String(), serviceName, Region(), PartitionDNSSuffix())
@@ -386,7 +386,7 @@ func MatchResourceAttrRegionalHostname(resourceName, attributeName, serviceName 
 	}
 }
 
-// MatchResourceAttrGlobalHostname ensures the Terraform state regexp matches a formatted DNS hostname with partition DNS suffix and without region
+// MatchResourceAttrGlobalHostname ensures the Terraform state regexp matches a formatted DNS hostname with partition DNS suffix and without region.
 func MatchResourceAttrGlobalHostname(resourceName, attributeName, serviceName string, hostnamePrefixRegexp *regexp.Regexp) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		hostnameRegexpPattern := fmt.Sprintf("%s\\.%s\\.%s$", hostnamePrefixRegexp.String(), serviceName, PartitionDNSSuffix())
@@ -400,7 +400,7 @@ func MatchResourceAttrGlobalHostname(resourceName, attributeName, serviceName st
 	}
 }
 
-// CheckResourceAttrGlobalARN ensures the Terraform state exactly matches a formatted ARN without region
+// CheckResourceAttrGlobalARN ensures the Terraform state exactly matches a formatted ARN without region.
 func CheckResourceAttrGlobalARN(resourceName, attributeName, arnService, arnResource string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		attributeValue := arn.ARN{
@@ -413,7 +413,7 @@ func CheckResourceAttrGlobalARN(resourceName, attributeName, arnService, arnReso
 	}
 }
 
-// CheckResourceAttrGlobalARNNoAccount ensures the Terraform state exactly matches a formatted ARN without region or account ID
+// CheckResourceAttrGlobalARNNoAccount ensures the Terraform state exactly matches a formatted ARN without region or account ID.
 func CheckResourceAttrGlobalARNNoAccount(resourceName, attributeName, arnService, arnResource string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		attributeValue := arn.ARN{
@@ -425,7 +425,7 @@ func CheckResourceAttrGlobalARNNoAccount(resourceName, attributeName, arnService
 	}
 }
 
-// CheckResourceAttrGlobalARNAccountID ensures the Terraform state exactly matches a formatted ARN without region and with specific account ID
+// CheckResourceAttrGlobalARNAccountID ensures the Terraform state exactly matches a formatted ARN without region and with specific account ID.
 func CheckResourceAttrGlobalARNAccountID(resourceName, attributeName, accountID, arnService, arnResource string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		attributeValue := arn.ARN{
@@ -438,7 +438,7 @@ func CheckResourceAttrGlobalARNAccountID(resourceName, attributeName, accountID,
 	}
 }
 
-// MatchResourceAttrGlobalARN ensures the Terraform state regexp matches a formatted ARN without region
+// MatchResourceAttrGlobalARN ensures the Terraform state regexp matches a formatted ARN without region.
 func MatchResourceAttrGlobalARN(resourceName, attributeName, arnService string, arnResourceRegexp *regexp.Regexp) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		arnRegexp := arn.ARN{
@@ -457,7 +457,7 @@ func MatchResourceAttrGlobalARN(resourceName, attributeName, arnService string, 
 	}
 }
 
-// CheckResourceAttrRegionalARNIgnoreRegionAndAccount ensures the Terraform state exactly matches a formatted ARN with region without specifying the region or account
+// CheckResourceAttrRegionalARNIgnoreRegionAndAccount ensures the Terraform state exactly matches a formatted ARN with region without specifying the region or account.
 func CheckResourceAttrRegionalARNIgnoreRegionAndAccount(resourceName, attributeName, arnService, arnResource string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		arnRegexp := arn.ARN{
@@ -477,7 +477,7 @@ func CheckResourceAttrRegionalARNIgnoreRegionAndAccount(resourceName, attributeN
 	}
 }
 
-// MatchResourceAttrGlobalARNNoAccount ensures the Terraform state regexp matches a formatted ARN without region or account ID
+// MatchResourceAttrGlobalARNNoAccount ensures the Terraform state regexp matches a formatted ARN without region or account ID.
 func MatchResourceAttrGlobalARNNoAccount(resourceName, attributeName, arnService string, arnResourceRegexp *regexp.Regexp) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		arnRegexp := arn.ARN{
@@ -532,7 +532,7 @@ func CheckResourceAttrEquivalentJSON(resourceName, attributeName, expectedJSON s
 	}
 }
 
-// Copied and inlined from the SDK testing code
+// Copied and inlined from the SDK testing code.
 func PrimaryInstanceState(s *terraform.State, name string) (*terraform.InstanceState, error) {
 	rs, ok := s.RootModule().Resources[name]
 	if !ok {
@@ -548,7 +548,7 @@ func PrimaryInstanceState(s *terraform.State, name string) (*terraform.InstanceS
 }
 
 // AccountID returns the account ID of Provider
-// Must be used within a resource.TestCheckFunc
+// Must be used within a resource.TestCheckFunc.
 func AccountID() string {
 	return providerAccountID(Provider)
 }
@@ -813,7 +813,7 @@ provider "awsalternate" {
 `, os.Getenv(conns.EnvVarAlternateAccessKeyId), os.Getenv(conns.EnvVarAlternateProfile), os.Getenv(conns.EnvVarAlternateSecretAccessKey))
 }
 
-// Deprecated: Use ConfigMultipleRegionProvider instead
+// Deprecated: Use ConfigMultipleRegionProvider instead.
 func ConfigAlternateRegionProvider() string {
 	return ConfigNamedRegionalProvider(ProviderNameAlternate, AlternateRegion())
 }
@@ -1003,7 +1003,7 @@ func CheckWithProviders(f func(*terraform.State, *schema.Provider) error, provid
 	}
 }
 
-// ErrorCheckSkipMessagesContaining skips tests based on error messages that indicate unsupported features
+// ErrorCheckSkipMessagesContaining skips tests based on error messages that indicate unsupported features.
 func ErrorCheckSkipMessagesContaining(t *testing.T, messages ...string) resource.ErrorCheckFunc {
 	return func(err error) error {
 		if err == nil {
@@ -1095,7 +1095,7 @@ func errorCheckCommon(err error) bool {
 }
 
 // Check service API call error for reasons to skip acceptance testing
-// These include missing API endpoints and unsupported API calls
+// These include missing API endpoints and unsupported API calls.
 func PreCheckSkipError(err error) bool {
 	// GovCloud has endpoints that respond with (no message provided after the error code):
 	// AccessDeniedException:
@@ -1206,7 +1206,7 @@ data "aws_arn" "test" {
 }
 `
 
-// ConfigCompose can be called to concatenate multiple strings to build test configurations
+// ConfigCompose can be called to concatenate multiple strings to build test configurations.
 func ConfigCompose(config ...string) string {
 	var str strings.Builder
 
@@ -1272,7 +1272,7 @@ func RandomDomain() domainName {
 const DefaultEmailAddress = "no-reply@hashicorp.com"
 
 // RandomEmailAddress generates a random email address in the form
-// "tf-acc-test-<random>@<domain>"
+// "tf-acc-test-<random>@<domain>".
 func RandomEmailAddress(domainName string) string {
 	return fmt.Sprintf("%s@%s", sdkacctest.RandomWithPrefix(ResourcePrefix), domainName)
 }
@@ -1300,7 +1300,7 @@ func PreCheckOutpostsOutposts(t *testing.T) {
 
 const (
 	// ACM domain names cannot be longer than 64 characters
-	// Other resources, e.g. Cognito User Pool Domains, limit this to 63
+	// Other resources, e.g. Cognito User Pool Domains, limit this to 63.
 	acmCertificateDomainMaxLen = 63
 
 	acmRandomSubDomainPrefix    = "tf-acc-"
@@ -1308,7 +1308,7 @@ const (
 
 	// Max length (63)
 	// Subtract "tf-acc-" prefix (7)
-	// Subtract "." between prefix and root domain (1)
+	// Subtract "." between prefix and root domain (1).
 	acmRandomSubDomainRemainderLen = acmCertificateDomainMaxLen - acmRandomSubDomainPrefixLen - 1
 )
 
@@ -1337,7 +1337,7 @@ func ACMCertificateDomainFromEnv(t *testing.T) string {
 }
 
 // ACM domain names cannot be longer than 64 characters
-// Other resources, e.g. Cognito User Pool Domains, limit this to 63
+// Other resources, e.g. Cognito User Pool Domains, limit this to 63.
 func ACMCertificateRandomSubDomain(rootDomain string) string {
 	return fmt.Sprintf(
 		acmRandomSubDomainPrefix+"%s.%s",
@@ -1929,7 +1929,7 @@ func CheckResourceAttrGreaterThanValue(n, key, value string) resource.TestCheckF
 			return fmt.Errorf("not found: %s", n)
 		}
 
-		if v, ok := rs.Primary.Attributes[key]; !ok || !(v > value) {
+		if v, ok := rs.Primary.Attributes[key]; !ok || (v <= value) {
 			if !ok {
 				return fmt.Errorf("%s: Attribute %q not found", n, key)
 			}

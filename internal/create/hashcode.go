@@ -6,7 +6,7 @@ import (
 
 // StringHashcode hashes a string to a unique hashcode.
 //
-// crc32 returns a uint32, but for our use we need
+// Crc32 returns a uint32, but for our use we need
 // and non negative integer. Here we cast to an integer
 // and invert it if the result is negative.
 func StringHashcode(s string) int {
